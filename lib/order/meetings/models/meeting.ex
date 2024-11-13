@@ -1,4 +1,5 @@
-defmodule Order.DB.Meeting do
+defmodule Order.Meetings.Meeting do
+  alias __MODULE__
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -18,14 +19,14 @@ defmodule Order.DB.Meeting do
     field :location, :string
 
     belongs_to :organization, Order.Organizations.Organization
-    has_many :attendees, Order.DB.Attendee
+    has_many :attendees, Order.Meetings.Attendee
     has_many :users, through: [:attendees, :user]
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(%Order.DB.Meeting{} = meeting, attrs) do
+  def changeset(%Meeting{} = meeting, attrs) do
     meeting
     |> cast(attrs, [
       :status,

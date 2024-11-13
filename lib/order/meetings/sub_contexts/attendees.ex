@@ -2,9 +2,8 @@ defmodule Order.Meetings.Attendees do
   require Logger
   import Ecto.Query
   import Order.DateHelper
-  alias Order.Meetings.Notifications
   alias Order.Repo
-  alias Order.DB.{Meeting, Attendee}
+  alias Order.Meetings.{Meeting, Attendee, Notifications}
   alias Order.Organizations.Membership
 
   def list_attendees(%Meeting{} = meeting) do
@@ -90,7 +89,8 @@ defmodule Order.Meetings.Attendees do
   defp map_attendee(%Attendee{} = a, %Date{} = date),
     do: %{
       # Attendee stuff
-      id: a.membership_id,
+      id: a.id,
+      membership_id: a.membership_id,
       attendee_id: a.id,
       status: a.status,
       rsvp_date: a.rsvp_date,

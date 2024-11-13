@@ -7,7 +7,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   alias OrderWeb.DTO
   alias Order.Organizations.{Presence, Position}
   alias Order.{Meetings, Organizations}
-  alias Order.DB.{Meeting}
+  alias Order.Meetings.Meeting
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
@@ -32,7 +32,7 @@ defmodule OrderWeb.OrganizationLive.Show do
     socket
     |> assign(:organization, organization)
     |> assign(:positions, positions)
-    |> assign(:meetings, Meetings.list_meetings(organization))
+    |> assign(:meetings, Meetings.list_org_meetings(organization.id))
     |> assign(:members, members)
     # permissions
     |> apply_action(socket.assigns.live_action, params)

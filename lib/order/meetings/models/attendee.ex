@@ -1,4 +1,4 @@
-defmodule Order.DB.Attendee do
+defmodule Order.Meetings.Attendee do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -13,7 +13,7 @@ defmodule Order.DB.Attendee do
     field :online, :boolean
     field :roles, {:array, Ecto.Enum}, values: [:attendee, :host, :owner], default: [:attendee]
 
-    belongs_to :meeting, Order.DB.Meeting
+    belongs_to :meeting, Order.Meetings.Meeting
     belongs_to :membership, Order.Organizations.Membership
 
     timestamps(type: :utc_datetime)

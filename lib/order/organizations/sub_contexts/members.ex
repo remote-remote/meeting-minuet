@@ -37,6 +37,11 @@ defmodule Order.Organizations.Members do
   end
 
   # get_member
+  def get_member!(membership_id) do
+    Repo.get!(Membership, membership_id)
+    |> Repo.preload([:user, tenures: :position])
+  end
+
   @spec get_member!(%Organization{}, %User{}) :: %Membership{}
   def get_member!(%Organization{} = organization, %User{} = user) do
     get_member!(organization.id, user.id)

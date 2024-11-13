@@ -8,7 +8,8 @@ defmodule Order.Organizations do
 
   # Members
   defdelegate list_members(organization), to: Members
-  defdelegate get_member!(organization, membership_id), to: Members
+  defdelegate get_member!(membership_id), to: Members
+  defdelegate get_member!(organization, user), to: Members
   defdelegate invite_member(organization, url_fn, attrs), to: Members
 
   # Positions (maybe don't need all this?)

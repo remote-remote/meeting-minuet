@@ -37,7 +37,7 @@
         <% end %>
       </:col>
       <:action :let={attendee}>
-        <div phx-click="uninvite" phx-value-id={attendee.id}>
+        <div phx-click="uninvite" phx-value-id={attendee.membership_id}>
           <.icon name="hero-minus-circle" /> Remove
         </div>
       </:action>

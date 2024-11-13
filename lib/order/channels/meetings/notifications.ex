@@ -1,5 +1,5 @@
 defmodule Order.Meetings.Notifications do
-  alias Order.DB.Meeting
+  alias Order.Meetings.Meeting
   alias Order.PubSub
 
   def notify(%Meeting{} = meeting, message) do

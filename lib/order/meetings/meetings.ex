@@ -1,8 +1,7 @@
 defmodule Order.Meetings do
   import Ecto.Query
   alias Order.Repo
-  alias Order.DB.Meeting
-  alias Order.Accounts.User
+  alias Order.Meetings.Meeting
   alias Order.Organizations.Organization
   alias Order.Meetings.{Attendees, Notifications}
 
@@ -65,44 +64,27 @@ defmodule Order.Meetings do
     |> Repo.insert()
   end
 
-  def list_meetings(subject, query \\ [], opts \\ [limit: 10])
-
-  def list_meetings(%Organization{} = organization, query, opts) do
+  def list_org_meetings(organization_id, query \\ [], opts \\ []) do
     Repo.all(
       from m in Meeting,
-        where: m.organization_id == ^organization.id,
+        where: m.organization_id == ^organization_id,
         where: ^query,
+        preload: [:organization, :attendees],
         order_by: [desc: m.date, desc: m.scheduled_start_time],
         limit: ^opts[:limit]
     )
   end
 
-  def list_meetings(%User{} = user, query, opts) do
+  def list_user_meetings(user_id, query \\ [], opts \\ []) do
     Repo.all(
       from m in Meeting,
         where: ^query,
         join: a in assoc(m, :attendees),
         join: mb in assoc(a, :membership),
-        where: mb.user_id == ^user.id,
+        where: mb.user_id == ^user_id,
+        preload: [:organization, :attendees],
         order_by: [desc: m.date, desc: m.scheduled_start_time],
-        preload: [:organization],
         limit: ^opts[:limit]
     )
-    |> Enum.map(&map_meeting/1)
-  end
-
-  defp map_meeting(%Meeting{} = m) do
-    %{
-      id: m.id,
-      title: m.title,
-      date: m.date,
-      scheduled_start_time: m.scheduled_start_time,
-      scheduled_end_time: m.scheduled_end_time,
-      running_start_time: m.running_start_time,
-      running_end_time: m.running_end_time,
-      organization_id: m.organization_id,
-      organization_name: m.organization.name,
-      status: m.status
-    }
   end
 end

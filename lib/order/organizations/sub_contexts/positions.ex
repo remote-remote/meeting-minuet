@@ -28,7 +28,7 @@ defmodule Order.Organizations.Positions do
   end
 
   def get_position!(position_id) do
-    Repo.get(DB.Position, position_id)
+    Repo.get(Position, position_id)
   end
 
   def create_position(%Organization{} = organization, attrs) do

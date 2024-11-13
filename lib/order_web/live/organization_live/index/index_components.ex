@@ -69,7 +69,7 @@ defmodule OrderWeb.OrganizationLive.IndexComponents do
         <%= meeting.title %>
       </:col>
       <:col :let={meeting} label="Organization">
-        <%= meeting.organization_name %>
+        <%= meeting.organization.name %>
       </:col>
       <:col :let={meeting} label="Scheduled At">
         <%= meeting.date %> <%= meeting.scheduled_start_time %>

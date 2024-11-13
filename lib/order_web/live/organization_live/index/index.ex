@@ -15,7 +15,7 @@ defmodule OrderWeb.OrganizationLive.Index do
       |> stream(:organizations, Organizations.list_organizations(current_user))
       |> assign(
         :upcoming_meetings,
-        Order.Meetings.list_meetings(current_user, status: :scheduled)
+        Order.Meetings.list_user_meetings(current_user.id, status: :scheduled)
       )
 
     {:ok, socket}

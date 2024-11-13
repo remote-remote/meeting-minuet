@@ -30,7 +30,7 @@ defmodule OrderWeb.MeetingLive.Show do
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
     attendees = Meetings.list_attendees(meeting)
-    attending_member_ids = attendees |> Enum.map(& &1.id)
+    attending_member_ids = attendees |> Enum.map(& &1.membership_id)
 
     uninvited_members =
       Organizations.list_members(organization_id)
@@ -92,20 +92,22 @@ defmodule OrderWeb.MeetingLive.Show do
     {:noreply,
      socket
      |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
-     |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
+     |> update(:uninvited_members, fn members ->
+       Enum.reject(members, &(&1.id == attendee.membership_id))
+     end)}
   end
 
   def handle_info({:removed_attendee, attendee}, socket) do
     member =
-      Organizations.get_member!(
-        socket.assigns.organization,
-        attendee.id
-      )
+      Organizations.get_member!(attendee.membership_id)
+      |> Member.map_preloaded_membership()
 
     {:noreply,
      socket
      |> update(:uninvited_members, fn members -> members ++ [member] end)
-     |> update(:attendees, fn attendees -> Enum.reject(attendees, &(&1.id == member.id)) end)}
+     |> update(:attendees, fn attendees ->
+       Enum.reject(attendees, &(&1.membership_id == member.id))
+     end)}
   end
 
   def handle_info(
