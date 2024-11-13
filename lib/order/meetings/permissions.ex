@@ -6,21 +6,26 @@ defmodule Order.Meetings.Permissions do
   def get_permissions(%Order.Accounts.User{} = user, %Order.DB.Meeting{} = meeting) do
     scope = "id:#{meeting.id}"
 
-    permissions =
+    actions =
       Repo.all(
         from p in Ecto.assoc(user, :permissions),
           where:
-            p.resource == "meeting" and p.organization_id == ^meeting.organization_id and
-              p.resource == "meeting" and (p.scope == "*" or p.scope == ^scope)
+            p.resource == :meetings and p.organization_id == ^meeting.organization_id and
+              (p.scope == "*" or p.scope == ^scope)
       )
+      |> Enum.map(fn p -> p.action end)
 
-    Enum.reduce(
-      permissions,
-      fn permission, acc ->
-        Map.put(acc, permission.action, true)
-      end,
-      %{}
-    )
-    |> Permission.new()
+    if "*" in actions do
+      %Permission{start_end: true, invite: true, view: true, edit: true}
+    else
+      Enum.reduce(
+        actions,
+        %{},
+        fn action, acc ->
+          Map.put(acc, action, true)
+        end
+      )
+      |> Permission.new()
+    end
   end
 end

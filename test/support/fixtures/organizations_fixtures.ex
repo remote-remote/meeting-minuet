@@ -11,9 +11,20 @@ defmodule Order.OrganizationsFixtures do
   @doc """
   Generate a organization.
   """
-  def organization_fixture(org_attrs \\ %{}) do
-    %Organization{}
-    |> Organization.changeset(org_attrs)
+  def organization_fixture(user_id, attrs \\ %{}) do
+    attrs = valid_organization_attributes(attrs)
+
+    %Organization{
+      owner_id: user_id
+    }
+    |> Organization.changeset(attrs)
     |> Repo.insert!()
+  end
+
+  def valid_organization_attributes(attrs \\ %{}) do
+    Enum.into(attrs, %{
+      name: "Some org",
+      description: "Some description"
+    })
   end
 end

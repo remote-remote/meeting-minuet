@@ -5,7 +5,9 @@ defmodule Order.DB.Permission do
   alias Order.Repo
 
   schema "permissions" do
-    field :resource, :string
+    field :resource, Ecto.Enum,
+      values: [:meetings, :organization, :members, :positions, :permissions]
+
     field :scope, :string
     field :action, :string
 

@@ -86,7 +86,7 @@ defmodule Order.Organizations do
     permissions =
       [
         %{resource: "meetings", scope: "*", action: "*"},
-        %{resource: "organizations", scope: "", action: "*"},
+        %{resource: "organization", scope: "", action: "*"},
         %{resource: "members", scope: "*", action: "*"},
         %{resource: "positions", scope: "*", action: "*"},
         %{resource: "permissions", scope: "*", action: "*"}
