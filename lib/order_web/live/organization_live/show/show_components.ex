@@ -92,10 +92,18 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
   end
 
   attr :members, :list, required: true
+  attr :organization, :map, required: true
 
   def members(assigns) do
     ~H"""
-    <.header>Members</.header>
+    <.header>
+      Members
+      <:actions>
+        <.link patch={~p"/organizations/#{@organization}/members/invite"}>
+          <.button>New</.button>
+        </.link>
+      </:actions>
+    </.header>
     <.table id="members" rows={@members}>
       <:col :let={member} label="Name"><%= member.name %></:col>
       <:col :let={member} label="Current Positions">

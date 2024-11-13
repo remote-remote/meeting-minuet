@@ -81,6 +81,8 @@ defmodule Order.Accounts do
   end
 
   def invite_user(attrs) do
+    IO.inspect(attrs, label: "Accounts.invite_user")
+
     %User{}
     |> User.invitation_changeset(attrs)
     |> Repo.insert()

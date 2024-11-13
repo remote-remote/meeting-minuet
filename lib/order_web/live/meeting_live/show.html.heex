@@ -1,69 +1,60 @@
-<.card>
-  <.header>
-    <%= @meeting.title %>
-    <:subtitle><%= @meeting.topic %></:subtitle>
-    <:actions>
-      <.link
-        :if={@meeting.status == :scheduled}
-        patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/start"}
-      >
-        <.button>Start Meeting</.button>
-      </.link>
-    </:actions>
-  </.header>
-</.card>
-<.card class="mt-4">
-  <.header>
-    Attendees
-  </.header>
-  <.table id="attendees" rows={@streams.attendees}>
-    <:col :let={{_id, attendee}} label="Name"><%= attendee.name %></:col>
-    <:col :let={{_id, attendee}} label="Email"><%= attendee.email %></:col>
-    <:col :let={{_id, attendee}} label="Status"><%= attendee.status %></:col>
-    <:col :let={{_id, attendee}} label="Current Positions">
-      <%= attendee.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
-    </:col>
-    <:action :let={{_id, attendee}}>
-      <div phx-click="uninvite" phx-value-id={attendee.id}>
-        <.icon name="hero-minus-circle" /> Remove
-      </div>
-    </:action>
-  </.table>
-</.card>
-<.card class="mt-4">
-  <.header>
-    Members
-  </.header>
-  <.table id="members" rows={@streams.uninvited_members}>
-    <:col :let={{_id, member}} label="Name"><%= member.name %></:col>
-    <:col :let={{_id, member}} label="Current Positions">
-      <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
-    </:col>
-    <%!-- <:col :let={member} label="Position"> --%>
-    <%!--   <%= if member.position.name do %> --%>
-    <%!--     <%= member.position.name %> --%>
-    <%!--   <% else %> --%>
-    <%!--     General Member --%>
-    <%!--   <% end %> --%>
-    <%!-- </:col> --%>
-    <%!-- <:col :let={member} label="Online"> --%>
-    <%!--   <%= if member.user_id do %> --%>
-    <%!--     <.icon --%>
-    <%!--       name="hero-user-circle" --%>
-    <%!--       class={ --%>
-    <%!--         if @presences[Integer.to_string(member.user_id)], --%>
-    <%!--           do: "text-green-500", --%>
-    <%!--           else: "text-slate-500" --%>
-    <%!--       } --%>
-    <%!--     /> --%>
-    <%!--   <% end %> --%>
-    <%!-- </:col> --%>
-    <:action :let={{_id, member}}>
-      <div phx-click="invite" phx-value-id={member.id}>
-        <.icon name="hero-plus-circle" /> Add
-      </div>
-    </:action>
-  </.table>
-</.card>
-
-<.back navigate={~p"/organizations/#{@organization}"}>Back to Organization Dashboard</.back>
+<div :if={@meeting.status == :scheduled}>
+  <.card>
+    <.header>
+      <%= @meeting.title %>
+      <:subtitle><%= @meeting.topic %></:subtitle>
+      <:actions>
+        <.link phx-click="start">
+          <.button>Start Meeting</.button>
+        </.link>
+      </:actions>
+    </.header>
+  </.card>
+  <.card class="mt-4">
+    <.header>
+      Attendees
+    </.header>
+    <.table id="attendees" rows={@streams.attendees}>
+      <:col :let={{_id, attendee}} label="Name"><%= attendee.name %></:col>
+      <:col :let={{_id, attendee}} label="Email"><%= attendee.email %></:col>
+      <:col :let={{_id, attendee}} label="Status"><%= attendee.status %></:col>
+      <:col :let={{_id, attendee}} label="Current Positions">
+        <%= attendee.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <:action :let={{_id, attendee}}>
+        <div phx-click="uninvite" phx-value-id={attendee.id}>
+          <.icon name="hero-minus-circle" /> Remove
+        </div>
+      </:action>
+    </.table>
+  </.card>
+  <.card class="mt-4">
+    <.header>
+      Members
+    </.header>
+    <.table id="members" rows={@streams.uninvited_members}>
+      <:col :let={{_id, member}} label="Name"><%= member.name %></:col>
+      <:col :let={{_id, member}} label="Current Positions">
+        <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <%!-- <:col :let={member} label="Online"> --%>
+      <%!--   <%= if member.user_id do %> --%>
+      <%!--     <.icon --%>
+      <%!--       name="hero-user-circle" --%>
+      <%!--       class={ --%>
+      <%!--         if @presences[Integer.to_string(member.user_id)], --%>
+      <%!--           do: "text-green-500", --%>
+      <%!--           else: "text-slate-500" --%>
+      <%!--       } --%>
+      <%!--     /> --%>
+      <%!--   <% end %> --%>
+      <%!-- </:col> --%>
+      <:action :let={{_id, member}}>
+        <div phx-click="invite" phx-value-id={member.id}>
+          <.icon name="hero-plus-circle" /> Add
+        </div>
+      </:action>
+    </.table>
+  </.card>
+  <.back navigate={~p"/organizations/#{@organization}"}>Back to Organization Dashboard</.back>
+</div>

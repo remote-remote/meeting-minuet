@@ -59,12 +59,10 @@ defmodule OrderWeb.OrganizationLive.Show do
      |> assign(:meeting, %Meetings.Meeting{})}
   end
 
-  def apply_action(socket, :invite_members, %{"meeting_id" => meeting_id}) do
-    # meeting = Meetings.get_meeting!(meeting_id, socket.assigns.current_user)
-    # TODO: Implement this
-    IO.puts("Invite members: meeting_id=#{meeting_id}")
-
-    {:noreply, socket}
+  def apply_action(socket, :invite_member, _params) do
+    {:noreply,
+     socket
+     |> assign(:page_title, page_title(:new_meeting))}
   end
 
   def apply_action(socket, action, _params) do
@@ -110,6 +108,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   defp page_title(:edit), do: "Edit Organization"
   defp page_title(:new_position), do: "Create Position"
   defp page_title(:new_meeting), do: "Create Meeting"
+  defp page_title(:invite_member), do: "Invite Member"
 
   defp topic(org_id) when is_bitstring(org_id) or is_integer(org_id) do
     "organization:#{org_id}"

@@ -8,7 +8,7 @@
   <.positions organization={@organization} positions={@positions} presences={@presences} />
 </.card>
 <.card class="mt-4">
-  <.members members={@members} />
+  <.members members={@members} organization={@organization} />
 </.card>
 
 <.back navigate={~p"/organizations"}>Back to organizations</.back>
@@ -60,5 +60,19 @@
     action={@live_action}
     organization={@organization}
     meeting={@meeting}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :invite_member}
+  id="member-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.InvitationFormComponent}
+    id="invite_member"
+    title={@page_title}
+    organization={@organization}
   />
 </.modal>

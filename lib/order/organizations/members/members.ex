@@ -5,17 +5,23 @@ defmodule Order.Organizations.Members do
   alias Order.Organizations.{Membership, Organization, Member}
   alias Order.{Repo, Accounts}
 
-  def add_member(%Organization{} = organization, attrs) do
+  def invite_member(%Organization{} = organization, attrs) do
+    IO.inspect(attrs, label: "Members.invite_member")
+
     user =
       case Accounts.get_user_by_email(attrs["email"]) do
         nil -> Accounts.invite_user(attrs)
         user -> user
       end
 
-    attrs = Map.put(attrs, "user_id", user.id)
+    attrs =
+      Map.put(attrs, "user_id", user.id)
+      |> Map.put("active_range", {Date.utc_today(), nil})
 
     Ecto.build_assoc(organization, :memberships)
+    |> dbg()
     |> Membership.changeset(attrs)
+    |> dbg()
     |> Repo.insert()
   end
 
