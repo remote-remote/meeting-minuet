@@ -3,8 +3,7 @@ defmodule Order.Organizations.Members do
   import Order.DateHelper
 
   alias Order.Accounts.User
-  alias Order.DB
-  alias Order.Organizations.{Member, Organization}
+  alias Order.Organizations.{Member, Membership, Organization}
   alias Order.{Repo, Accounts}
 
   def invite_member(%Organization{} = organization, url_fn, attrs) do
@@ -18,8 +17,8 @@ defmodule Order.Organizations.Members do
       Map.put(attrs, "user_id", user.id)
       |> Map.put("active_range", {Date.utc_today(), nil})
 
-    %DB.Membership{organization_id: organization.id}
-    |> DB.Membership.changeset(attrs)
+    %Membership{organization_id: organization.id}
+    |> Membership.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -32,7 +31,7 @@ defmodule Order.Organizations.Members do
   @spec list_members(binary()) :: [%Member{}]
   def list_members(organization_id) when is_integer(organization_id) do
     Repo.all(
-      from m in DB.Membership,
+      from m in Membership,
         where: m.organization_id == ^organization_id
     )
     |> Repo.preload([:user, tenures: :position])
@@ -57,7 +56,7 @@ defmodule Order.Organizations.Members do
       when (is_integer(organization_id) or is_binary(organization_id)) and
              (is_integer(user_id) or is_binary(user_id)) do
     Repo.one!(
-      from m in DB.Membership,
+      from m in Membership,
         where: m.organization_id == ^organization_id and m.user_id == ^user_id
     )
     |> Repo.preload([:user, tenures: :position])
@@ -65,15 +64,15 @@ defmodule Order.Organizations.Members do
   end
 
   # mapper
-  defp map_member(%DB.Membership{tenures: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
+  defp map_member(%Membership{tenures: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
     Repo.preload(m, [:user, tenures: :position]) |> map_member(date)
   end
 
-  defp map_member(%DB.Membership{user: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
+  defp map_member(%Membership{user: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
     Repo.preload(m, user: :tenures) |> map_member(date)
   end
 
-  defp map_member(%DB.Membership{} = m, %Date{} = date) do
+  defp map_member(%Membership{} = m, %Date{} = date) do
     %Member{
       id: m.user_id,
       membership_id: m.id,

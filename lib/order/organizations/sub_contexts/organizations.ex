@@ -1,13 +1,12 @@
 defmodule Order.Organizations.Organizations do
-  alias Order.Accounts.User
   alias Order.Repo
-  alias Order.DB
-  alias Order.Organizations.Organization
+  alias Order.Accounts.User
+  alias Order.Organizations.{Organization, Permissions}
 
   def list_organizations(%User{} = user) do
-    DB.Organization.q_list_with_memberships(user.id)
+    Organization.q_list_with_memberships(user.id)
     |> Repo.all()
-    |> Enum.map(&Organization.from_db(&1, user))
+    |> Enum.map(&Permissions.with_permissions(&1, user))
   end
 
   @doc """
@@ -25,9 +24,9 @@ defmodule Order.Organizations.Organizations do
 
   """
   def get_organization!(%User{} = user, organization_id) do
-    DB.Organization.q_get_with_memberships(user.id, organization_id)
+    Organization.q_get_with_memberships(user.id, organization_id)
     |> Repo.one!()
-    |> Organization.from_db(user)
+    |> Permissions.with_permissions(user)
   end
 
   @doc """
@@ -51,16 +50,16 @@ defmodule Order.Organizations.Organizations do
     attrs = Map.put(attrs, "memberships", [member])
 
     case Ecto.build_assoc(user, :owned_organizations)
-         |> DB.Organization.changeset(attrs)
+         |> Organization.changeset(attrs)
          |> Repo.insert() do
-      {:ok, organization} -> {:ok, Organization.from_db(organization, user)}
+      {:ok, organization} -> {:ok, Permissions.with_permissions(organization, user)}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
   def create_organization(attrs) do
     %Organization{}
-    |> DB.Organization.changeset(attrs)
+    |> Organization.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -78,8 +77,7 @@ defmodule Order.Organizations.Organizations do
   """
   def update_organization(%Organization{} = organization, attrs) do
     organization
-    |> Organization.to_db()
-    |> DB.Organization.changeset(attrs)
+    |> Organization.changeset(attrs)
     |> Repo.update()
   end
 
@@ -96,7 +94,7 @@ defmodule Order.Organizations.Organizations do
 
   """
   def delete_organization(%Organization{} = organization) do
-    Repo.delete(%DB.Organization{id: organization.id})
+    Repo.delete(organization)
   end
 
   @doc """

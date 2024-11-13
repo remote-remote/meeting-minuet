@@ -1,9 +1,7 @@
 defmodule Order.Organizations.Positions do
-  import Ecto.Query
   import Order.DateHelper
-  alias Order.DB
   alias Order.Repo
-  alias Order.Organizations.{Position, Tenure, Organization}
+  alias Order.Organizations.{Position, Organization, Tenure}
 
   # Positions
 
@@ -17,20 +15,18 @@ defmodule Order.Organizations.Positions do
   def update_position(%Position{} = position, attrs) do
     position
     |> Position.changeset(attrs)
-    |> Position.to_db()
     |> Repo.update()
   end
 
   def list_positions(%Organization{} = organization) do
-    DB.Position.q_list_with_tenures(organization.id)
+    Position.q_list_with_tenures(organization.id)
     |> Repo.all()
-    |> Enum.map(&Position.from_db/1)
+    |> Enum.map(&map_position/1)
   end
 
   def get_position!(%Organization{} = organization, position_id) do
-    DB.Position.q_get_with_tenures(organization.id, position_id)
+    Position.q_get_with_tenures(organization.id, position_id)
     |> Repo.one!()
-    |> Position.from_db()
   end
 
   def get_position!(position_id) do
@@ -38,8 +34,34 @@ defmodule Order.Organizations.Positions do
   end
 
   def create_position(%Organization{} = organization, attrs) do
-    %DB.Position{organization_id: organization.id}
-    |> DB.Position.changeset(attrs)
+    %Position{organization_id: organization.id}
+    |> Position.changeset(attrs)
     |> Repo.insert()
+  end
+
+  defp map_position(%Position{} = p) do
+    tenures = Enum.map(p.tenures, &map_tenure/1)
+
+    %{
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      requires_report: p.requires_report,
+      current_tenures:
+        tenures
+        |> Enum.filter(&in_range?(&1.active_range, Date.utc_today())),
+      past_tenures: tenures |> Enum.reject(&in_range?(&1.active_range, Date.utc_today()))
+    }
+  end
+
+  defp map_tenure(%Tenure{} = t) do
+    %{
+      name: t.user.name,
+      membership_id: t.membership_id,
+      position_id: t.position_id,
+      email: t.user.email,
+      phone: t.user.phone,
+      active_range: t.active_range
+    }
   end
 end

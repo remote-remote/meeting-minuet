@@ -3,7 +3,7 @@ defmodule Order.ContextBuilderTest do
   import Order.ContextBuilder
   import Order.Repo
   alias Order.Accounts.User
-  alias Order.DB.{Organization, Position, Membership, Tenure}
+  alias Order.Organizations.{Organization, Position, Membership, Tenure}
 
   @input %{
     # username: %{ ??? future config }

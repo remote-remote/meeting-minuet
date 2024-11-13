@@ -1,6 +1,6 @@
 defmodule Order.ContextBuilder do
   alias Order.Repo
-  alias Order.DB.{Membership, Position, Tenure}
+  alias Order.Organizations.{Membership, Position, Tenure}
 
   def build_context(scenario) do
     %{}

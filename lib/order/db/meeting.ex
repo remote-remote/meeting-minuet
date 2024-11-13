@@ -17,7 +17,7 @@ defmodule Order.DB.Meeting do
     field :timezone, :string
     field :location, :string
 
-    belongs_to :organization, Order.DB.Organization
+    belongs_to :organization, Order.Organizations.Organization
     has_many :attendees, Order.DB.Attendee
     has_many :users, through: [:attendees, :user]
 

@@ -1,7 +1,7 @@
-defmodule Order.DB.Position do
+defmodule Order.Organizations.Position do
   use Ecto.Schema
   import Ecto.{Changeset, Query}
-  alias Order.DB.{Membership, Tenure, Organization}
+  alias Order.Organizations.{Membership, Tenure, Organization}
 
   schema "positions" do
     field :name, :string
@@ -23,13 +23,13 @@ defmodule Order.DB.Position do
   end
 
   def q_list_with_tenures(org_id) do
-    from p in Order.DB.Position,
+    from p in Order.Organizations.Position,
       preload: [tenures: :user],
       where: p.organization_id == ^org_id
   end
 
   def q_get_with_tenures(position_id) do
-    from p in Order.DB.Position,
+    from p in Order.Organizations.Position,
       preload: [tenures: :user],
       where: p.id == ^position_id
   end

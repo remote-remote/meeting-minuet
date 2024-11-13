@@ -5,7 +5,8 @@ defmodule Order.Meetings.Attendees do
   alias Order.Meetings.Notifications
   alias Order.Organizations
   alias Order.Repo
-  alias Order.DB.{Membership, Meeting, Attendee}
+  alias Order.DB.{Meeting, Attendee}
+  alias Order.Organizations.Membership
 
   def list_attendees(%Meeting{} = meeting) do
     Repo.all(from(a in Ecto.assoc(meeting, :attendees)))

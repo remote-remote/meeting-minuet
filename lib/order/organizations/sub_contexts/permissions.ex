@@ -1,21 +1,26 @@
 defmodule Order.Organizations.Permissions do
   alias Order.Repo
-  alias Order.DB
-  alias Order.Organizations.{Permission}
+  alias Order.Organizations.{Permission, Organization, Membership}
+  alias Order.Accounts.User
+
+  def with_permissions(%Organization{} = org, %User{} = user) do
+    permissions = get_permissions(org, user)
+    Map.put(org, :permissions, permissions)
+  end
 
   def get_permissions(
-        %DB.Organization{memberships: %Ecto.Association.NotLoaded{}} = org,
+        %Organization{memberships: %Ecto.Association.NotLoaded{}} = org,
         %Order.Accounts.User{} = user
       ) do
     get_permissions(Repo.preload(org, :memberships), user)
   end
 
-  def get_permissions(%DB.Organization{} = org, %Order.Accounts.User{} = user) do
+  def get_permissions(%Organization{} = org, %Order.Accounts.User{} = user) do
     membership = Enum.find(org.memberships, &(&1.user_id == user.id))
     get_permissions(org, membership)
   end
 
-  def get_permissions(%DB.Organization{} = org, %DB.Membership{} = membership) do
+  def get_permissions(%Organization{} = org, %Membership{} = membership) do
     %Permission{
       edit_organization: edit_organization?(org, membership),
       delete_organization: delete_organization?(org, membership),
@@ -31,53 +36,53 @@ defmodule Order.Organizations.Permissions do
     }
   end
 
-  defp edit_organization?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp edit_organization?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_organization?(%DB.Organization{} = org, %DB.Membership{
+  defp delete_organization?(%Organization{} = org, %Membership{
          roles: roles,
          user_id: user_id
        }) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp create_meetings?(%DB.Organization{} = _org, %DB.Membership{
+  defp create_meetings?(%Organization{} = _org, %Membership{
          roles: _roles,
          user_id: _user_id
        }) do
     true
   end
 
-  defp delete_meetings?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp delete_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp edit_meetings?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp edit_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp add_members?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp add_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_members?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp delete_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp add_positions?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp add_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp assign_positions?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp assign_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp edit_positions?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp edit_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_positions?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp delete_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 end

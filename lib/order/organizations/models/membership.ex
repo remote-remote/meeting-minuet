@@ -1,7 +1,7 @@
-defmodule Order.DB.Membership do
+defmodule Order.Organizations.Membership do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Order.DB.{Tenure, Organization}
+  alias Order.Organizations.{Tenure, Organization}
   alias Order.Accounts.User
 
   schema "memberships" do
@@ -18,8 +18,8 @@ defmodule Order.DB.Membership do
   end
 
   @doc false
-  def changeset(member, attrs) do
-    member
+  def changeset(membership, attrs) do
+    membership
     |> cast(attrs, [:user_id, :active_range, :roles])
     |> validate_required([:user_id, :active_range, :roles])
   end

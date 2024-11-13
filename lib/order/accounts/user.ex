@@ -13,10 +13,11 @@ defmodule Order.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :roles, {:array, Ecto.Enum}, values: [:user, :admin], default: [:user]
 
-    has_many :memberships, Order.DB.Membership
-    has_many :owned_organizations, Order.DB.Organization, foreign_key: :owner_id
+    has_many :memberships, Order.Organizations.Membership
+    has_many :owned_organizations, Order.Organizations.Organization, foreign_key: :owner_id
 
-    many_to_many :member_organizations, Order.DB.Organization, join_through: Order.DB.Membership
+    many_to_many :member_organizations, Order.Organizations.Organization,
+      join_through: Order.Organizations.Membership
 
     timestamps(type: :utc_datetime)
   end

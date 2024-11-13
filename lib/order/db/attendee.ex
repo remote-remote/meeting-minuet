@@ -14,7 +14,7 @@ defmodule Order.DB.Attendee do
     field :roles, {:array, Ecto.Enum}, values: [:attendee, :host, :owner], default: [:attendee]
 
     belongs_to :meeting, Order.DB.Meeting
-    belongs_to :membership, Order.DB.Membership
+    belongs_to :membership, Order.Organizations.Membership
 
     timestamps(type: :utc_datetime)
   end

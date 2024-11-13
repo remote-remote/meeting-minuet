@@ -1,13 +1,14 @@
-defmodule Order.DB.Organization do
+defmodule Order.Organizations.Organization do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias Order.DB.{Membership, Position, Meeting}
+  alias Order.Organizations.{Organization, Membership, Position, Meeting, Member, Permission}
   alias Order.Accounts.User
 
   schema "organizations" do
     field :name, :string
     field :description, :string
+
     belongs_to :owner, User, foreign_key: :owner_id
     has_many :memberships, Membership
     has_many :meetings, Meeting
@@ -28,9 +29,9 @@ defmodule Order.DB.Organization do
   @doc """
   Returns the organization with the given id.
   """
-  @spec q_list_with_memberships(string()) :: Ecto.Query.t()
+  @spec q_list_with_memberships(integer()) :: Ecto.Query.t()
   def q_list_with_memberships(user_id) do
-    from o in Order.DB.Organization,
+    from o in Organization,
       left_join: m in assoc(o, :memberships),
       on: m.user_id == ^user_id,
       where: not is_nil(m.id) or o.owner_id == ^user_id,

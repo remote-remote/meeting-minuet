@@ -2,7 +2,7 @@ defmodule Order.OrganizationsTest do
   use Order.DataCase
 
   import Order.ContextBuilder
-  alias Order.DB.Organization
+  alias Order.Organizations.Organization
   alias Order.Organizations
 
   describe "organizations crud" do
