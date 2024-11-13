@@ -5,7 +5,7 @@ defmodule Order.OrganizationsTest do
   alias Order.Organizations.Organization
   alias Order.Organizations
 
-  describe "organizations" do
+  describe "organizations crud" do
     setup do
       context =
         build_context(%{
@@ -94,5 +94,65 @@ defmodule Order.OrganizationsTest do
       organization = get_org(context, :org1)
       assert %Ecto.Changeset{} = Organizations.change_organization(organization)
     end
+  end
+
+  describe "organization memberships" do
+    setup do
+      context =
+        build_context(%{
+          users: %{
+            user1: %{},
+            user2: %{},
+            user3: %{}
+          },
+          orgs: %{
+            org1: %{
+              owner: :user1,
+              memberships: %{
+                user1: {~D[2024-01-01], nil},
+                user2: {~D[2024-01-01], nil}
+              },
+              positions: %{
+                chair: %{
+                  user1: {~D[2023-01-01], ~D[2023-12-31]},
+                  user2: {~D[2024-01-01], nil}
+                },
+                secretary: %{
+                  user1: {~D[2024-01-01], nil},
+                  user2: {~D[2023-01-01], ~D[2023-12-31]}
+                }
+              }
+            },
+            org2: %{
+              owner: :user2,
+              memberships: %{
+                user3: {~D[2024-01-01], nil}
+              },
+              positions: %{
+                chair: %{
+                  user3: {~D[2023-01-01], ~D[2023-12-31]}
+                },
+                secretary: %{
+                  user3: {~D[2024-01-01], nil}
+                }
+              }
+            }
+          }
+        })
+
+      {:ok, context}
+    end
+
+    @tag run: true
+    test "list_members/1 returns organization_members in the correct shape", context do
+      organization = get_org(context, :org1)
+      members = Organizations.list_members(organization)
+      assert length(members) == 2
+      assert Enum.at(members, 0).user_id == get_user(context, :user1).id
+      assert Enum.at(members, 1).user_id == get_user(context, :user2).id
+
+      IO.inspect(members)
+    end
+
   end
 end

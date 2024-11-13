@@ -21,29 +21,15 @@
       </.link>
     </:actions>
   </.header>
-  <.table id="attendees" rows={@attendees}>
-    <:col :let={attendee} label="Name"><%= attendee.membership.user.name %></:col>
-    <%!-- <:col :let={attendee} label="Position"> --%>
-    <%!--   <%= if attendee.position.name do %> --%>
-    <%!--     <%= attendee.position.name %> --%>
-    <%!--   <% else %> --%>
-    <%!--     General Member --%>
-    <%!--   <% end %> --%>
-    <%!-- </:col> --%>
-    <%!-- <:col :let={attendee} label="Online"> --%>
-    <%!--   <%= if attendee.user_id do %> --%>
-    <%!--     <.icon --%>
-    <%!--       name="hero-user-circle" --%>
-    <%!--       class={ --%>
-    <%!--         if @presences[Integer.to_string(attendee.user_id)], --%>
-    <%!--           do: "text-green-500", --%>
-    <%!--           else: "text-slate-500" --%>
-    <%!--       } --%>
-    <%!--     /> --%>
-    <%!--   <% end %> --%>
-    <%!-- </:col> --%>
-    <:action :let={attendee}>
-      <div phx-click="remove_attendee" phx-value-id={attendee.id}>
+  <.table id="attendees" rows={@streams.attendees}>
+    <:col :let={{_id, attendee}} label="Name"><%= attendee.name %></:col>
+    <:col :let={{_id, attendee}} label="Email"><%= attendee.email %></:col>
+    <:col :let={{_id, attendee}} label="Status"><%= attendee.status %></:col>
+    <:col :let={{_id, attendee}} label="Current Positions">
+      <%= attendee.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+    </:col>
+    <:action :let={{_id, attendee}}>
+      <div phx-click="uninvite" phx-value-id={attendee.id}>
         <.icon name="hero-minus-circle" /> Remove
       </div>
     </:action>
@@ -53,8 +39,11 @@
   <.header>
     Members
   </.header>
-  <.table id="members" rows={@members}>
-    <:col :let={member} label="Name"><%= member.user.name %></:col>
+  <.table id="members" rows={@streams.uninvited_members}>
+    <:col :let={{_id, member}} label="Name"><%= member.name %></:col>
+    <:col :let={{_id, member}} label="Current Positions">
+      <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+    </:col>
     <%!-- <:col :let={member} label="Position"> --%>
     <%!--   <%= if member.position.name do %> --%>
     <%!--     <%= member.position.name %> --%>
@@ -74,8 +63,8 @@
     <%!--     /> --%>
     <%!--   <% end %> --%>
     <%!-- </:col> --%>
-    <:action :let={member}>
-      <div phx-click="invite_attendee" phx-value-id={member.id}>
+    <:action :let={{_id, member}}>
+      <div phx-click="invite" phx-value-id={member.id}>
         <.icon name="hero-plus-circle" /> Add
       </div>
     </:action>

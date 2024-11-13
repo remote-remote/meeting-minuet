@@ -4,7 +4,8 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
 
-  alias Order.{Organizations, Positions, Meetings, Presence, Memberships}
+  alias Order.{Organizations, Meetings, Presence}
+  alias Order.Organizations.{Position}
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
@@ -23,9 +24,9 @@ defmodule OrderWeb.OrganizationLive.Show do
 
     socket
     |> assign(:organization, organization)
-    |> assign(:positions, Positions.list_positions(organization))
+    |> assign(:positions, Organizations.list_positions(organization))
     |> assign(:meetings, Meetings.list_meetings(organization))
-    |> assign(:members, Memberships.list_members(organization))
+    |> assign(:members, Organizations.list_members(organization))
     |> apply_action(socket.assigns.live_action, params)
   end
 
@@ -48,7 +49,7 @@ defmodule OrderWeb.OrganizationLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(:new_position))
-     |> assign(:position, %Positions.Position{})}
+     |> assign(:position, %Position{})}
   end
 
   def apply_action(socket, :new_meeting, _params) do

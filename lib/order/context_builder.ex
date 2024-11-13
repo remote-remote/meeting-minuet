@@ -1,8 +1,6 @@
 defmodule Order.ContextBuilder do
-  alias Order.Tenures.Tenure
-  alias Order.Positions.Position
   alias Order.Repo
-  alias Order.Memberships.Membership
+  alias Order.Organizations.{Membership, Position, Tenure}
 
   def build_context(scenario) do
     %{}
@@ -45,7 +43,7 @@ defmodule Order.ContextBuilder do
   end
 
   defp insert_organization(result, {org_key, org_config}) do
-    org_name = org_config.name || Atom.to_string(org_key)
+    org_name = org_config[:name] || Atom.to_string(org_key)
 
     {:ok, org} =
       Order.Organizations.create_organization(%{
@@ -122,7 +120,7 @@ defmodule Order.ContextBuilder do
   end
 
   defp insert_user(result, {user_key, user_info}) do
-    name = user_info.name || Atom.to_string(user_key)
+    name = user_info[:name] || Atom.to_string(user_key)
 
     # we'll use the Accounts context for this one, since it will probably not change
     # and it requires a hashed password

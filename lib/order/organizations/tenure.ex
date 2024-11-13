@@ -1,12 +1,13 @@
-defmodule Order.Tenures.Tenure do
+defmodule Order.Organizations.Tenure do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Order.Organizations.{Membership, Position}
 
   schema "tenures" do
     field :active_range, EctoRange.Date
 
-    belongs_to :membership, Order.Memberships.Membership
-    belongs_to :position, Order.Positions.Position
+    belongs_to :membership, Membership
+    belongs_to :position, Position
 
     has_one :user, through: [:membership, :user]
 

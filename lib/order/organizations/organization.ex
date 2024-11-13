@@ -1,15 +1,18 @@
 defmodule Order.Organizations.Organization do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Order.Organizations.{Membership, Position}
+  alias Order.Accounts.User
+  alias Order.Meetings.Meeting
 
   schema "organizations" do
     field :name, :string
     field :description, :string
-    belongs_to :owner, Order.Accounts.User, foreign_key: :owner_id
-    has_many :memberships, Order.Memberships.Membership
-    has_many :meetings, Order.Meetings.Meeting
-    has_many :positions, Order.Positions.Position
-    many_to_many :users, Order.Accounts.User, join_through: Order.Memberships.Membership
+    belongs_to :owner, User, foreign_key: :owner_id
+    has_many :memberships, Membership
+    has_many :meetings, Meeting
+    has_many :positions, Position
+    many_to_many :users, User, join_through: Membership
 
     timestamps(type: :utc_datetime)
   end

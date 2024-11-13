@@ -1,14 +1,15 @@
-defmodule Order.Positions.Position do
+defmodule Order.Organizations.Position do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Order.Organizations.{Membership, Tenure, Organization}
 
   schema "positions" do
     field :name, :string
     field :description, :string
 
-    belongs_to :organization, Order.Organizations.Organization
-    has_many :tenures, Order.Tenures.Tenure
-    many_to_many :memberships, Order.Memberships.Membership, join_through: Order.Tenures.Tenure
+    belongs_to :organization, Organization
+    has_many :tenures, Tenure
+    many_to_many :memberships, Membership, join_through: Tenure
 
     timestamps(type: :utc_datetime)
   end

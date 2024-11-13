@@ -16,16 +16,17 @@ defmodule OrderWeb.MeetingLive.Show do
         _session,
         socket
       ) do
+    # TODO: do I really need organization? or can I get away with just the id from the params?
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
-    members = Meetings.list_uninvited_members(meeting)
-    attendees = Meetings.list_attendees(meeting)
+    members = Meetings.list_uninvited_members(meeting) |> IO.inspect(label: "Members")
+    attendees = Meetings.list_attendees(meeting) |> IO.inspect(label: "Attendees")
 
     socket
     |> assign(:organization, organization)
     |> assign(:meeting, meeting)
-    |> assign(:attendees, attendees)
-    |> assign(:members, members)
+    |> stream(:attendees, attendees)
+    |> stream(:uninvited_members, members)
     |> apply_action(socket.assigns.live_action, params)
   end
 
@@ -34,24 +35,29 @@ defmodule OrderWeb.MeetingLive.Show do
   end
 
   @impl true
-  def handle_event("invite_attendee", %{"id" => member_id}, socket) do
-    {:ok, attendee} = Meetings.add_attendee(socket.assigns.meeting, member_id)
-    IO.inspect(attendee, label: "Attendee")
+  def handle_event("invite", %{"id" => membership_id}, socket) do
+    {:ok, attendee} =
+      Meetings.add_attendee(socket.assigns.meeting, String.to_integer(membership_id))
 
     {:noreply,
-     update(socket, :attendees, fn attendees ->
-       [attendee | attendees]
-     end)}
+     socket
+     |> stream_insert(:attendees, attendee)
+     |> stream_delete(:uninvited_members, attendee)}
   end
 
-  def handle_event("remove_attendee", %{"id" => attendee_id}, socket) do
-    {1, r} = Meetings.remove_attendee(socket.assigns.meeting, attendee_id)
-    IO.inspect(r, label: "Remove Attendee")
+  def handle_event("uninvite", %{"id" => membership_id}, socket) do
+    # TODO: return the member from remove_attendee
+    IO.inspect(socket.assigns.meeting.id, label: "Meeting ID")
+    IO.inspect(membership_id, label: "Membership ID")
+    {1, _} = Meetings.remove_attendee(socket.assigns.meeting, membership_id)
+
+    member =
+      Organizations.get_member!(socket.assigns.organization, String.to_integer(membership_id))
 
     {:noreply,
-     update(socket, :attendees, fn attendees ->
-       Enum.reject(attendees, &(&1.id == attendee_id))
-     end)}
+     socket
+     |> stream_insert(:uninvited_members, member)
+     |> stream_delete_by_dom_id(:attendees, "attendees-#{membership_id}")}
   end
 
   def handle_event(msg, _params, socket) do

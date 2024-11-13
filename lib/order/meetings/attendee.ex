@@ -13,7 +13,7 @@ defmodule Order.Meetings.Attendee do
     field :online, :boolean
 
     belongs_to :meeting, Order.Meetings.Meeting
-    belongs_to :membership, Order.Memberships.Membership
+    belongs_to :membership, Order.Organizations.Membership
 
     timestamps(type: :utc_datetime)
   end

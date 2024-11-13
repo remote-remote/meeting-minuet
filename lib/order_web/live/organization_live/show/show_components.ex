@@ -1,6 +1,7 @@
 defmodule OrderWeb.OrganizationLive.ShowComponents do
   use OrderWeb, :live_component
   import OrderWeb.CoreComponents
+  import OrderWeb.DateComponents
   alias Phoenix.LiveView.JS
 
   attr :organization, :map, required: true
@@ -96,10 +97,15 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
     ~H"""
     <.header>Members</.header>
     <.table id="members" rows={@members}>
-      <:col :let={member} label="Name"><%= member.user.name %></:col>
-      <:col :let={member} label="Email"><%= member.user.email %></:col>
-      <:col :let={member} label="Positions">
-        <%= member.positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      <:col :let={member} label="Name"><%= member.name %></:col>
+      <:col :let={member} label="Current Positions">
+        <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <:col :let={member} label="Past Positions">
+        <%= member.past_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <:col :let={member} label="Member Since">
+        <.date_range_text date_range={member.active_range} type="start" />
       </:col>
     </.table>
     """
