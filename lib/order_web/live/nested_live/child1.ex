@@ -1,6 +1,5 @@
 defmodule OrderWeb.NestedLive.Child1 do
   use OrderWeb, :live_view
-  import OrderWeb.LayoutComponents
 
   def mount(params, session, socket) do
     IO.inspect(params, label: "Child 1 params")

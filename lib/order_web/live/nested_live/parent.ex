@@ -1,6 +1,5 @@
 defmodule OrderWeb.NestedLive.Parent do
   use OrderWeb, :live_view
-  import OrderWeb.LayoutComponents
 
   def mount(params, _session, socket) do
     {:ok, assign(socket, params: params, from_parent: %{stuff: ["F", "U"]})}

@@ -2,9 +2,8 @@ defmodule Order.Meetings do
   import Ecto.Query
   alias Order.Organizations
   alias Order.Repo
-  alias Order.Organizations.{Organization, Membership}
-  alias Order.Meetings.Meeting
-  alias Order.Meetings.Attendee, warn: false
+  alias Order.Organizations.{Organization, Membership, Members}
+  alias Order.Meetings.{Meeting, Attendee}
 
   def get_meeting!(%Organization{} = organization, meeting_id) do
     Repo.one!(
@@ -44,7 +43,7 @@ defmodule Order.Meetings do
     # TODO: optimize this somehow
     invited_member_ids = list_attendees(meeting) |> Enum.map(& &1.id)
 
-    Organizations.list_members(meeting.organization_id)
+    Members.list_members(meeting.organization_id)
     |> Enum.reject(fn m ->
       m.id in invited_member_ids
     end)
@@ -64,7 +63,7 @@ defmodule Order.Meetings do
 
     case result do
       {:ok, attendee} ->
-        member = Organizations.get_member!(meeting.organization_id, membership_id)
+        member = Members.get_member!(meeting.organization_id, membership_id)
         {:ok, map_attendee(attendee, member)}
 
       {:error, changeset} ->
@@ -72,7 +71,14 @@ defmodule Order.Meetings do
     end
   end
 
-  def map_attendee(%Attendee{} = a) do
+  def remove_attendee(%Meeting{} = meeting, membership_id) do
+    Repo.delete_all(
+      from a in Attendee,
+        where: a.meeting_id == ^meeting.id and a.membership_id == ^membership_id
+    )
+  end
+
+  defp map_attendee(%Attendee{} = a) do
     %{
       # Attendee stuff
       id: a.membership_id,
@@ -91,7 +97,7 @@ defmodule Order.Meetings do
     }
   end
 
-  def map_attendee(%Attendee{} = a, %Organizations.Member{} = m) do
+  defp map_attendee(%Attendee{} = a, %Organizations.Member{} = m) do
     %{
       # Attendee stuff
       id: a.membership_id,
@@ -108,12 +114,5 @@ defmodule Order.Meetings do
       phone: m.phone,
       current_positions: m.current_positions
     }
-  end
-
-  def remove_attendee(%Meeting{} = meeting, membership_id) do
-    Repo.delete_all(
-      from a in Attendee,
-        where: a.meeting_id == ^meeting.id and a.membership_id == ^membership_id
-    )
   end
 end

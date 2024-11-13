@@ -58,7 +58,6 @@ defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
     form =
       meeting
       |> Meetings.change_meeting(meeting_params)
-      |> IO.inspect(label: "Meeting Changeset")
       |> to_form(action: :validate)
 
     {:noreply, assign(socket, form: form)}

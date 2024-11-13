@@ -74,7 +74,7 @@ defmodule Order.ContextBuilder do
     )
   end
 
-  defp build_tenures(result, {org_key, org_config}, {position_key, tenures}) do
+  defp build_tenures(result, {org_key, _org_config}, {position_key, tenures}) do
     org_map = result[:orgs][org_key]
     position = org_map[:positions][position_key][:position]
 

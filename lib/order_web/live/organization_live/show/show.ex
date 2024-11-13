@@ -26,7 +26,7 @@ defmodule OrderWeb.OrganizationLive.Show do
     |> assign(:organization, organization)
     |> assign(:positions, Organizations.list_positions(organization))
     |> assign(:meetings, Meetings.list_meetings(organization))
-    |> assign(:members, Organizations.list_members(organization))
+    |> assign(:members, Organizations.Members.list_members(organization))
     |> apply_action(socket.assigns.live_action, params)
   end
 

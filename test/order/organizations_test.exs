@@ -153,6 +153,5 @@ defmodule Order.OrganizationsTest do
 
       IO.inspect(members)
     end
-
   end
 end

@@ -5,6 +5,7 @@ defmodule OrderWeb.LayoutComponents do
   attr :cols, :integer, required: true
   attr :class, :string, default: ""
   attr :gap, :integer, default: 4
+  slot :inner_block, required: true
 
   def grid(assigns) do
     ~H"""
@@ -19,6 +20,7 @@ defmodule OrderWeb.LayoutComponents do
   attr :width, :integer
   attr :height, :integer
   attr :class, :string, default: ""
+  slot :inner_block, required: true
 
   def grid_cell(assigns) do
     ~H"""
@@ -29,6 +31,7 @@ defmodule OrderWeb.LayoutComponents do
   end
 
   attr :class, :string, default: ""
+  slot :inner_block, required: true
 
   def card(assigns) do
     ~H"""

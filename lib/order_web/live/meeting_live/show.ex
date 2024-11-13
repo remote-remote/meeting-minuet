@@ -19,8 +19,8 @@ defmodule OrderWeb.MeetingLive.Show do
     # TODO: do I really need organization? or can I get away with just the id from the params?
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
-    members = Meetings.list_uninvited_members(meeting) |> IO.inspect(label: "Members")
-    attendees = Meetings.list_attendees(meeting) |> IO.inspect(label: "Attendees")
+    members = Meetings.list_uninvited_members(meeting)
+    attendees = Meetings.list_attendees(meeting)
 
     socket
     |> assign(:organization, organization)
@@ -47,12 +47,13 @@ defmodule OrderWeb.MeetingLive.Show do
 
   def handle_event("uninvite", %{"id" => membership_id}, socket) do
     # TODO: return the member from remove_attendee
-    IO.inspect(socket.assigns.meeting.id, label: "Meeting ID")
-    IO.inspect(membership_id, label: "Membership ID")
     {1, _} = Meetings.remove_attendee(socket.assigns.meeting, membership_id)
 
     member =
-      Organizations.get_member!(socket.assigns.organization, String.to_integer(membership_id))
+      Organizations.Members.get_member!(
+        socket.assigns.organization,
+        String.to_integer(membership_id)
+      )
 
     {:noreply,
      socket
