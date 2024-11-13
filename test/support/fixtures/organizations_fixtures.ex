@@ -4,18 +4,16 @@ defmodule Order.OrganizationsFixtures do
   entities via the `Order.Organizations` context.
   """
 
+  alias Order.Repo
+  alias Order.Organizations.Organization
+  alias Order.Accounts.User
+
   @doc """
   Generate a organization.
   """
-  def organization_fixture(attrs \\ %{}) do
-    {:ok, organization} =
-      attrs
-      |> Enum.into(%{
-        description: "some description",
-        name: "some name"
-      })
-      |> Order.Organizations.create_organization()
-
-    organization
+  def organization_fixture(org_attrs \\ %{}) do
+    %Organization{}
+    |> Organization.changeset(org_attrs)
+    |> Repo.insert!()
   end
 end

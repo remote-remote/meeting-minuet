@@ -46,6 +46,7 @@ defmodule Order.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:name, :phone, :email, :password])
+    |> validate_required([:name])
     |> validate_email(opts)
     |> validate_password(opts)
   end

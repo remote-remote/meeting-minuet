@@ -59,7 +59,7 @@ defmodule Order.Organizations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_organization(%User{} = user, attrs) do
+  def create_organization(attrs, %User{} = user) do
     member = %{"user_id" => user.id, "active_range" => {Date.utc_today(), nil}}
     attrs = Map.put(attrs, "memberships", [member])
 

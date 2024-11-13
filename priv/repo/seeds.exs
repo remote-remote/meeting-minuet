@@ -28,10 +28,10 @@ Enum.each(1..3, fn n ->
 
   {:ok, organization} =
     Organizations.create_organization(
-      user,
       %{
         "name" => "Organization #{n}"
-      }
+      },
+      user
     )
 
   Enum.each(["Chair", "Secretary", "Treasurer", "Fluffer"], fn position_name ->
