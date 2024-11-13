@@ -12,7 +12,8 @@ defmodule Order.Application do
       Order.Repo,
       {DNSCluster, query: Application.get_env(:order, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Order.PubSub},
-      Order.Presence,
+      Order.Organizations.Presence,
+      Order.Meetings.Presence,
       # Start the Finch HTTP client for sending emails
       {Finch, name: Order.Finch},
       # Start a worker by calling: Order.Worker.start_link(arg)

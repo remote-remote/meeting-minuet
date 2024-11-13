@@ -26,8 +26,6 @@ defmodule OrderWeb.OrganizationLive.InvitationForm do
   end
 
   def update(assigns, socket) do
-    IO.inspect(assigns, label: "InvitationFormComponent update assigns")
-
     {:ok,
      socket
      |> assign(assigns)
@@ -54,8 +52,6 @@ defmodule OrderWeb.OrganizationLive.InvitationForm do
         %{assigns: %{organization: organization}} = socket,
         attrs
       ) do
-    IO.inspect(attrs, label: "InvitationFormComponent send_invitation")
-
     case Order.Organizations.invite_member(
            organization,
            &url(~p"/users/accept_invitation/#{&1}"),

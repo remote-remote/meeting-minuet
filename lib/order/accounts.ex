@@ -81,8 +81,6 @@ defmodule Order.Accounts do
   end
 
   def invite_user(attrs, url_fn) when is_function(url_fn, 1) do
-    IO.inspect(attrs, label: "Accounts.invite_user")
-
     {:ok, user} =
       %User{}
       |> User.invitation_changeset(attrs)

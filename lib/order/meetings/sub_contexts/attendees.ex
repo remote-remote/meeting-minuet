@@ -1,6 +1,8 @@
 defmodule Order.Meetings.Attendees do
+  require Logger
   import Ecto.Query
   import Order.DateHelper
+  alias Order.Meetings.Notifications
   alias Order.Organizations
   alias Order.Repo
   alias Order.DB.{Membership, Meeting, Attendee}
@@ -13,21 +15,32 @@ defmodule Order.Meetings.Attendees do
     end)
   end
 
+  def is_attendee?(meeting_id, membership_id) do
+    Repo.exists?(
+      from a in Attendee,
+        where: a.meeting_id == ^meeting_id and a.membership_id == ^membership_id
+    )
+  end
+
   def add_attendee(%Meeting{} = meeting, %Membership{} = membership) do
     add_attendee(meeting, membership.id)
   end
 
   def add_attendee(%Meeting{} = meeting, membership_id) when is_integer(membership_id) do
-    # TODO: don't allow duplicates
-    # TODO: don't allow adding members from other organizations
-    result =
-      Ecto.build_assoc(meeting, :attendees)
-      |> Attendee.changeset(%{membership_id: membership_id, status: "invited"})
-      |> Repo.insert()
-
-    case result do
-      {:ok, attendee} ->
-        {:ok, map_attendee(attendee)}
+    with false <- is_attendee?(meeting.id, membership_id),
+         changeset <-
+           Ecto.build_assoc(meeting, :attendees)
+           |> Attendee.changeset(%{
+             membership_id: membership_id,
+             status: "invited"
+           }),
+         {:ok, attendee} <- Repo.insert(changeset) do
+      attendee = map_attendee(attendee)
+      Notifications.notify(meeting, {:added_attendee, attendee})
+      {:ok, attendee}
+    else
+      true ->
+        {:error, "Member is already an attendee"}
 
       {:error, changeset} ->
         changeset
@@ -35,10 +48,29 @@ defmodule Order.Meetings.Attendees do
   end
 
   def remove_attendee(%Meeting{} = meeting, membership_id) do
-    Repo.delete_all(
-      from a in Attendee,
-        where: a.meeting_id == ^meeting.id and a.membership_id == ^membership_id
-    )
+    Logger.info("Removing attendee for meeting #{meeting.id} and membership #{membership_id}")
+
+    case Repo.delete_all(
+           from a in Attendee,
+             where: a.membership_id == ^membership_id and a.meeting_id == ^meeting.id,
+             select: a
+         ) do
+      {0, _} ->
+        {:error, "Attendee not found"}
+
+      {n, a} when is_integer(n) ->
+        Logger.warning(
+          "Deleted #{n} attendees for meeting #{meeting.id} and membership #{membership_id}"
+        )
+
+        attendee = hd(a)
+        Notifications.notify(meeting, {:removed_attendee, attendee})
+
+        {:ok, attendee}
+
+      {:error, _} ->
+        {:error, "Failed to remove attendee"}
+    end
   end
 
   defp map_attendee(_, d \\ Date.utc_today())

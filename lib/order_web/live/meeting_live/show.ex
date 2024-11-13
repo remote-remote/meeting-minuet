@@ -2,12 +2,18 @@ defmodule OrderWeb.MeetingLive.Show do
   use OrderWeb, :live_view
 
   alias Order.Meetings
+  alias Order.Meetings.{Presence, Notifications}
   alias Order.Organizations
   import OrderWeb.LayoutComponents
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
+  def mount(%{"meeting_id" => meeting_id}, _session, socket) do
+    if connected?(socket) do
+      Notifications.subscribe(meeting_id)
+      connect_presence(socket, meeting_id)
+    end
+
+    {:ok, assign(socket, :presences, Presence.list_users(meeting_id)) |> assign(:pid, self())}
   end
 
   @impl true
@@ -28,8 +34,8 @@ defmodule OrderWeb.MeetingLive.Show do
     socket
     |> assign(:organization, organization)
     |> assign(:meeting, meeting)
-    |> stream(:attendees, attendees)
-    |> stream(:uninvited_members, uninvited_members)
+    |> assign(:attendees, attendees)
+    |> assign(:uninvited_members, uninvited_members)
     |> apply_action(socket.assigns.live_action, params)
   end
 
@@ -39,33 +45,95 @@ defmodule OrderWeb.MeetingLive.Show do
 
   @impl true
   def handle_event("invite", %{"id" => membership_id}, socket) do
-    {:ok, attendee} =
+    {:ok, _} =
       Meetings.add_attendee(socket.assigns.meeting, String.to_integer(membership_id))
 
-    {:noreply,
-     socket
-     |> stream_insert(:attendees, attendee)
-     |> stream_delete(:uninvited_members, attendee)}
+    {:noreply, socket}
   end
 
   def handle_event("uninvite", %{"id" => membership_id}, socket) do
-    # TODO: return the member from remove_attendee
-    {1, _} = Meetings.remove_attendee(socket.assigns.meeting, membership_id)
+    {:ok, _} = Meetings.remove_attendee(socket.assigns.meeting, membership_id)
+    {:noreply, socket}
+  end
 
-    member =
-      Organizations.get_member!(
-        socket.assigns.organization,
-        String.to_integer(membership_id)
-      )
+  def handle_event("start", _params, socket) do
+    case Meetings.start_meeting(socket.assigns.meeting) do
+      {:ok, _} ->
+        {:noreply, socket}
 
-    {:noreply,
-     socket
-     |> stream_insert(:uninvited_members, member)
-     |> stream_delete_by_dom_id(:attendees, "attendees-#{membership_id}")}
+      {:error, message} ->
+        {:noreply, socket |> put_flash(:error, message)}
+    end
+  end
+
+  def handle_event("end", _params, socket) do
+    case Meetings.end_meeting(socket.assigns.meeting) do
+      {:ok, _} ->
+        {:noreply, socket}
+
+      {:error, message} ->
+        {:noreply, socket |> put_flash(:error, message)}
+    end
   end
 
   def handle_event(msg, _params, socket) do
     IO.inspect(msg, label: "Unhandled message")
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:added_attendee, attendee}, socket) do
+    {:noreply,
+     socket
+     |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
+     |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
+  end
+
+  def handle_info({:removed_attendee, attendee}, socket) do
+    member =
+      Organizations.get_member!(
+        socket.assigns.organization,
+        attendee.membership_id
+      )
+
+    {:noreply,
+     socket
+     |> update(:uninvited_members, fn members -> members ++ [member] end)
+     |> update(:attendees, fn attendees -> Enum.reject(attendees, &(&1.id == member.id)) end)}
+  end
+
+  def handle_info(
+        %Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff},
+        socket
+      ) do
+    {:noreply, Presence.handle_diff(socket, diff)}
+  end
+
+  def handle_info({:meeting_started, meeting}, socket) do
+    {:noreply, socket |> assign(:meeting, meeting)}
+  end
+
+  def handle_info({:meeting_ended, meeting}, socket) do
+    {:noreply, socket |> assign(:meeting, meeting)}
+  end
+
+  def handle_info(msg, socket) do
+    IO.inspect(msg, label: "Unhandled message")
+    {:noreply, socket}
+  end
+
+  defp connect_presence(socket, meeting_id) do
+    if connected?(socket) do
+      Presence.subscribe(meeting_id)
+
+      %{current_user: current_user} = socket.assigns
+
+      {:ok, _} =
+        Presence.track_user(current_user, meeting_id, %{
+          user_id: current_user.id
+        })
+    end
+
+    socket
   end
 end

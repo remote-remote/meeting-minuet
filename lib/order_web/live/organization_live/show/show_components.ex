@@ -47,18 +47,6 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
           Vacant
         <% end %>
       </:col>
-      <:col :let={position} label="Online">
-        <%= if position.user.id do %>
-          <.icon
-            name="hero-user-circle"
-            class={
-              if @presences[Integer.to_string(position.user.id)],
-                do: "text-green-500",
-                else: "text-slate-500"
-            }
-          />
-        <% end %>
-      </:col>
     </.table>
     """
   end
@@ -93,6 +81,7 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
 
   attr :members, :list, required: true
   attr :organization, :map, required: true
+  attr :presences, :map, required: true
 
   def members(assigns) do
     ~H"""
@@ -114,6 +103,18 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
       </:col>
       <:col :let={member} label="Member Since">
         <.date_range_text date_range={member.active_range} type="start" />
+      </:col>
+      <:col :let={member} label="Online">
+        <%= if member.user_id do %>
+          <.icon
+            name="hero-user-circle"
+            class={
+              if @presences[Integer.to_string(member.user_id)],
+                do: "text-green-500",
+                else: "text-slate-500"
+            }
+          />
+        <% end %>
       </:col>
     </.table>
     """

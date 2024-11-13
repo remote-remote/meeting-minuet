@@ -6,10 +6,7 @@ defmodule Order.Organizations.Members do
   alias Order.Organizations.Member
   alias Order.{Repo, Accounts}
 
-  # TODO: This should not reference
   def invite_member(%Organization{} = organization, url_fn, attrs) do
-    IO.inspect(attrs, label: "Members.invite_member")
-
     user =
       case Accounts.get_user_by_email(attrs["email"]) do
         nil -> Accounts.invite_user(attrs, url_fn)
@@ -21,9 +18,7 @@ defmodule Order.Organizations.Members do
       |> Map.put("active_range", {Date.utc_today(), nil})
 
     Ecto.build_assoc(organization, :memberships)
-    |> dbg()
     |> Membership.changeset(attrs)
-    |> dbg()
     |> Repo.insert()
   end
 
@@ -47,13 +42,14 @@ defmodule Order.Organizations.Members do
 
   # get_member
   @spec get_member!(%Organization{}, integer) :: %Member{}
-  def get_member!(%Organization{} = organization, membership_id) when is_integer(membership_id) do
+  def get_member!(%Organization{} = organization, membership_id) do
     get_member!(organization.id, membership_id)
   end
 
   @spec get_member!(integer, integer) :: %Member{}
   def get_member!(organization_id, membership_id)
-      when is_integer(organization_id) and is_integer(membership_id) do
+      when (is_integer(organization_id) or is_binary(organization_id)) and
+             (is_integer(membership_id) or is_binary(membership_id)) do
     Repo.one!(
       from m in Membership,
         where: m.organization_id == ^organization_id and m.id == ^membership_id

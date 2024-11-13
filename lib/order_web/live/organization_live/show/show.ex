@@ -4,18 +4,15 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
 
-  alias Order.{Meetings, Presence, Organizations}
+  alias Order.Organizations.Presence
+  alias Order.{Meetings, Organizations}
   alias Order.DB.{Meeting, Position}
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
-    if connected?(socket) do
-      connect_presence(socket, org_id)
-    end
+    connect_presence(socket, org_id)
 
-    topic = topic(org_id)
-
-    {:ok, assign(socket, :presences, Presence.list_users(topic))}
+    {:ok, assign(socket, :presences, Presence.list_users(org_id))}
   end
 
   @impl true
@@ -75,7 +72,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   def handle_info({OrderWeb.OrganizationLive.FormComponent, {:saved, organization}}, socket) do
     Phoenix.PubSub.broadcast(
       Order.PubSub,
-      topic(organization.id),
+      organization.id,
       {:organization_saved, organization}
     )
 
@@ -102,18 +99,14 @@ defmodule OrderWeb.OrganizationLive.Show do
   defp page_title(action),
     do: "Organization #{action |> Atom.to_string() |> String.capitalize()} (unhandled)"
 
-  defp topic(org_id) when is_bitstring(org_id) or is_integer(org_id) do
-    "organization:#{org_id}"
-  end
-
   defp connect_presence(socket, org_id) do
     if connected?(socket) do
-      org_id |> topic() |> Presence.subscribe()
+      Presence.subscribe(org_id)
 
       %{current_user: current_user} = socket.assigns
 
       {:ok, _} =
-        Presence.track_user(current_user, topic(org_id), %{
+        Presence.track_user(current_user, org_id, %{
           user_id: current_user.id
         })
     end
