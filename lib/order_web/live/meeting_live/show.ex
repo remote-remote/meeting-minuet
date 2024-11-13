@@ -97,7 +97,7 @@ defmodule OrderWeb.MeetingLive.Show do
     member =
       Organizations.get_member!(
         socket.assigns.organization,
-        attendee.membership_id
+        attendee.id
       )
 
     {:noreply,

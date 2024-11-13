@@ -6,16 +6,7 @@
   </div>
   <div class="col-span-2 col-start-2 row-start-1">
     <.card>
-      <.organizations organizations={@streams.owned_organizations} title="Owned Organizations" />
-    </.card>
-  </div>
-  <div class="col-span-2 col-start-4 row-start-1">
-    <.card>
-      <.organizations
-        organizations={@streams.member_organizations}
-        title="Member Organizations"
-        allow_actions={false}
-      />
+      <.organizations organizations={@streams.organizations} title="Organizations" />
     </.card>
   </div>
 </div>

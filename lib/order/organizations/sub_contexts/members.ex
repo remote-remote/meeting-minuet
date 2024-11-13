@@ -2,8 +2,9 @@ defmodule Order.Organizations.Members do
   import Ecto.Query
   import Order.DateHelper
 
-  alias Order.DB.{Membership, Organization}
-  alias Order.Organizations.Member
+  alias Order.Accounts.User
+  alias Order.DB
+  alias Order.Organizations.{Member, Organization}
   alias Order.{Repo, Accounts}
 
   def invite_member(%Organization{} = organization, url_fn, attrs) do
@@ -17,8 +18,8 @@ defmodule Order.Organizations.Members do
       Map.put(attrs, "user_id", user.id)
       |> Map.put("active_range", {Date.utc_today(), nil})
 
-    Ecto.build_assoc(organization, :memberships)
-    |> Membership.changeset(attrs)
+    %DB.Membership{organization_id: organization.id}
+    |> DB.Membership.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -28,10 +29,10 @@ defmodule Order.Organizations.Members do
     list_members(organization.id)
   end
 
-  @spec list_members(binary) :: [%Member{}]
+  @spec list_members(binary()) :: [%Member{}]
   def list_members(organization_id) when is_integer(organization_id) do
     Repo.all(
-      from m in Membership,
+      from m in DB.Membership,
         where: m.organization_id == ^organization_id
     )
     |> Repo.preload([:user, tenures: :position])
@@ -41,32 +42,46 @@ defmodule Order.Organizations.Members do
   end
 
   # get_member
+  @spec get_member!(%Organization{}, %User{}) :: %Member{}
+  def get_member!(%Organization{} = organization, %User{} = user) do
+    get_member!(organization.id, user.id)
+  end
+
   @spec get_member!(%Organization{}, integer) :: %Member{}
-  def get_member!(%Organization{} = organization, membership_id) do
-    get_member!(organization.id, membership_id)
+  def get_member!(%Organization{} = organization, user_id) do
+    get_member!(organization.id, user_id)
   end
 
   @spec get_member!(integer, integer) :: %Member{}
-  def get_member!(organization_id, membership_id)
+  def get_member!(organization_id, user_id)
       when (is_integer(organization_id) or is_binary(organization_id)) and
-             (is_integer(membership_id) or is_binary(membership_id)) do
+             (is_integer(user_id) or is_binary(user_id)) do
     Repo.one!(
-      from m in Membership,
-        where: m.organization_id == ^organization_id and m.id == ^membership_id
+      from m in DB.Membership,
+        where: m.organization_id == ^organization_id and m.user_id == ^user_id
     )
     |> Repo.preload([:user, tenures: :position])
     |> map_member(Date.utc_today())
   end
 
   # mapper
-  defp map_member(%Membership{} = m, %Date{} = date) do
+  defp map_member(%DB.Membership{tenures: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
+    Repo.preload(m, [:user, tenures: :position]) |> map_member(date)
+  end
+
+  defp map_member(%DB.Membership{user: %Ecto.Association.NotLoaded{}} = m, %Date{} = date) do
+    Repo.preload(m, user: :tenures) |> map_member(date)
+  end
+
+  defp map_member(%DB.Membership{} = m, %Date{} = date) do
     %Member{
-      id: m.id,
-      user_id: m.user_id,
+      id: m.user_id,
+      membership_id: m.id,
       name: m.user.name,
       email: m.user.email,
       phone: m.user.phone,
       active_range: m.active_range,
+      roles: m.roles,
       current_positions:
         m.tenures
         |> Enum.filter(fn t ->

@@ -1,6 +1,6 @@
 defmodule Order.DB.Position do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   alias Order.DB.{Membership, Tenure, Organization}
 
   schema "positions" do
@@ -16,9 +16,26 @@ defmodule Order.DB.Position do
   end
 
   @doc false
-  def changeset(position, attrs) do
+  def changeset(position, attrs \\ %{}) do
     position
-    |> cast(attrs, [:name, :description, :organization_id])
+    |> cast(attrs, [:name, :description, :organization_id, :requires_report])
     |> validate_required([:name, :organization_id])
+  end
+
+  def q_list_with_tenures(org_id) do
+    from p in Order.DB.Position,
+      preload: [tenures: :user],
+      where: p.organization_id == ^org_id
+  end
+
+  def q_get_with_tenures(position_id) do
+    from p in Order.DB.Position,
+      preload: [tenures: :user],
+      where: p.id == ^position_id
+  end
+
+  def q_get_with_tenures(org_id, position_id) do
+    q_list_with_tenures(org_id)
+    |> where([p], p.id == ^position_id)
   end
 end

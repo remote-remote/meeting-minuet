@@ -4,9 +4,9 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
 
-  alias Order.Organizations.Presence
+  alias Order.Organizations.{Presence, Position}
   alias Order.{Meetings, Organizations}
-  alias Order.DB.{Meeting, Position}
+  alias Order.DB.{Meeting}
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do

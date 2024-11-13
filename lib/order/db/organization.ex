@@ -1,6 +1,7 @@
 defmodule Order.DB.Organization do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Order.DB.{Membership, Position, Meeting}
   alias Order.Accounts.User
 
@@ -22,5 +23,22 @@ defmodule Order.DB.Organization do
     |> cast(attrs, [:name, :owner_id, :description])
     |> cast_assoc(:memberships)
     |> validate_required([:name, :owner_id])
+  end
+
+  @doc """
+  Returns the organization with the given id.
+  """
+  @spec q_list_with_memberships(string()) :: Ecto.Query.t()
+  def q_list_with_memberships(user_id) do
+    from o in Order.DB.Organization,
+      left_join: m in assoc(o, :memberships),
+      on: m.user_id == ^user_id,
+      where: not is_nil(m.id) or o.owner_id == ^user_id,
+      preload: [:memberships]
+  end
+
+  def q_get_with_memberships(user_id, org_id) do
+    q_list_with_memberships(user_id)
+    |> where([o], o.id == ^org_id)
   end
 end

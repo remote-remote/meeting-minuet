@@ -87,8 +87,6 @@ defmodule Order.Meetings.Attendees do
        ),
        do: map_attendee(%{a | membership: Repo.preload(a.membership, user: :tenures)}, date)
 
-  # TODO: one level deeper
-
   defp map_attendee(%Attendee{} = a, %Date{} = date),
     do: %{
       # Attendee stuff
@@ -123,15 +121,15 @@ defmodule Order.Meetings.Attendees do
   defp map_attendee(%Attendee{} = a, %Organizations.Member{} = m),
     do: %{
       # Attendee stuff
-      id: a.membership_id,
+      id: m.id,
       attendee_id: a.id,
       status: a.status,
       rsvp_date: a.rsvp_date,
       marked_present_at: a.marked_present_at,
       in_person: a.in_person,
       online: a.online,
+      roles: a.roles,
       # Member stuff
-      user_id: m.user_id,
       name: m.name,
       email: m.email,
       phone: m.phone,

@@ -2,6 +2,7 @@ defmodule OrderWeb.Router do
   use OrderWeb, :router
 
   import OrderWeb.UserAuth
+  import OrderWeb.OrgMemberAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -50,12 +51,13 @@ defmodule OrderWeb.Router do
   end
 
   scope "/organizations/:organization_id", OrderWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :fetch_membership]
 
     live_session :organization_dashboard,
       on_mount: {
         OrderWeb.UserAuth,
         :ensure_authenticated
+        # :ensure_membership
       } do
       live "/edit", OrganizationLive.Show, :edit
       live "/", OrganizationLive.Show, :show

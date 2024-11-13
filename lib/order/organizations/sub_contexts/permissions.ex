@@ -42,7 +42,10 @@ defmodule Order.Organizations.Permissions do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp create_meetings?(%DB.Organization{} = org, %DB.Membership{roles: roles, user_id: user_id}) do
+  defp create_meetings?(%DB.Organization{} = _org, %DB.Membership{
+         roles: _roles,
+         user_id: _user_id
+       }) do
     true
   end
 

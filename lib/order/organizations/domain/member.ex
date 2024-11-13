@@ -2,12 +2,17 @@ defmodule Order.Organizations.Member do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  A member of an organization.
+  """
+
   embedded_schema do
     field :user_id, :id
     field :membership_id, :id
     field :name, :string
     field :email, :string
     field :phone, :string
+    field :roles, {:array, Ecto.Enum}, values: [:member, :admin], default: [:member]
     field :active_range, EctoRange.Date
 
     embeds_many :current_positions, Order.Organization.Member.Position

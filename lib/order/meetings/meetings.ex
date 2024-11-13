@@ -1,8 +1,9 @@
 defmodule Order.Meetings do
   import Ecto.Query
   alias Order.Repo
-  alias Order.DB.{Organization, Meeting}
+  alias Order.DB.Meeting
   alias Order.Accounts.User
+  alias Order.Organizations.Organization
   alias Order.Meetings.{Attendees, Notifications}
 
   defdelegate list_attendees(meeting), to: Attendees
@@ -11,8 +12,8 @@ defmodule Order.Meetings do
 
   def get_meeting!(%Organization{} = organization, meeting_id) do
     Repo.one!(
-      from m in Ecto.assoc(organization, :meetings),
-        where: m.id == ^meeting_id
+      from m in Meeting,
+        where: m.organization_id == ^organization.id and m.id == ^meeting_id
     )
   end
 
@@ -59,7 +60,7 @@ defmodule Order.Meetings do
   end
 
   def create_meeting(%Organization{} = organization, attrs) do
-    Ecto.build_assoc(organization, :meetings)
+    %Meeting{organization_id: organization.id}
     |> Meeting.changeset(attrs)
     |> Repo.insert()
   end

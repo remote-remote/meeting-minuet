@@ -2,7 +2,7 @@ defmodule OrderWeb.OrganizationLive.OrganizationForm do
   use OrderWeb, :live_component
 
   alias Order.Organizations
-  alias Order.DB.Organization
+  alias Order.Organizations.Organization
 
   @impl true
   def render(assigns) do
