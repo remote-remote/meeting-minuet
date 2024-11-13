@@ -1,4 +1,4 @@
-defmodule OrderWeb.OrganizationLive.FormComponent do
+defmodule OrderWeb.OrganizationLive.OrganizationFormComponent do
   use OrderWeb, :live_component
 
   alias Order.Organizations

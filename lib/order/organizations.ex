@@ -7,10 +7,7 @@ defmodule Order.Organizations do
   alias Order.Accounts.User
   alias Order.Repo
 
-  alias Order.Organizations.Organization
-  alias Order.Organizations.Membership
-  alias Order.Organizations.Position
-  alias Order.Organizations.OrganizationWithCurrentPosition
+  alias Order.Organizations.{Organization, Membership, Position, OrganizationWithCurrentPosition}
 
   @doc """
   Returns the list of organizations.

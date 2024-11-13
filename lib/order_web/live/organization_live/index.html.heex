@@ -40,7 +40,7 @@
   on_cancel={JS.patch(~p"/organizations")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.FormComponent}
+    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
     id={@organization.id || :new}
     title={@page_title}
     action={@live_action}

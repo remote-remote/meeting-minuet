@@ -7,12 +7,6 @@
     </.link>
   </:actions>
 </.header>
-
-<.list>
-  <:item title="Created at"><%= @organization.inserted_at %></:item>
-  <:item title="Updated at"><%= @organization.updated_at %></:item>
-</.list>
-
 <.header>
   Positions
   <:actions>
@@ -21,7 +15,13 @@
     </.link>
   </:actions>
 </.header>
-<.table id="positions" rows={@positions}>
+<.table
+  id="positions"
+  rows={@positions}
+  row_click={
+    fn row -> JS.navigate(~p"/organizations/#{@organization.id}/positions/#{row.id}") end
+  }
+>
   <:col :let={position} label="Title"><%= position.title %></:col>
   <:col :let={position} label="Current Holder">
     <%= if position.member.id do %>
@@ -30,6 +30,39 @@
       Vacant
     <% end %>
   </:col>
+  <:col :let={position} label="Online">
+    <%= if position.member.id do %>
+      <.icon
+        name="hero-user-circle"
+        class={
+          if @presences[Integer.to_string(position.member.id)],
+            do: "text-green-500",
+            else: "text-slate-500"
+        }
+      />
+    <% end %>
+  </:col>
+</.table>
+
+<.header>
+  Meetings
+  <:actions>
+    <.link patch={~p"/organizations/#{@organization}/meetings/new"}>
+      <.button>New Meeting</.button>
+    </.link>
+  </:actions>
+</.header>
+<.table
+  id="meetings"
+  rows={@meetings}
+  row_click={fn row -> JS.navigate(~p"/organizations/#{@organization}/meetings/#{row.id}") end}
+>
+  <:col :let={meeting} label="Title"><%= meeting.title %></:col>
+  <:col :let={meeting} label="Topic"><%= meeting.topic %></:col>
+  <:col :let={meeting} label="Date"><%= meeting.date %></:col>
+  <:col :let={meeting} label="Start"><%= meeting.scheduled_start_time %></:col>
+  <:col :let={meeting} label="End"><%= meeting.scheduled_end_time %></:col>
+  <:col :let={meeting} label="Location"><%= meeting.location %></:col>
 </.table>
 
 <.back navigate={~p"/organizations"}>Back to organizations</.back>
@@ -41,7 +74,7 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.FormComponent}
+    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
     id={@organization.id}
     title={@page_title}
     action={@live_action}
@@ -58,12 +91,28 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.PositionLive.FormComponent}
-    id={:new}
+    module={OrderWeb.OrganizationLive.PositionFormComponent}
+    id={@position.id || :new}
     title={@page_title}
-    action={:new}
+    action={@live_action}
     organization={@organization}
     position={@position}
     patch={~p"/organizations/#{@organization}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_meeting}
+  id="meeting-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.MeetingFormComponent}
+    id={@meeting.id || :new}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    meeting={@meeting}
   />
 </.modal>

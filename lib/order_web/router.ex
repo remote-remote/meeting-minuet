@@ -19,24 +19,36 @@ defmodule OrderWeb.Router do
 
   scope "/", OrderWeb do
     pipe_through :browser
-
-    get "/", PageController, :home
   end
 
   scope "/", OrderWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live_session :authenticated,
+    # This creates a live session. The routes in this block can be live routed
+    live_session :organization_lobby,
       on_mount: {
         OrderWeb.UserAuth,
         :ensure_authenticated
       } do
-      # We'll put our authenticated live views here
+      # TODO: figure out how to redirect this?
+      live "/", OrganizationLive.Index, :index
       live "/organizations", OrganizationLive.Index, :index
       live "/organizations/new", OrganizationLive.Index, :new
-      live "/organizations/:id/show/edit", OrganizationLive.Show, :edit
-      live "/organizations/:id", OrganizationLive.Show, :show
-      live "/organizations/:id/positions/new", OrganizationLive.Show, :new_position
+    end
+  end
+
+  scope "/organizations/:id", OrderWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :organization_dashboard,
+      on_mount: {
+        OrderWeb.UserAuth,
+        :ensure_authenticated
+      } do
+      live "/show/edit", OrganizationLive.Show, :edit
+      live "/", OrganizationLive.Show, :show
+      live "/positions/new", OrganizationLive.Show, :new_position
+      live "/meetings/new", OrganizationLive.Show, :new_meeting
     end
   end
 

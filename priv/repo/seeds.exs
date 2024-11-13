@@ -14,7 +14,6 @@ alias Order.Organizations
 alias Order.Accounts
 
 # Create some users
-
 Enum.each(1..3, fn n ->
   {:ok, user} =
     Accounts.register_user(%{

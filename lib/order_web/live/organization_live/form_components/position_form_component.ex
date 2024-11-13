@@ -1,4 +1,4 @@
-defmodule OrderWeb.PositionLive.FormComponent do
+defmodule OrderWeb.OrganizationLive.PositionFormComponent do
   use OrderWeb, :live_component
 
   alias Order.Organizations
@@ -14,7 +14,6 @@ defmodule OrderWeb.PositionLive.FormComponent do
     <div>
       <.header>
         <%= @title %>
-        <:subtitle>Use this form to manage position records in your database.</:subtitle>
       </.header>
 
       <.simple_form
@@ -22,6 +21,7 @@ defmodule OrderWeb.PositionLive.FormComponent do
         id="position-form"
         phx-target={@myself}
         phx-change="validate"
+        phx-debounce="500"
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
@@ -69,7 +69,7 @@ defmodule OrderWeb.PositionLive.FormComponent do
     end
   end
 
-  defp save_position(socket, :new, position_params) do
+  defp save_position(socket, :new_position, position_params) do
     case Organizations.create_position(socket.assigns.organization, position_params) do
       {:ok, position} ->
         notify_parent({:saved, position})
