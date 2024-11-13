@@ -1,10 +1,12 @@
 defmodule OrderWeb.OrganizationLive.ShowComponents do
   use OrderWeb, :live_component
+  import Order.Organizations.Permissions
   import OrderWeb.CoreComponents
   import OrderWeb.DateComponents
   alias Phoenix.LiveView.JS
 
   attr :organization, :map, required: true
+  attr :membership, :map, required: true
 
   def org_header(assigns) do
     ~H"""
@@ -12,7 +14,11 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
       <%= @organization.name %>
       <:subtitle><%= @organization.description %></:subtitle>
       <:actions>
-        <.link patch={~p"/organizations/#{@organization}/edit"} phx-click={JS.push_focus()}>
+        <.link
+          :if={edit_organization?(@organization, @membership)}
+          patch={~p"/organizations/#{@organization}/edit"}
+          phx-click={JS.push_focus()}
+        >
           <.button class="w-20">Edit</.button>
         </.link>
       </:actions>
@@ -23,13 +29,17 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
   attr :positions, :list, required: true
   attr :presences, :map, required: true
   attr :organization, :map, required: true
+  attr :membership, :map, required: true
 
   def positions(assigns) do
     ~H"""
     <.header>
       Positions
       <:actions>
-        <.link patch={~p"/organizations/#{@organization}/positions/new"}>
+        <.link
+          :if={create_positions?(@organization, @membership)}
+          patch={~p"/organizations/#{@organization}/positions/new"}
+        >
           <.button class="w-20">New</.button>
         </.link>
       </:actions>
@@ -53,13 +63,17 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
 
   attr :meetings, :list, required: true
   attr :organization, :map, required: true
+  attr :membership, :map, required: true
 
   def meetings(assigns) do
     ~H"""
     <.header>
       Meetings
       <:actions>
-        <.link patch={~p"/organizations/#{@organization}/meetings/new"}>
+        <.link
+          :if={create_meetings?(@organization, @membership)}
+          patch={~p"/organizations/#{@organization}/meetings/new"}
+        >
           <.button>New</.button>
         </.link>
       </:actions>
@@ -81,6 +95,7 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
 
   attr :members, :list, required: true
   attr :organization, :map, required: true
+  attr :membership, :map, required: true
   attr :presences, :map, required: true
 
   def members(assigns) do
@@ -88,7 +103,10 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
     <.header>
       Members
       <:actions>
-        <.link patch={~p"/organizations/#{@organization}/members/invite"}>
+        <.link
+          :if={add_members?(@organization, @membership)}
+          patch={~p"/organizations/#{@organization}/members/invite"}
+        >
           <.button>New</.button>
         </.link>
       </:actions>

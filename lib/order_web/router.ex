@@ -54,11 +54,16 @@ defmodule OrderWeb.Router do
     pipe_through [:browser, :require_authenticated_user, :fetch_membership]
 
     live_session :organization_dashboard,
-      on_mount: {
-        OrderWeb.UserAuth,
-        :ensure_authenticated
-        # :ensure_membership
-      } do
+      on_mount: [
+        {
+          OrderWeb.UserAuth,
+          :ensure_authenticated
+        },
+        {
+          OrderWeb.OrgMemberAuth,
+          :ensure_membership
+        }
+      ] do
       live "/edit", OrganizationLive.Show, :edit
       live "/", OrganizationLive.Show, :show
       live "/positions/new", OrganizationLive.Show, :new_position

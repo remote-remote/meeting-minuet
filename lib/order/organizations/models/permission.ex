@@ -13,7 +13,7 @@ defmodule Order.Organizations.Permission do
     field :add_members, :boolean, default: false
     field :delete_members, :boolean, default: false
 
-    field :add_positions, :boolean, default: false
+    field :create_positions, :boolean, default: false
     field :assign_positions, :boolean, default: false
     field :edit_positions, :boolean, default: false
     field :delete_positions, :boolean, default: false
@@ -28,7 +28,7 @@ defmodule Order.Organizations.Permission do
       :edit_meetings,
       :add_members,
       :delete_members,
-      :add_positions,
+      :create_positions,
       :assign_positions,
       :edit_positions,
       :delete_positions

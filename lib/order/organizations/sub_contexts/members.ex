@@ -62,4 +62,11 @@ defmodule Order.Organizations.Members do
     )
     |> Repo.preload([:user, tenures: :position])
   end
+
+  def get_membership(organization_id, user_id) do
+    Repo.one(
+      from m in Membership,
+        where: m.organization_id == ^organization_id and m.user_id == ^user_id
+    )
+  end
 end

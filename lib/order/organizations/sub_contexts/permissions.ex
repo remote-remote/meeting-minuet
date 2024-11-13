@@ -29,60 +29,60 @@ defmodule Order.Organizations.Permissions do
       edit_meetings: edit_meetings?(org, membership),
       add_members: add_members?(org, membership),
       delete_members: delete_members?(org, membership),
-      add_positions: add_positions?(org, membership),
+      create_positions: create_positions?(org, membership),
       assign_positions: assign_positions?(org, membership),
       edit_positions: edit_positions?(org, membership),
       delete_positions: delete_positions?(org, membership)
     }
   end
 
-  defp edit_organization?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def edit_organization?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_organization?(%Organization{} = org, %Membership{
-         roles: roles,
-         user_id: user_id
-       }) do
+  def delete_organization?(%Organization{} = org, %Membership{
+        roles: roles,
+        user_id: user_id
+      }) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp create_meetings?(%Organization{} = _org, %Membership{
-         roles: _roles,
-         user_id: _user_id
-       }) do
+  def create_meetings?(%Organization{} = _org, %Membership{
+        roles: _roles,
+        user_id: _user_id
+      }) do
     true
   end
 
-  defp delete_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def delete_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp edit_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def edit_meetings?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp add_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def add_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def delete_members?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp add_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def create_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp assign_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def assign_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp edit_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def edit_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 
-  defp delete_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
+  def delete_positions?(%Organization{} = org, %Membership{roles: roles, user_id: user_id}) do
     org.owner_id == user_id or Enum.member?(roles, :admin)
   end
 end

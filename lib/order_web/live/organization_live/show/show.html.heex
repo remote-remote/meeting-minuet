@@ -1,14 +1,24 @@
 <.card class="mt-4">
-  <.org_header organization={@organization} />
+  <.org_header organization={@organization} membership={@current_membership} />
 </.card>
 <.card class="mt-4">
-  <.meetings organization={@organization} meetings={@meetings} />
+  <.meetings organization={@organization} membership={@current_membership} meetings={@meetings} />
 </.card>
 <.card class="mt-4">
-  <.positions organization={@organization} positions={@positions} presences={@presences} />
+  <.positions
+    organization={@organization}
+    membership={@current_membership}
+    positions={@positions}
+    presences={@presences}
+  />
 </.card>
 <.card class="mt-4">
-  <.members members={@members} organization={@organization} presences={@presences} />
+  <.members
+    organization={@organization}
+    membership={@current_membership}
+    members={@members}
+    presences={@presences}
+  />
 </.card>
 
 <.back navigate={~p"/organizations"}>Back to organizations</.back>

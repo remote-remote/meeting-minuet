@@ -3,6 +3,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.DateComponents, warn: false
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
+  import Order.Organizations.Permissions
 
   alias OrderWeb.DTO
   alias Order.Organizations.{Presence, Position}
@@ -17,24 +18,22 @@ defmodule OrderWeb.OrganizationLive.Show do
   end
 
   @impl true
-  def handle_params(%{"organization_id" => id} = params, _, socket) do
-    # TODO: add permissions
-    organization = Organizations.get_organization!(socket.assigns.current_user, id)
-
-    members =
-      Organizations.list_members(id)
-      |> DTO.Member.map_list()
-
-    positions =
-      Organizations.list_positions(id)
-      |> DTO.Position.map_list()
+  def handle_params(%{"organization_id" => org_id} = params, _, socket) do
+    organization = Organizations.get_organization!(socket.assigns.current_user, org_id)
 
     socket
     |> assign(:organization, organization)
-    |> assign(:positions, positions)
-    |> assign(:meetings, Meetings.list_org_meetings(organization.id))
-    |> assign(:members, members)
-    # permissions
+    |> assign(
+      :positions,
+      Organizations.list_positions(org_id)
+      |> DTO.Position.map_list()
+    )
+    |> assign(:meetings, Meetings.list_org_meetings(org_id))
+    |> assign(
+      :members,
+      Organizations.list_members(org_id)
+      |> DTO.Member.map_list()
+    )
     |> apply_action(socket.assigns.live_action, params)
   end
 
