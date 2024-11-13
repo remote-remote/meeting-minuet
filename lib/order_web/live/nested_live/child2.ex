@@ -2,7 +2,7 @@ defmodule OrderWeb.NestedLive.Child2 do
   use OrderWeb, :live_view
 
   def mount(params, _session, socket) do
-    {:ok, assign(socket, params: params, child1_pid: self())}
+    {:ok, assign(socket, params: params, pid: self())}
   end
 
   def render(assigns) do
@@ -10,7 +10,7 @@ defmodule OrderWeb.NestedLive.Child2 do
 
     ~H"""
     <div>
-      Child 2: <%= inspect(@child1_pid) %>
+      Child 2: <%= inspect(@pid) %>
     </div>
     """
   end

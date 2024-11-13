@@ -1,4 +1,4 @@
-defmodule Order.Meetings.Attendee do
+defmodule Order.DB.Attendee do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -12,8 +12,8 @@ defmodule Order.Meetings.Attendee do
     field :in_person, :boolean
     field :online, :boolean
 
-    belongs_to :meeting, Order.Meetings.Meeting
-    belongs_to :membership, Order.Organizations.Membership
+    belongs_to :meeting, Order.DB.Meeting
+    belongs_to :membership, Order.DB.Membership
 
     timestamps(type: :utc_datetime)
   end

@@ -1,9 +1,8 @@
-defmodule Order.Organizations.Organization do
+defmodule Order.DB.Organization do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Order.Organizations.{Membership, Position}
+  alias Order.DB.{Membership, Position, Meeting}
   alias Order.Accounts.User
-  alias Order.Meetings.Meeting
 
   schema "organizations" do
     field :name, :string

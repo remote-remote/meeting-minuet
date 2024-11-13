@@ -80,12 +80,52 @@ defmodule Order.Accounts do
     |> Repo.insert()
   end
 
-  def invite_user(attrs) do
+  def invite_user(attrs, url_fn) when is_function(url_fn, 1) do
     IO.inspect(attrs, label: "Accounts.invite_user")
 
-    %User{}
-    |> User.invitation_changeset(attrs)
-    |> Repo.insert()
+    {:ok, user} =
+      %User{}
+      |> User.invitation_changeset(attrs)
+      |> Repo.insert()
+
+    deliver_user_invitation(user, url_fn)
+    user
+  end
+
+  def get_user_by_invitation_token(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "invitation"),
+         %User{} = user <- Repo.one(query) do
+      {:ok, user}
+    else
+      _ -> {:error, :invalid_token}
+    end
+  end
+
+  def accept_invitation(token, user_attrs) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "invitation"),
+         %User{} = user <- Repo.one(query),
+         {:ok, %{user: user}} <- Repo.transaction(accept_invitation_multi(user, user_attrs)) do
+      {:ok, user}
+    else
+      _ -> :error
+    end
+  end
+
+  def change_invitation(%User{} = user, attrs \\ %{}) do
+    User.invitation_changeset(user, attrs)
+  end
+
+  defp accept_invitation_multi(%User{} = user, user_attrs) do
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:user, User.accept_changeset(user, user_attrs))
+    |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, ["invitation"]))
+  end
+
+  def deliver_user_invitation(%User{} = user, url_fun)
+      when is_function(url_fun, 1) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "invitation")
+    Repo.insert!(user_token)
+    UserNotifier.deliver_organization_invitation(user, url_fun.(encoded_token))
   end
 
   @doc """

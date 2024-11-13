@@ -6,16 +6,16 @@ defmodule Order.Accounts.User do
     field :name, :string
     field :phone, :string
     field :email, :string
+    field :status, Ecto.Enum, values: [:invited, :active, :revoked], default: :active
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
 
-    has_many :memberships, Order.Organizations.Membership
-    has_many :owned_organizations, Order.Organizations.Organization, foreign_key: :owner_id
+    has_many :memberships, Order.DB.Membership
+    has_many :owned_organizations, Order.DB.Organization, foreign_key: :owner_id
 
-    many_to_many :member_organizations, Order.Organizations.Organization,
-      join_through: Order.Organizations.Membership
+    many_to_many :member_organizations, Order.DB.Organization, join_through: Order.DB.Membership
 
     timestamps(type: :utc_datetime)
   end
@@ -49,13 +49,20 @@ defmodule Order.Accounts.User do
     |> validate_required([:name])
     |> validate_email(opts)
     |> validate_password(opts)
+    |> put_change(:status, :active)
   end
 
   def invitation_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:name, :email])
-    |> validate_required([:email])
     |> validate_email(opts)
+    |> put_change(:hashed_password, "NOTAPASS")
+    |> put_change(:status, :invited)
+  end
+
+  def accept_changeset(user, attrs) do
+    registration_changeset(user, attrs)
+    |> confirm_changeset()
   end
 
   defp validate_email(changeset, opts) do

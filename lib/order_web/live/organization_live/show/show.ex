@@ -4,8 +4,8 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
 
-  alias Order.{Organizations, Meetings, Presence}
-  alias Order.Organizations.{Position}
+  alias Order.{Meetings, Presence, Organizations}
+  alias Order.DB.{Meeting, Position}
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
@@ -26,48 +26,37 @@ defmodule OrderWeb.OrganizationLive.Show do
     |> assign(:organization, organization)
     |> assign(:positions, Organizations.list_positions(organization))
     |> assign(:meetings, Meetings.list_meetings(organization))
-    |> assign(:members, Organizations.Members.list_members(organization))
+    |> assign(:members, Organizations.list_members(organization))
     |> apply_action(socket.assigns.live_action, params)
   end
 
   # Apply Actions
-  def apply_action(socket, :show, _params) do
-    {
-      :noreply,
-      socket
-      |> assign(:page_title, page_title(:show))
-    }
-  end
+  def apply_action(socket, action, _params) when action in [:new_position, :new_meeting] do
+    socket =
+      case action do
+        :new_position ->
+          socket
+          |> assign(:position, %Position{})
 
-  def apply_action(socket, :edit, %{"id" => _}) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(:edit))}
-  end
+        :new_meeting ->
+          socket
+          |> assign(:meeting, %Meeting{})
+      end
 
-  def apply_action(socket, :new_position, _params) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(:new_position))
-     |> assign(:position, %Position{})}
+    {:noreply, socket |> assign(:page_title, page_title(action))}
   end
 
   def apply_action(socket, :new_meeting, _params) do
     {:noreply,
      socket
      |> assign(:page_title, page_title(:new_meeting))
-     |> assign(:meeting, %Meetings.Meeting{})}
-  end
-
-  def apply_action(socket, :invite_member, _params) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(:new_meeting))}
+     |> assign(:meeting, %Meeting{})}
   end
 
   def apply_action(socket, action, _params) do
-    IO.inspect(action, label: "Unhandled action")
-    {:noreply, socket}
+    {:noreply,
+     socket
+     |> assign(:page_title, page_title(action))}
   end
 
   # Handle Events
@@ -109,6 +98,9 @@ defmodule OrderWeb.OrganizationLive.Show do
   defp page_title(:new_position), do: "Create Position"
   defp page_title(:new_meeting), do: "Create Meeting"
   defp page_title(:invite_member), do: "Invite Member"
+
+  defp page_title(action),
+    do: "Organization #{action |> Atom.to_string() |> String.capitalize()} (unhandled)"
 
   defp topic(org_id) when is_bitstring(org_id) or is_integer(org_id) do
     "organization:#{org_id}"

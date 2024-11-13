@@ -20,7 +20,7 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
+    module={OrderWeb.OrganizationLive.OrganizationForm}
     id={@organization.id}
     title={@page_title}
     action={@live_action}
@@ -37,8 +37,8 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.PositionFormComponent}
-    id={@position.id || :new}
+    module={OrderWeb.OrganizationLive.PositionForm}
+    id={@position.id || :new_position}
     title={@page_title}
     action={@live_action}
     organization={@organization}
@@ -54,8 +54,8 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.MeetingFormComponent}
-    id={@meeting.id || :new}
+    module={OrderWeb.OrganizationLive.MeetingForm}
+    id={@meeting.id || :new_meeting}
     title={@page_title}
     action={@live_action}
     organization={@organization}
@@ -70,7 +70,7 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.InvitationFormComponent}
+    module={OrderWeb.OrganizationLive.InvitationForm}
     id="invite_member"
     title={@page_title}
     organization={@organization}

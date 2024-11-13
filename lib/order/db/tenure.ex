@@ -1,7 +1,7 @@
-defmodule Order.Organizations.Tenure do
+defmodule Order.DB.Tenure do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Order.Organizations.{Membership, Position}
+  alias Order.DB.{Membership, Position}
 
   schema "tenures" do
     field :active_range, EctoRange.Date

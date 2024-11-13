@@ -12,4 +12,9 @@ defmodule OrderWeb.Dtos.MemberInvitation do
     |> cast(attrs, [:email])
     |> validate_required([:email])
   end
+
+  def validate(invitation) do
+    invitation
+    |> validate_format(:email, ~r/@/)
+  end
 end

@@ -1,4 +1,4 @@
-defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
+defmodule OrderWeb.OrganizationLive.MeetingForm do
   use OrderWeb, :live_component
   alias Order.Meetings
 

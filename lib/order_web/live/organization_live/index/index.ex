@@ -4,7 +4,7 @@ defmodule OrderWeb.OrganizationLive.Index do
   import OrderWeb.OrganizationLive.IndexComponents
 
   alias Order.Organizations
-  alias Order.Organizations.Organization
+  alias Order.DB.Organization
 
   @impl true
   def mount(_params, _session, socket) do

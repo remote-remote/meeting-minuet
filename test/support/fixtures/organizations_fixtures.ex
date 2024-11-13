@@ -5,7 +5,7 @@ defmodule Order.OrganizationsFixtures do
   """
 
   alias Order.Repo
-  alias Order.Organizations.Organization
+  alias Order.DB.Organization
   alias Order.Accounts.User
 
   @doc """

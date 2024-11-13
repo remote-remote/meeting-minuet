@@ -1,11 +1,12 @@
-defmodule Order.Organizations.Membership do
+defmodule Order.DB.Membership do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Order.Organizations.{Tenure, Organization}
+  alias Order.DB.{Tenure, Organization}
   alias Order.Accounts.User
 
   schema "memberships" do
     field :active_range, EctoRange.Date
+    field :status, Ecto.Enum, values: [:invited, :active, :revoked], default: :invited
 
     belongs_to :user, User
     belongs_to :organization, Organization

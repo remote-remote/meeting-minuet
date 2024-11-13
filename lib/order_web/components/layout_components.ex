@@ -33,14 +33,6 @@ defmodule OrderWeb.LayoutComponents do
   attr :class, :string, default: ""
   slot :inner_block, required: true
 
-  def card(assigns) do
-    ~H"""
-    <div class={"bg-brand-50 border border-brand-200 shadow-md rounded-lg p-6 #{@class}"}>
-      <%= render_slot(@inner_block) %>
-    </div>
-    """
-  end
-
   defp grid_cell_classes(assigns) do
     mapper = %{
       row: "row-start-",
@@ -52,5 +44,13 @@ defmodule OrderWeb.LayoutComponents do
 
     Map.take(assigns, [:col, :row, :width, :height, :class])
     |> Enum.map(fn {k, v} -> "#{mapper[k]}#{v}" end)
+  end
+
+  def card(assigns) do
+    ~H"""
+    <div class={"bg-brand-50 border border-brand-200 shadow-md rounded-lg p-6 #{@class}"}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
   end
 end

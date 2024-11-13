@@ -1,51 +1,15 @@
-defmodule Order.Meetings do
+defmodule Order.Meetings.Attendees do
   import Ecto.Query
+  import Order.DateHelper
   alias Order.Organizations
   alias Order.Repo
-  alias Order.Organizations.{Organization, Membership, Members}
-  alias Order.Meetings.{Meeting, Attendee}
-
-  def get_meeting!(%Organization{} = organization, meeting_id) do
-    Repo.one!(
-      from m in Ecto.assoc(organization, :meetings),
-        where: m.id == ^meeting_id
-    )
-  end
-
-  def change_meeting(%Meeting{} = meeting, attrs \\ %{}) do
-    Meeting.changeset(meeting, attrs)
-  end
-
-  def create_meeting(%Organization{} = organization, attrs) do
-    Ecto.build_assoc(organization, :meetings)
-    |> Meeting.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def list_meetings(%Organization{} = organization) do
-    Repo.all(
-      from m in Meeting,
-        where: m.organization_id == ^organization.id,
-        order_by: [desc: m.date, desc: m.scheduled_start_time],
-        limit: 10
-    )
-  end
+  alias Order.DB.{Membership, Meeting, Attendee}
 
   def list_attendees(%Meeting{} = meeting) do
     Repo.all(from(a in Ecto.assoc(meeting, :attendees)))
     |> Repo.preload(membership: [:user, tenures: :position])
     |> Enum.map(fn a ->
       map_attendee(a)
-    end)
-  end
-
-  def list_uninvited_members(%Meeting{} = meeting) do
-    # TODO: optimize this somehow
-    invited_member_ids = list_attendees(meeting) |> Enum.map(& &1.id)
-
-    Members.list_members(meeting.organization_id)
-    |> Enum.reject(fn m ->
-      m.id in invited_member_ids
     end)
   end
 
@@ -63,8 +27,7 @@ defmodule Order.Meetings do
 
     case result do
       {:ok, attendee} ->
-        member = Members.get_member!(meeting.organization_id, membership_id)
-        {:ok, map_attendee(attendee, member)}
+        {:ok, map_attendee(attendee)}
 
       {:error, changeset} ->
         changeset
@@ -78,8 +41,24 @@ defmodule Order.Meetings do
     )
   end
 
-  defp map_attendee(%Attendee{} = a) do
-    %{
+  defp map_attendee(_, d \\ Date.utc_today())
+
+  defp map_attendee(
+         %Attendee{membership: %Ecto.Association.NotLoaded{}} = a,
+         date
+       ),
+       do: map_attendee(Repo.preload(a, membership: [:user, tenures: :position]), date)
+
+  defp map_attendee(
+         %Attendee{membership: %Membership{user: %Ecto.Association.NotLoaded{}}} = a,
+         date
+       ),
+       do: map_attendee(%{a | membership: Repo.preload(a.membership, user: :tenures)}, date)
+
+  # TODO: one level deeper
+
+  defp map_attendee(%Attendee{} = a, %Date{} = date),
+    do: %{
       # Attendee stuff
       id: a.membership_id,
       attendee_id: a.id,
@@ -93,12 +72,24 @@ defmodule Order.Meetings do
       name: a.membership.user.name,
       email: a.membership.user.email,
       phone: a.membership.user.phone,
-      current_positions: a.membership.tenures |> Enum.map(& &1.position.name)
+      current_positions:
+        a.membership.tenures
+        |> Enum.filter(fn t ->
+          in_range?(t.active_range, date)
+        end)
+        |> Enum.map(fn t ->
+          %{
+            position_id: t.position_id,
+            tenure_id: t.id,
+            name: t.position.name,
+            description: t.position.description,
+            active_range: t.active_range
+          }
+        end)
     }
-  end
 
-  defp map_attendee(%Attendee{} = a, %Organizations.Member{} = m) do
-    %{
+  defp map_attendee(%Attendee{} = a, %Organizations.Member{} = m),
+    do: %{
       # Attendee stuff
       id: a.membership_id,
       attendee_id: a.id,
@@ -114,5 +105,4 @@ defmodule Order.Meetings do
       phone: m.phone,
       current_positions: m.current_positions
     }
-  end
 end

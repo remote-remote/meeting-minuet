@@ -2,15 +2,17 @@ defmodule Order.Organizations.Members do
   import Ecto.Query
   import Order.DateHelper
 
-  alias Order.Organizations.{Membership, Organization, Member}
+  alias Order.DB.{Membership, Organization}
+  alias Order.Organizations.Member
   alias Order.{Repo, Accounts}
 
-  def invite_member(%Organization{} = organization, attrs) do
+  # TODO: This should not reference
+  def invite_member(%Organization{} = organization, url_fn, attrs) do
     IO.inspect(attrs, label: "Members.invite_member")
 
     user =
       case Accounts.get_user_by_email(attrs["email"]) do
-        nil -> Accounts.invite_user(attrs)
+        nil -> Accounts.invite_user(attrs, url_fn)
         user -> user
       end
 
@@ -25,6 +27,7 @@ defmodule Order.Organizations.Members do
     |> Repo.insert()
   end
 
+  # list_members
   @spec list_members(%Organization{}) :: [%Member{}]
   def list_members(%Organization{} = organization) do
     list_members(organization.id)
@@ -42,6 +45,7 @@ defmodule Order.Organizations.Members do
     end)
   end
 
+  # get_member
   @spec get_member!(%Organization{}, integer) :: %Member{}
   def get_member!(%Organization{} = organization, membership_id) when is_integer(membership_id) do
     get_member!(organization.id, membership_id)
@@ -58,6 +62,7 @@ defmodule Order.Organizations.Members do
     |> map_member(Date.utc_today())
   end
 
+  # mapper
   defp map_member(%Membership{} = m, %Date{} = date) do
     %Member{
       id: m.id,

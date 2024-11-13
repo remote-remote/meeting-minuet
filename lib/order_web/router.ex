@@ -45,8 +45,7 @@ defmodule OrderWeb.Router do
         OrderWeb.UserAuth,
         :ensure_authenticated
       } do
-      live "/child1/:id", NestedLive.Parent, :child1
-      live "/child2/:id", NestedLive.Parent, :child2
+      live "/:id", NestedLive.Parent
     end
   end
 
@@ -125,6 +124,7 @@ defmodule OrderWeb.Router do
 
     live_session :current_user,
       on_mount: [{OrderWeb.UserAuth, :mount_current_user}] do
+      live "/users/accept_invitation/:token", UserInvitationLive, :edit
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new
     end

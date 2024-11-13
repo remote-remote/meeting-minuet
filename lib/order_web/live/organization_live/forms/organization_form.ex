@@ -1,7 +1,8 @@
-defmodule OrderWeb.OrganizationLive.OrganizationFormComponent do
+defmodule OrderWeb.OrganizationLive.OrganizationForm do
   use OrderWeb, :live_component
 
   alias Order.Organizations
+  alias Order.DB.Organization
 
   @impl true
   def render(assigns) do
@@ -67,7 +68,7 @@ defmodule OrderWeb.OrganizationLive.OrganizationFormComponent do
 
   defp save_organization(socket, :new, organization_params) do
     case Organizations.create_organization(organization_params, socket.assigns.user) do
-      {:ok, %Organizations.Organization{} = organization} ->
+      {:ok, %Organization{} = organization} ->
         notify_parent({:saved, organization})
 
         {:noreply,

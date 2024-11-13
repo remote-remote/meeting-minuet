@@ -3,7 +3,8 @@ defmodule Order.Organizations.Member do
   import Ecto.Changeset
 
   @primary_key false
-  schema "organization_members" do
+  embedded_schema do
+    # the id is just here for streams, and will be populated with the membership_id
     field :id, :id
     field :user_id, :id
     field :membership_id, :id
@@ -12,8 +13,8 @@ defmodule Order.Organizations.Member do
     field :phone, :string
     field :active_range, EctoRange.Date
 
-    embeds_many :current_positions, Order.Organization.MemberPosition
-    embeds_many :past_positions, Order.Organization.MemberPosition
+    embeds_many :current_positions, Order.Organization.Member.Position
+    embeds_many :past_positions, Order.Organization.Member.Position
   end
 
   @doc false
@@ -29,12 +30,12 @@ defmodule Order.Organizations.Member.Position do
   import Ecto.Changeset
 
   @primary_key false
-  schema "member_position" do
-    field :position_id, :id
-    field :tenure_id, :id
+  embedded_schema do
     field :name, :string
     field :description, :string
     field :active_range, EctoRange.Date
+    field :position_id, :id
+    field :tenure_id, :id
   end
 
   @doc false

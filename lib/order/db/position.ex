@@ -1,11 +1,12 @@
-defmodule Order.Organizations.Position do
+defmodule Order.DB.Position do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Order.Organizations.{Membership, Tenure, Organization}
+  alias Order.DB.{Membership, Tenure, Organization}
 
   schema "positions" do
     field :name, :string
     field :description, :string
+    field :requires_report, :boolean, default: false
 
     belongs_to :organization, Organization
     has_many :tenures, Tenure

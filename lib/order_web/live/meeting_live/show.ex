@@ -16,17 +16,20 @@ defmodule OrderWeb.MeetingLive.Show do
         _session,
         socket
       ) do
-    # TODO: do I really need organization? or can I get away with just the id from the params?
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
-    members = Meetings.list_uninvited_members(meeting)
     attendees = Meetings.list_attendees(meeting)
+    attending_member_ids = attendees |> Enum.map(& &1.id)
+
+    uninvited_members =
+      Organizations.list_members(organization)
+      |> Enum.reject(fn m -> m.id in attending_member_ids end)
 
     socket
     |> assign(:organization, organization)
     |> assign(:meeting, meeting)
     |> stream(:attendees, attendees)
-    |> stream(:uninvited_members, members)
+    |> stream(:uninvited_members, uninvited_members)
     |> apply_action(socket.assigns.live_action, params)
   end
 
@@ -50,7 +53,7 @@ defmodule OrderWeb.MeetingLive.Show do
     {1, _} = Meetings.remove_attendee(socket.assigns.meeting, membership_id)
 
     member =
-      Organizations.Members.get_member!(
+      Organizations.get_member!(
         socket.assigns.organization,
         String.to_integer(membership_id)
       )

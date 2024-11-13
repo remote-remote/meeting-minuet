@@ -1,4 +1,4 @@
-defmodule OrderWeb.OrganizationLive.InvitationFormComponent do
+defmodule OrderWeb.OrganizationLive.InvitationForm do
   use OrderWeb, :live_component
 
   def render(assigns) do
@@ -38,24 +38,6 @@ defmodule OrderWeb.OrganizationLive.InvitationFormComponent do
      )}
   end
 
-  def send_invitation(
-        %{assigns: %{organization: organization}} = socket,
-        attrs
-      ) do
-    IO.inspect(attrs, label: "InvitationFormComponent send_invitation")
-
-    case Order.Organizations.Members.invite_member(organization, attrs) do
-      {:ok, member} ->
-        notify_parent({:member_invited, member})
-        {:noreply, socket |> assign(:form, %OrderWeb.Dtos.MemberInvitation{})}
-
-      {:error, changeset} ->
-        {:noreply, socket |> assign(:form, changeset)}
-    end
-
-    {:noreply, socket}
-  end
-
   def handle_event(
         "validate",
         _params,
@@ -65,8 +47,30 @@ defmodule OrderWeb.OrganizationLive.InvitationFormComponent do
   end
 
   def handle_event("save", %{"member_invitation" => invitation_params}, socket) do
-    IO.puts("InvitationFormComponent handle_event save")
     send_invitation(socket, invitation_params)
+  end
+
+  def send_invitation(
+        %{assigns: %{organization: organization}} = socket,
+        attrs
+      ) do
+    IO.inspect(attrs, label: "InvitationFormComponent send_invitation")
+
+    case Order.Organizations.invite_member(
+           organization,
+           &url(~p"/users/accept_invitation/#{&1}"),
+           attrs
+         ) do
+      {:ok, member} ->
+        notify_parent({:member_invited, member})
+
+        {:noreply,
+         socket
+         |> push_navigate(to: ~p"/organizations/#{organization.id}")}
+
+      {:error, changeset} ->
+        {:noreply, socket |> assign(:form, changeset)}
+    end
   end
 
   def handle_event(event, socket) do

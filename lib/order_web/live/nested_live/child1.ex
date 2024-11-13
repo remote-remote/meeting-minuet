@@ -6,16 +6,16 @@ defmodule OrderWeb.NestedLive.Child1 do
     IO.inspect(session, label: "Child 1 session")
     IO.inspect(socket, label: "Child 1 socket")
 
-    {:ok, assign(socket, params: params, child1_pid: self())}
+    {:ok, assign(socket, pid: self())}
   end
 
   def render(assigns) do
-    IO.inspect(assigns, label: "Child 1 render assigns")
-
     ~H"""
+    <h1>Child 1</h1>
     <div>
-      Child 1: <%= inspect(@child1_pid) %>
+      pid: <%= inspect(@pid) %>
     </div>
+    <div>socket: <%= inspect(@socket) %></div>
     """
   end
 end

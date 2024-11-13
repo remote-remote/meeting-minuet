@@ -1,6 +1,8 @@
 <header class="bg-brand-200 p-6 shadow-md">
   <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-4xl font-bold text-brand-700">Meeting Minuet</h1>
+    <h1 class="text-4xl font-bold text-brand-700">
+      <.link href={~p"/organizations"}>Meeting Minuet</.link>
+    </h1>
     <nav class="space-x-6">
       <%= if @current_user do %>
         <span class="text-brand-500">
