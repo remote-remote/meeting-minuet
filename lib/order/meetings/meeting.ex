@@ -9,7 +9,6 @@ defmodule Order.Meetings.Meeting do
 
     field :title, :string
     field :topic, :string
-    field :organization_id, :id
     field :date, :date
     field :scheduled_start_time, :time
     field :scheduled_end_time, :time
@@ -17,6 +16,10 @@ defmodule Order.Meetings.Meeting do
     field :running_end_time, :time
     field :timezone, :string
     field :location, :string
+
+    belongs_to :organization, Order.Organizations.Organization
+    has_many :attendees, Order.Meetings.Attendee
+    has_many :users, through: [:attendees, :user]
 
     timestamps(type: :utc_datetime)
   end

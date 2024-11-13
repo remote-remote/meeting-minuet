@@ -4,7 +4,8 @@ defmodule Order.Meetings.Attendee do
 
   schema "attendees" do
     field :status, Ecto.Enum,
-      values: [:invited, :accepted, :present, :attended, :absent, :declined]
+      values: [:invited, :accepted, :present, :attended, :absent, :declined],
+      default: :invited
 
     field :rsvp_date, :utc_datetime
     field :marked_present_at, :utc_datetime

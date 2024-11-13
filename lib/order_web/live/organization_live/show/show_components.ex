@@ -89,4 +89,19 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
     </.table>
     """
   end
+
+  attr :members, :list, required: true
+
+  def members(assigns) do
+    ~H"""
+    <.header>Members</.header>
+    <.table id="members" rows={@members}>
+      <:col :let={member} label="Name"><%= member.user.name %></:col>
+      <:col :let={member} label="Email"><%= member.user.email %></:col>
+      <:col :let={member} label="Positions">
+        <%= member.positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+    </.table>
+    """
+  end
 end

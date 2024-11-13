@@ -27,7 +27,9 @@ defmodule Order.Memberships do
   def list_active_members(%Organization{} = organization, %Date{} = date) do
     Repo.all(
       from m in Membership,
-        where: m.organization_id == ^organization.id and fragment("m0.period @> ?::date", ^date)
+        where:
+          m.organization_id == ^organization.id and
+            fragment("m0.active_range @> ?::date", ^date)
     )
   end
 
@@ -36,6 +38,8 @@ defmodule Order.Memberships do
       from m in Membership,
         where: m.organization_id == ^organization.id
     )
+    |> Repo.preload(:user)
+    |> Repo.preload(:positions)
   end
 
   def get_membership(%Organization{} = organization, membership_id) do

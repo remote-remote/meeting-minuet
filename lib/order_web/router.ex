@@ -36,6 +36,20 @@ defmodule OrderWeb.Router do
     end
   end
 
+  # just an experiment
+  scope "/nested", OrderWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :nested_test,
+      on_mount: {
+        OrderWeb.UserAuth,
+        :ensure_authenticated
+      } do
+      live "/child1/:id", NestedLive.Parent, :child1
+      live "/child2/:id", NestedLive.Parent, :child2
+    end
+  end
+
   scope "/organizations/:organization_id", OrderWeb do
     pipe_through [:browser, :require_authenticated_user]
 
@@ -50,7 +64,6 @@ defmodule OrderWeb.Router do
       live "/meetings/new", OrganizationLive.Show, :new_meeting
 
       live "/meetings/:meeting_id", MeetingLive.Show, :show
-      live "/meetings/:meeting_id/attendees/edit", MeetingLive.Show, :edit_attendees
     end
   end
 

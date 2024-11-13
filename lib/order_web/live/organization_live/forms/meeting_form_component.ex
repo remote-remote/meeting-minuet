@@ -86,9 +86,7 @@ defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Meeting created successfully")
-         |> push_navigate(
-           to: ~p"/organizations/#{organization}/meetings/#{saved_meeting.id}/attendees"
-         )}
+         |> push_navigate(to: ~p"/organizations/#{organization}/meetings/#{saved_meeting.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
