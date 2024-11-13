@@ -31,7 +31,7 @@ defmodule OrderWeb.OrganizationLive.InvitationForm do
      |> assign(assigns)
      |> assign(
        :form,
-       OrderWeb.Dtos.MemberInvitation.changeset(%OrderWeb.Dtos.MemberInvitation{}, %{})
+       OrderWeb.DTO.MemberInvitation.changeset(%OrderWeb.DTO.MemberInvitation{}, %{})
        |> to_form()
      )}
   end

@@ -2,7 +2,7 @@ defmodule Order.Organizations.Organization do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query
-  alias Order.Organizations.{Organization, Membership, Position, Meeting, Member, Permission}
+  alias Order.Organizations.{Organization, Membership, Position, Meeting}
   alias Order.Accounts.User
 
   schema "organizations" do

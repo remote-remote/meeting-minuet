@@ -1,4 +1,4 @@
-defmodule OrderWeb.Dtos.MemberInvitation do
+defmodule OrderWeb.DTO.MemberInvitation do
   use Ecto.Schema
   import Ecto.Changeset
 

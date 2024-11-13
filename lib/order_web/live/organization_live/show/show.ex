@@ -4,6 +4,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
 
+  alias OrderWeb.DTO
   alias Order.Organizations.{Presence, Position}
   alias Order.{Meetings, Organizations}
   alias Order.DB.{Meeting}
@@ -17,13 +18,23 @@ defmodule OrderWeb.OrganizationLive.Show do
 
   @impl true
   def handle_params(%{"organization_id" => id} = params, _, socket) do
+    # TODO: add permissions
     organization = Organizations.get_organization!(socket.assigns.current_user, id)
+
+    members =
+      Organizations.list_members(id)
+      |> DTO.Member.map_list()
+
+    positions =
+      Organizations.list_positions(id)
+      |> DTO.Position.map_list()
 
     socket
     |> assign(:organization, organization)
-    |> assign(:positions, Organizations.list_positions(organization))
+    |> assign(:positions, positions)
     |> assign(:meetings, Meetings.list_meetings(organization))
-    |> assign(:members, Organizations.list_members(organization))
+    |> assign(:members, members)
+    # permissions
     |> apply_action(socket.assigns.live_action, params)
   end
 

@@ -1,4 +1,5 @@
 defmodule OrderWeb.MeetingLive.Show do
+  alias OrderWeb.DTO.Member
   use OrderWeb, :live_view
 
   alias Order.Meetings
@@ -32,7 +33,8 @@ defmodule OrderWeb.MeetingLive.Show do
     attending_member_ids = attendees |> Enum.map(& &1.id)
 
     uninvited_members =
-      Organizations.list_members(organization)
+      Organizations.list_members(organization_id)
+      |> Member.map_list()
       |> Enum.reject(fn m -> m.id in attending_member_ids end)
 
     socket

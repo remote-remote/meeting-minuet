@@ -146,7 +146,7 @@ defmodule Order.OrganizationsTest do
     @tag run: true
     test "list_members/1 returns organization_members in the correct shape", context do
       organization = get_org(context, :org1)
-      members = Organizations.list_members(organization)
+      members = Organizations.list_members(organization.id)
       assert length(members) == 2
       assert Enum.at(members, 0).user_id == get_user(context, :user1).id
       assert Enum.at(members, 1).user_id == get_user(context, :user2).id

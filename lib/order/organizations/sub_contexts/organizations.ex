@@ -23,6 +23,7 @@ defmodule Order.Organizations.Organizations do
       ** (Ecto.NoResultsError)
 
   """
+  @spec get_organization!(User.t(), integer) :: Organization.t()
   def get_organization!(%User{} = user, organization_id) do
     Organization.q_get_with_memberships(user.id, organization_id)
     |> Repo.one!()

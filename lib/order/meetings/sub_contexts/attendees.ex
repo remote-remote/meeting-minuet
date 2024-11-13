@@ -3,7 +3,6 @@ defmodule Order.Meetings.Attendees do
   import Ecto.Query
   import Order.DateHelper
   alias Order.Meetings.Notifications
-  alias Order.Organizations
   alias Order.Repo
   alias Order.DB.{Meeting, Attendee}
   alias Order.Organizations.Membership
@@ -117,23 +116,5 @@ defmodule Order.Meetings.Attendees do
             active_range: t.active_range
           }
         end)
-    }
-
-  defp map_attendee(%Attendee{} = a, %Organizations.Member{} = m),
-    do: %{
-      # Attendee stuff
-      id: m.id,
-      attendee_id: a.id,
-      status: a.status,
-      rsvp_date: a.rsvp_date,
-      marked_present_at: a.marked_present_at,
-      in_person: a.in_person,
-      online: a.online,
-      roles: a.roles,
-      # Member stuff
-      name: m.name,
-      email: m.email,
-      phone: m.phone,
-      current_positions: m.current_positions
     }
 end
