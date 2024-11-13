@@ -11,6 +11,7 @@ defmodule Order.Accounts.User do
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+    field :roles, {:array, Ecto.Enum}, values: [:user, :admin], default: [:user]
 
     has_many :memberships, Order.DB.Membership
     has_many :owned_organizations, Order.DB.Organization, foreign_key: :owner_id
@@ -45,8 +46,8 @@ defmodule Order.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:name, :phone, :email, :password])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :phone, :email, :password, :roles])
+    |> validate_required([:name, :roles])
     |> validate_email(opts)
     |> validate_password(opts)
     |> put_change(:status, :active)

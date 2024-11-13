@@ -7,6 +7,7 @@ defmodule Order.DB.Membership do
   schema "memberships" do
     field :active_range, EctoRange.Date
     field :status, Ecto.Enum, values: [:invited, :active, :revoked], default: :invited
+    field :roles, {:array, Ecto.Enum}, values: [:member, :admin], default: [:member]
 
     belongs_to :user, User
     belongs_to :organization, Organization
@@ -19,7 +20,7 @@ defmodule Order.DB.Membership do
   @doc false
   def changeset(member, attrs) do
     member
-    |> cast(attrs, [:user_id, :active_range])
-    |> validate_required([:user_id, :active_range])
+    |> cast(attrs, [:user_id, :active_range, :roles])
+    |> validate_required([:user_id, :active_range, :roles])
   end
 end

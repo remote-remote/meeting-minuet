@@ -6,32 +6,54 @@ defmodule Order.Organizations do
   import Ecto.Query, warn: false
   alias Order.Accounts.User
   alias Order.Repo
-  alias Order.DB.{Organization}
+  alias Order.DB
+  alias Order.Organizations.{Organization, Permissions}
 
   # Members
   defdelegate list_members(organization), to: Order.Organizations.Members
   defdelegate get_member!(organization, membership_id), to: Order.Organizations.Members
   defdelegate invite_member(organization, url_fn, attrs), to: Order.Organizations.Members
 
-  # Positions
+  # Positions (maybe don't need all this?)
   defdelegate list_positions(organization), to: Order.Organizations.Positions
   defdelegate get_position!(organization, position_id), to: Order.Organizations.Positions
   defdelegate create_position(organization, attrs), to: Order.Organizations.Positions
   defdelegate change_position(position, attrs \\ %{}), to: Order.Organizations.Positions
   defdelegate update_position(position, attrs), to: Order.Organizations.Positions
 
+  def list_organizations(%User{} = user) do
+    (owned_organizations(user) ++ member_organizations(user))
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.map(&map_list_organization(&1, user))
+  end
+
+  defp map_list_organization(%DB.Organization{} = org, %User{} = user) do
+    %Organization{
+      id: org.id,
+      name: org.name,
+      description: org.description,
+      ami_owner: org.owner_id == user.id,
+      ami_member: Enum.any?(org.memberships, &(&1.user_id == user.id)),
+      permissions: Permissions.get_permissions(org, user)
+    }
+  end
+
   @doc """
   Returns a list of organizations that the user owns via organization.owner_id.
   """
   def owned_organizations(%User{} = user) do
-    Ecto.assoc(user, :owned_organizations) |> Repo.all()
+    Ecto.assoc(user, :owned_organizations)
+    |> Repo.all()
+    |> Repo.preload(:memberships)
   end
 
   @doc """
   Returns a list of organizations that the user is a member of.
   """
   def member_organizations(%User{} = user) do
-    Ecto.assoc(user, :member_organizations) |> Repo.all()
+    Ecto.assoc(user, :member_organizations)
+    |> Repo.all()
+    |> Repo.preload(:memberships)
   end
 
   @doc """

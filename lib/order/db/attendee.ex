@@ -11,6 +11,7 @@ defmodule Order.DB.Attendee do
     field :marked_present_at, :utc_datetime
     field :in_person, :boolean
     field :online, :boolean
+    field :roles, {:array, Ecto.Enum}, values: [:attendee, :host, :owner], default: [:attendee]
 
     belongs_to :meeting, Order.DB.Meeting
     belongs_to :membership, Order.DB.Membership
@@ -28,8 +29,9 @@ defmodule Order.DB.Attendee do
       :rsvp_date,
       :marked_present_at,
       :in_person,
-      :online
+      :online,
+      :roles
     ])
-    |> validate_required([:status, :meeting_id, :membership_id])
+    |> validate_required([:status, :meeting_id, :membership_id, :roles])
   end
 end

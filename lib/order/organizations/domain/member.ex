@@ -2,10 +2,7 @@ defmodule Order.Organizations.Member do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key false
   embedded_schema do
-    # the id is just here for streams, and will be populated with the membership_id
-    field :id, :id
     field :user_id, :id
     field :membership_id, :id
     field :name, :string
