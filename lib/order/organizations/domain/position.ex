@@ -1,6 +1,7 @@
 defmodule Order.Organizations.Position do
-  import Ecto.{Changeset, Query}
+  import Ecto.Changeset
   import Order.DateHelper
+
   use Ecto.Schema
   use Order.DomainModel, db_module: Order.DB.Position
   alias Order.{DB}
@@ -18,7 +19,6 @@ defmodule Order.Organizations.Position do
     position
     |> cast(attrs, [:name, :description, :requires_report])
     |> validate_required([:name])
-    |> cast_embed(:current_tenures)
   end
 
   def from_db(%DB.Position{} = p) do
@@ -52,6 +52,8 @@ defmodule Order.Organizations.Tenure do
 
   embedded_schema do
     field :name, :string
+    field :membership_id, :id
+    field :position_id, :id
     field :email, :string
     field :phone, :string
     field :active_range, EctoRange.Date
@@ -60,6 +62,8 @@ defmodule Order.Organizations.Tenure do
   def from_db(%Order.DB.Tenure{} = t) do
     %{
       name: t.user.name,
+      membership_id: t.membership_id,
+      position_id: t.position_id,
       email: t.user.email,
       phone: t.user.phone,
       active_range: t.active_range
@@ -68,7 +72,8 @@ defmodule Order.Organizations.Tenure do
 
   def to_db(%Order.Organizations.Tenure{} = t) do
     %Order.DB.Tenure{
-      user: %Order.Accounts.User{},
+      membership_id: t.membership_id,
+      position_id: t.position_id,
       active_range: t.active_range
     }
   end
