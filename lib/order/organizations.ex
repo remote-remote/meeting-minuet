@@ -7,7 +7,7 @@ defmodule Order.Organizations do
   alias Order.Accounts.User
   alias Order.Repo
   alias Order.Organizations.Organization
-  alias Order.Members.Member
+  alias Order.Memberships.Membership
 
   @doc """
   Returns the list of organizations.
@@ -130,8 +130,8 @@ defmodule Order.Organizations do
 
   defp user_organization_query(%User{} = user) do
     from o in Organization,
-      left_join: m in Member,
-      on: m.organization_id == o.id and m.email == ^user.email,
-      where: (not is_nil(m.email) and m.email == ^user.email) or o.owner_id == ^user.id
+      left_join: m in Membership,
+      on: m.organization_id == o.id and m.user_id == ^user.id,
+      where: (not is_nil(m.user_id) and m.user_id == ^user.id) or o.owner_id == ^user.id
   end
 end

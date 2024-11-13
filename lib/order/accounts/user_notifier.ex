@@ -38,6 +38,27 @@ defmodule Order.Accounts.UserNotifier do
   end
 
   @doc """
+  Deliver organization invitation.
+  """
+  # TODO: Maybe move this into the memberships context?
+  def deliver_organization_invitation(user, url) do
+    deliver(user.email, "Organization invitation", """
+
+    ==============================
+
+    Hi #{user.email},
+
+    You have been invited to join an organization. You can accept the invitation by visiting the URL below:
+
+    #{url}
+
+    If you didn't request this change, please ignore this.
+
+    ==============================
+    """)
+  end
+
+  @doc """
   Deliver instructions to reset a user password.
   """
   def deliver_reset_password_instructions(user, url) do

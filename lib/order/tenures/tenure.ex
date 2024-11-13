@@ -5,7 +5,7 @@ defmodule Order.Tenures.Tenure do
   schema "tenures" do
     field :active_range, EctoRange.Date
 
-    belongs_to :member, Order.Members.Member
+    belongs_to :membership, Order.Memberships.Membership
     belongs_to :position, Order.Positions.Position
 
     timestamps(type: :utc_datetime)

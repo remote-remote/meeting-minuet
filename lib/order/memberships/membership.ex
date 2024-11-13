@@ -1,11 +1,8 @@
-defmodule Order.Members.Member do
+defmodule Order.Memberships.Membership do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "members" do
-    field :name, :string
-    field :email, :string
-    field :phone, :string
+  schema "memberships" do
     field :active_range, EctoRange.Date
 
     belongs_to :user, Order.Accounts.User
@@ -19,7 +16,7 @@ defmodule Order.Members.Member do
   @doc false
   def changeset(member, attrs) do
     member
-    |> cast(attrs, [:name, :email, :phone, :active_range])
-    |> validate_required([:name, :email, :active_range])
+    |> cast(attrs, [:user_id, :active_range])
+    |> validate_required([:user_id, :active_range])
   end
 end

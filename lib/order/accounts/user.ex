@@ -3,6 +3,8 @@ defmodule Order.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    field :name, :string
+    field :phone, :string
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -10,7 +12,7 @@ defmodule Order.Accounts.User do
     field :confirmed_at, :utc_datetime
 
     has_many :organizations, Order.Organizations.Organization, foreign_key: :owner_id
-    has_many :members, Order.Members.Member
+    has_many :memberships, Order.Memberships.Membership
 
     timestamps(type: :utc_datetime)
   end
@@ -40,14 +42,21 @@ defmodule Order.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:name, :phone, :email, :password])
     |> validate_email(opts)
     |> validate_password(opts)
   end
 
+  def invitation_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:name, :email])
+    |> validate_required([:email])
+    |> validate_email(opts)
+  end
+
   defp validate_email(changeset, opts) do
     changeset
-    |> validate_required([:email])
+    |> validate_required([:name, :email])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)

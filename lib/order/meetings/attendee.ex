@@ -6,12 +6,13 @@ defmodule Order.Meetings.Attendee do
     field :status, Ecto.Enum,
       values: [:invited, :accepted, :present, :attended, :absent, :declined]
 
-    field :meeting_id, :id
-    field :member_id, :id
     field :rsvp_date, :utc_datetime
     field :marked_present_at, :utc_datetime
     field :in_person, :boolean
     field :online, :boolean
+
+    belongs_to :meeting, Order.Meetings.Meeting
+    belongs_to :membership, Order.Memberships.Membership
 
     timestamps(type: :utc_datetime)
   end
@@ -22,12 +23,12 @@ defmodule Order.Meetings.Attendee do
     |> cast(attrs, [
       :status,
       :meeting_id,
-      :member_id,
+      :membership_id,
       :rsvp_date,
       :marked_present_at,
       :in_person,
       :online
     ])
-    |> validate_required([:status, :meeting_id, :member_id])
+    |> validate_required([:status, :meeting_id, :membership_id])
   end
 end

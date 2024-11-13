@@ -13,13 +13,15 @@
 alias Order.Organizations
 alias Order.Accounts
 alias Order.Positions
-alias Order.Members
+alias Order.Memberships
 alias Order.Tenures
 
 # Create some users
 Enum.each(1..3, fn n ->
   {:ok, user} =
     Accounts.register_user(%{
+      name: "Owner #{n}",
+      phone: "555-555-5555",
       email: "owner@org#{n}",
       password: "password!!!!!"
     })
@@ -37,15 +39,14 @@ Enum.each(1..3, fn n ->
 
     {:ok, user} =
       Accounts.register_user(%{
+        name: "Organization #{n} #{position_name}",
+        phone: "555-555-5555",
         email: "#{String.downcase(position_name)}@org#{n}",
         password: "password!!!!!"
       })
 
-    member = %{
-      "name" => "Organization #{n} #{position_name}",
+    member_attrs = %{
       "email" => user.email,
-      "phone" => "555-555-5555",
-      "user_id" => user.id,
       "active_range" => %Postgrex.Range{
         lower: Date.utc_today(),
         upper: nil,
@@ -54,7 +55,7 @@ Enum.each(1..3, fn n ->
       }
     }
 
-    {:ok, member} = Members.add_member(organization, member)
+    {:ok, member} = Memberships.add_member(organization, member_attrs)
 
     {:ok, tenure} =
       Tenures.create_tenure(member, position, %{

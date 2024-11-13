@@ -80,6 +80,12 @@ defmodule Order.Accounts do
     |> Repo.insert()
   end
 
+  def invite_user(attrs) do
+    %User{}
+    |> User.invitation_changeset(attrs)
+    |> Repo.insert()
+  end
+
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 
