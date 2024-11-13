@@ -2,7 +2,7 @@ defmodule OrderWeb.MeetingLive.Show do
   use OrderWeb, :live_view
 
   alias Order.Meetings
-  alias Order.Meetings.{Presence, Notifications}
+  alias Order.Meetings.{Presence, Notifications, Permissions}
   alias Order.Organizations
   import OrderWeb.LayoutComponents
 
@@ -13,7 +13,12 @@ defmodule OrderWeb.MeetingLive.Show do
       connect_presence(socket, meeting_id)
     end
 
-    {:ok, assign(socket, :presences, Presence.list_users(meeting_id)) |> assign(:pid, self())}
+    socket =
+      socket
+      |> assign(:presences, Presence.list_users(meeting_id))
+      |> assign(:permissions, %{})
+
+    {:ok, socket}
   end
 
   @impl true
@@ -24,6 +29,7 @@ defmodule OrderWeb.MeetingLive.Show do
       ) do
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
+    permissions = Permissions.get_permissions(socket.assigns.current_user, meeting)
     attendees = Meetings.list_attendees(meeting)
     attending_member_ids = attendees |> Enum.map(& &1.id)
 
@@ -35,6 +41,7 @@ defmodule OrderWeb.MeetingLive.Show do
     |> assign(:organization, organization)
     |> assign(:meeting, meeting)
     |> assign(:attendees, attendees)
+    |> assign(:permissions, permissions)
     |> assign(:uninvited_members, uninvited_members)
     |> apply_action(socket.assigns.live_action, params)
   end
@@ -82,12 +89,12 @@ defmodule OrderWeb.MeetingLive.Show do
   end
 
   @impl true
-  def handle_info({:added_attendee, attendee}, socket) do
-    {:noreply,
-     socket
-     |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
-     |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
-  end
+  # def handle_info({:added_attendee, attendee}, socket) do
+  #   {:noreply,
+  #    socket
+  #    |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
+  #    |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
+  # end
 
   def handle_info({:removed_attendee, attendee}, socket) do
     member =

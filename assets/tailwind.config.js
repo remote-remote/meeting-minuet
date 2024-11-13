@@ -5,6 +5,8 @@ const plugin = require("tailwindcss/plugin")
 const fs = require("fs")
 const path = require("path")
 
+const sizeMods = ['sm', 'md', 'lg', 'xl', '2xl', 'xs', 'sm:max-lg', 'lg:max-xl']
+
 module.exports = {
   content: [
     "./js/**/*.js",
@@ -12,12 +14,12 @@ module.exports = {
     "../lib/order_web/**/*.*ex"
   ],
   safelist: [
-    { pattern: /col-start-/ },
-    { pattern: /col-span-/ },
-    { pattern: /row-start-/ },
-    { pattern: /row-span-/ },
-    { pattern: /grid-cols-/ },
-    { pattern: /grid-rows-/ },
+    { pattern: /col-start-/, variants: sizeMods },
+    { pattern: /col-span-/, variants: sizeMods },
+    { pattern: /row-start-/, variants: sizeMods },
+    { pattern: /row-span-/, variants: sizeMods },
+    { pattern: /grid-cols-/, variants: sizeMods },
+    { pattern: /grid-rows-/, variants: sizeMods },
   ],
   theme: {
     extend: {

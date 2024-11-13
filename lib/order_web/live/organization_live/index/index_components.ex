@@ -44,4 +44,34 @@ defmodule OrderWeb.OrganizationLive.IndexComponents do
     </.table>
     """
   end
+
+  attr :upcoming_meetings, :list, required: true
+  attr :organization, :map, required: true
+
+  def upcoming_meetings(assigns) do
+    ~H"""
+    <.header>
+      Upcoming Meetings
+    </.header>
+    <.table
+      rows={@upcoming_meetings}
+      id="user_meetings"
+      row_click={
+        fn meeting ->
+          JS.navigate(~p"/organizations/#{meeting.organization_id}/meetings/#{meeting.id}")
+        end
+      }
+    >
+      <:col :let={meeting} label="Title">
+        <%= meeting.title %>
+      </:col>
+      <:col :let={meeting} label="Organization">
+        <%= meeting.organization_name %>
+      </:col>
+      <:col :let={meeting} label="Scheduled At">
+        <%= meeting.date %> <%= meeting.scheduled_start_time %>
+      </:col>
+    </.table>
+    """
+  end
 end

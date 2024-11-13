@@ -1,17 +1,15 @@
-<.grid rows={2} cols={3} gap={4}>
-  <.grid_cell height={2} col={1} row={1}>
+<div class="grid grid-cols-4 grid-rows-5 gap-4">
+  <div class="row-span-2 col-span-1 row-start-1 col-start-1">
     <.card class="h-full">
-      <.header>
-        Upcoming Meetings
-      </.header>
+      <.upcoming_meetings upcoming_meetings={@upcoming_meetings} />
     </.card>
-  </.grid_cell>
-  <.grid_cell width={2} col={2}>
+  </div>
+  <div class="col-span-3 col-start-2 row-start-1">
     <.card>
       <.organizations organizations={@streams.owned_organizations} title="Owned Organizations" />
     </.card>
-  </.grid_cell>
-  <.grid_cell width={2} col={2} row={2}>
+  </div>
+  <div class="col-span-2 col-start-2 row-start-2">
     <.card>
       <.organizations
         organizations={@streams.member_organizations}
@@ -19,8 +17,8 @@
         allow_actions={false}
       />
     </.card>
-  </.grid_cell>
-</.grid>
+  </div>
+</div>
 
 <.modal
   :if={@live_action in [:new, :edit]}
@@ -29,7 +27,7 @@
   on_cancel={JS.patch(~p"/organizations")}
 >
   <.live_component
-    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
+    module={OrderWeb.OrganizationLive.OrganizationForm}
     id={@organization.id || :new}
     title={@page_title}
     action={@live_action}

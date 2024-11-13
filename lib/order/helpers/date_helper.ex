@@ -1,5 +1,8 @@
 defmodule Order.DateHelper do
-  def in_range?(range, date) do
+  @doc """
+  Returns true if the given date is within the given range.
+  """
+  def in_range?(%Postgrex.Range{} = range, %Date{} = date) do
     gte_lower =
       if is_nil(range.lower) || range.lower == :unbound do
         true

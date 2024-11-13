@@ -6,7 +6,8 @@ defmodule Order.Organizations.Position do
     field :description, :string
     field :requires_report, :boolean
 
-    embeds_many :tenures, Order.Organizations.Tenure
+    embeds_many :current_tenures, Order.Organizations.Tenure
+    embeds_many :past_tenures, Order.Organizations.Tenure
   end
 end
 

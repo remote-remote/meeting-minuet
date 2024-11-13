@@ -40,12 +40,12 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
       row_click={fn row -> JS.navigate(~p"/organizations/#{@organization}/positions/#{row.id}") end}
     >
       <:col :let={position} label="Title"><%= position.name %></:col>
-      <:col :let={position} label="Member">
-        <%= if position.user.id do %>
-          <%= position.user.name %>
-        <% else %>
-          Vacant
-        <% end %>
+      <:col :let={position} label="Description"><%= position.description %></:col>
+      <:col :let={position} label="Current Tenures">
+        <%= position.current_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
+      </:col>
+      <:col :let={position} label="Past Tenures">
+        <%= position.past_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
       </:col>
     </.table>
     """

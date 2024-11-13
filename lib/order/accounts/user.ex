@@ -14,6 +14,7 @@ defmodule Order.Accounts.User do
 
     has_many :memberships, Order.DB.Membership
     has_many :owned_organizations, Order.DB.Organization, foreign_key: :owner_id
+    has_many :permissions, Order.DB.Permission
 
     many_to_many :member_organizations, Order.DB.Organization, join_through: Order.DB.Membership
 

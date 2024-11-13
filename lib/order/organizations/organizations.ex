@@ -6,7 +6,7 @@ defmodule Order.Organizations do
   import Ecto.Query, warn: false
   alias Order.Accounts.User
   alias Order.Repo
-  alias Order.DB.Organization
+  alias Order.DB.{Organization, Permission}
 
   # Members
   defdelegate list_members(organization), to: Order.Organizations.Members
@@ -78,9 +78,30 @@ defmodule Order.Organizations do
     member = %{"user_id" => user.id, "active_range" => {Date.utc_today(), nil}}
     attrs = Map.put(attrs, "memberships", [member])
 
-    Ecto.build_assoc(user, :owned_organizations)
-    |> Organization.changeset(attrs)
-    |> Repo.insert()
+    {:ok, org} =
+      Ecto.build_assoc(user, :owned_organizations)
+      |> Organization.changeset(attrs)
+      |> Repo.insert()
+
+    permissions =
+      [
+        %{resource: "meetings", scope: "*", action: "*"},
+        %{resource: "organizations", scope: "", action: "*"},
+        %{resource: "members", scope: "*", action: "*"},
+        %{resource: "positions", scope: "*", action: "*"},
+        %{resource: "permissions", scope: "*", action: "*"}
+      ]
+      |> Enum.map(
+        &Map.merge(&1, %{
+          user_id: user.id,
+          organization_id: org.id,
+          inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
+          updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+      )
+
+    Repo.insert_all(Permission, permissions)
+    {:ok, org}
   end
 
   def create_organization(attrs) do
