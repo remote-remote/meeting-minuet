@@ -147,8 +147,8 @@ defmodule OrderWeb.CoreComponents do
   def flash_group(assigns) do
     ~H"""
     <div id={@id}>
-      <.flash kind={:info} title="Success!" flash={@flash} />
-      <.flash kind={:error} title="Error!" flash={@flash} />
+      <.flash id="success-flash" kind={:info} title="Success!" flash={@flash} />
+      <.flash id="error-flash" kind={:error} title="Error!" flash={@flash} />
       <.flash
         id="client-error"
         kind={:error}

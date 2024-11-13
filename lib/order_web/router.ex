@@ -23,6 +23,23 @@ defmodule OrderWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/", OrderWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :authenticated,
+      on_mount: {
+        OrderWeb.UserAuth,
+        :ensure_authenticated
+      } do
+      # We'll put our authenticated live views here
+      live "/organizations", OrganizationLive.Index, :index
+      live "/organizations/new", OrganizationLive.Index, :new
+      live "/organizations/:id/show/edit", OrganizationLive.Show, :edit
+      live "/organizations/:id", OrganizationLive.Show, :show
+      live "/organizations/:id/positions/new", OrganizationLive.Show, :new_position
+    end
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", OrderWeb do
   #   pipe_through :api

@@ -1,0 +1,69 @@
+<.header>
+  <%= @organization.name %>
+  <:subtitle><%= @organization.description %></:subtitle>
+  <:actions>
+    <.link patch={~p"/organizations/#{@organization}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit organization</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Created at"><%= @organization.inserted_at %></:item>
+  <:item title="Updated at"><%= @organization.updated_at %></:item>
+</.list>
+
+<.header>
+  Positions
+  <:actions>
+    <.link patch={~p"/organizations/#{@organization}/positions/new"}>
+      <.button>New Position</.button>
+    </.link>
+  </:actions>
+</.header>
+<.table id="positions" rows={@positions}>
+  <:col :let={position} label="Title"><%= position.title %></:col>
+  <:col :let={position} label="Current Holder">
+    <%= if position.member.id do %>
+      <%= position.member.first_name %> <%= position.member.last_name %>
+    <% else %>
+      Vacant
+    <% end %>
+  </:col>
+</.table>
+
+<.back navigate={~p"/organizations"}>Back to organizations</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="organization-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.FormComponent}
+    id={@organization.id}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    user={@current_user}
+    patch={~p"/organizations/#{@organization}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_position}
+  id="position-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.PositionLive.FormComponent}
+    id={:new}
+    title={@page_title}
+    action={:new}
+    organization={@organization}
+    position={@position}
+    patch={~p"/organizations/#{@organization}"}
+  />
+</.modal>

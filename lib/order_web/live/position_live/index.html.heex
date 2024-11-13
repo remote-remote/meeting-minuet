@@ -1,0 +1,42 @@
+<.header>
+  Listing Positions
+  <:actions>
+    <.link patch={~p"/positions/new"}>
+      <.button>New Position</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="positions"
+  rows={@streams.positions}
+  row_click={fn {_id, position} -> JS.navigate(~p"/positions/#{position}") end}
+>
+  <:col :let={{_id, position}} label="Name"><%= position.name %></:col>
+  <:col :let={{_id, position}} label="Description"><%= position.description %></:col>
+  <:action :let={{_id, position}}>
+    <div class="sr-only">
+      <.link navigate={~p"/positions/#{position}"}>Show</.link>
+    </div>
+    <.link patch={~p"/positions/#{position}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, position}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: position.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="position-modal" show on_cancel={JS.patch(~p"/positions")}>
+  <.live_component
+    module={OrderWeb.PositionLive.FormComponent}
+    id={@position.id || :new}
+    title={@page_title}
+    action={@live_action}
+    position={@position}
+    patch={~p"/positions"}
+  />
+</.modal>
