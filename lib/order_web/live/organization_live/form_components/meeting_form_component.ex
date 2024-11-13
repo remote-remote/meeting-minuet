@@ -86,7 +86,7 @@ defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
         {:noreply,
          socket
          |> put_flash(:info, "Meeting created successfully")
-         |> push_patch(
+         |> push_navigate(
            to: ~p"/organizations/#{organization}/meetings/#{saved_meeting.id}/attendees"
          )}
 

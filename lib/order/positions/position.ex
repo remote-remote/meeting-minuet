@@ -8,7 +8,7 @@ defmodule Order.Positions.Position do
 
     belongs_to :organization, Order.Organizations.Organization
     has_many :tenures, Order.Tenures.Tenure
-    has_many :members, through: [:tenures, :member]
+    many_to_many :memberships, Order.Memberships.Membership, join_through: Order.Tenures.Tenure
 
     timestamps(type: :utc_datetime)
   end

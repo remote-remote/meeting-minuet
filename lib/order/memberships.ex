@@ -10,7 +10,7 @@ defmodule Order.Memberships do
 
   # TODO: There is starting to be a good reason to move the Organizations
   # and Memberships contexts into Accounts
-  def add_member(%Organization{} = organization, attrs) do
+  def add_membership(%Organization{} = organization, attrs) do
     user =
       case Accounts.get_user_by_email(attrs["email"]) do
         nil -> Accounts.invite_user(attrs)
@@ -19,7 +19,7 @@ defmodule Order.Memberships do
 
     attrs = Map.put(attrs, "user_id", user.id)
 
-    Ecto.build_assoc(organization, :members)
+    Ecto.build_assoc(organization, :memberships)
     |> Membership.changeset(attrs)
     |> Repo.insert()
   end

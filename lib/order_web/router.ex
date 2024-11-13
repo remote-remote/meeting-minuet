@@ -37,7 +37,7 @@ defmodule OrderWeb.Router do
     end
   end
 
-  scope "/organizations/:id", OrderWeb do
+  scope "/organizations/:organization_id", OrderWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :organization_dashboard,
@@ -49,7 +49,9 @@ defmodule OrderWeb.Router do
       live "/", OrganizationLive.Show, :show
       live "/positions/new", OrganizationLive.Show, :new_position
       live "/meetings/new", OrganizationLive.Show, :new_meeting
-      live "/meetings/:meeting_id/attendees", OrganizationLive.Show, :show_attendees
+
+      live "/meetings/:meeting_id", MeetingLive.Show, :show
+      live "/meetings/:meeting_id/attendees", MeetingLive.Show, :edit_attendees
     end
   end
 

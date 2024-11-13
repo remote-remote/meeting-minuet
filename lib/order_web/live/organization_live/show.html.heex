@@ -22,8 +22,8 @@
     fn row -> JS.navigate(~p"/organizations/#{@organization.id}/positions/#{row.id}") end
   }
 >
-  <:col :let={position} label="Title"><%= position.title %></:col>
-  <:col :let={position} label="Current Holder">
+  <:col :let={position} label="Title"><%= position.name %></:col>
+  <:col :let={position} label="Member">
     <%= if position.user.id do %>
       <%= position.user.name %>
     <% else %>

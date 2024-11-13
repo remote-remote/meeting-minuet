@@ -7,7 +7,6 @@ defmodule Order.Organizations do
   alias Order.Accounts.User
   alias Order.Repo
   alias Order.Organizations.Organization
-  alias Order.Memberships.Membership
 
   @doc """
   Returns the list of organizations.
@@ -19,16 +18,8 @@ defmodule Order.Organizations do
 
   """
   def list_organizations(%User{} = user) do
-    Repo.all(
-      from [o, m] in user_organization_query(user),
-        select: %Organization{
-          id: o.id,
-          name: o.name,
-          description: o.description,
-          inserted_at: o.inserted_at,
-          updated_at: o.updated_at
-        }
-    )
+    # TODO: this might bite me later
+    Ecto.assoc(user, :organizations) |> Repo.all()
   end
 
   @doc """
@@ -47,9 +38,8 @@ defmodule Order.Organizations do
   """
   def get_organization!(%User{} = user, organization_id) do
     Repo.one!(
-      from [o, m] in user_organization_query(user),
-        where: o.id == ^organization_id,
-        select: o
+      from o in Ecto.assoc(user, :organizations),
+        where: o.id == ^organization_id
     )
   end
 
@@ -70,9 +60,13 @@ defmodule Order.Organizations do
 
   """
   def create_organization(%User{} = user, attrs) do
-    Ecto.build_assoc(user, :organizations)
+    member = %{"user_id" => user.id, "active_range" => {Date.utc_today(), nil}}
+    attrs = Map.put(attrs, "memberships", [member])
+
+    Ecto.build_assoc(user, :owned_organizations)
     |> Organization.changeset(attrs)
     |> Repo.insert()
+    |> IO.inspect(label: "create_organization for user")
   end
 
   def create_organization(attrs) do
@@ -126,12 +120,5 @@ defmodule Order.Organizations do
   """
   def change_organization(%Organization{} = organization, attrs \\ %{}) do
     Organization.changeset(organization, attrs)
-  end
-
-  defp user_organization_query(%User{} = user) do
-    from o in Organization,
-      left_join: m in Membership,
-      on: m.organization_id == o.id and m.user_id == ^user.id,
-      where: (not is_nil(m.user_id) and m.user_id == ^user.id) or o.owner_id == ^user.id
   end
 end

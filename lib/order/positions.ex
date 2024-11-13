@@ -1,11 +1,10 @@
 defmodule Order.Positions do
-  import Ecto.Query, warn: false
+  import Ecto.Query
+  import Ecto
+
   alias Order.Repo
-  alias Order.Accounts.User
-  alias Order.Memberships.Membership
   alias Order.Positions.Position
   alias Order.Organizations.Organization
-  alias Order.Tenures.Tenure
 
   @doc """
   Returns a Position changeset
@@ -21,24 +20,21 @@ defmodule Order.Positions do
   end
 
   def list_positions(%Organization{} = organization) do
-    # TODO: preload?
     Repo.all(
-      from p in Position,
-        where: p.organization_id == ^organization.id,
-        left_join: t in Tenure,
-        on: t.position_id == p.id and fragment("t1.active_range @> ?::date", ^Date.utc_today()),
-        left_join: m in Membership,
-        on: t.membership_id == m.id,
-        left_join: u in User,
-        on: u.id == m.user_id,
+      from p in assoc(organization, :positions),
+        left_join: t in assoc(p, :tenures),
+        on: fragment("t1.active_range @> ?::date", ^Date.utc_today()),
+        left_join: m in assoc(t, :membership),
+        left_join: u in assoc(m, :user),
         select: %{
           id: p.id,
-          title: p.name,
+          name: p.name,
           description: p.description,
           user: %{
             id: u.id,
             name: u.name,
-            email: u.email
+            email: u.email,
+            phone: u.phone
           }
         }
     )

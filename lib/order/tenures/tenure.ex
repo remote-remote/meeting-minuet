@@ -8,6 +8,8 @@ defmodule Order.Tenures.Tenure do
     belongs_to :membership, Order.Memberships.Membership
     belongs_to :position, Order.Positions.Position
 
+    has_one :user, through: [:membership, :user]
+
     timestamps(type: :utc_datetime)
   end
 

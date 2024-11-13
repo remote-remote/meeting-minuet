@@ -6,10 +6,10 @@ defmodule Order.Organizations.Organization do
     field :name, :string
     field :description, :string
     belongs_to :owner, Order.Accounts.User, foreign_key: :owner_id
-    has_many :members, Order.Memberships.Membership
+    has_many :memberships, Order.Memberships.Membership
     has_many :meetings, Order.Meetings.Meeting
     has_many :positions, Order.Positions.Position
-    # has_many :tenures, through: [:positions, :members]
+    many_to_many :users, Order.Accounts.User, join_through: Order.Memberships.Membership
 
     timestamps(type: :utc_datetime)
   end
@@ -18,6 +18,7 @@ defmodule Order.Organizations.Organization do
   def changeset(organization, attrs) do
     organization
     |> cast(attrs, [:name, :owner_id, :description])
+    |> cast_assoc(:memberships)
     |> validate_required([:name, :owner_id])
   end
 end

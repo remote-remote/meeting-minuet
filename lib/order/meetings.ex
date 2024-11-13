@@ -4,6 +4,13 @@ defmodule Order.Meetings do
   alias Order.Organizations.Organization
   alias Order.Meetings.Meeting
 
+  def get_meeting!(%Organization{} = organization, meeting_id) do
+    Repo.one!(
+      from m in Ecto.assoc(organization, :meetings),
+        where: m.id == ^meeting_id
+    )
+  end
+
   def change_meeting(%Meeting{} = meeting, attrs \\ %{}) do
     Meeting.changeset(meeting, attrs)
   end

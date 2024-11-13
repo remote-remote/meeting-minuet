@@ -8,7 +8,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   alias Order.Presence
 
   @impl true
-  def mount(%{"id" => org_id}, _session, socket) do
+  def mount(%{"organization_id" => org_id}, _session, socket) do
     if connected?(socket) do
       connect_presence(socket, org_id)
     end
@@ -19,7 +19,7 @@ defmodule OrderWeb.OrganizationLive.Show do
   end
 
   @impl true
-  def handle_params(%{"id" => id} = params, _, socket) do
+  def handle_params(%{"organization_id" => id} = params, _, socket) do
     organization = Organizations.get_organization!(socket.assigns.current_user, id)
 
     socket

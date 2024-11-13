@@ -48,14 +48,14 @@ Enum.each(1..3, fn n ->
     member_attrs = %{
       "email" => user.email,
       "active_range" => %Postgrex.Range{
-        lower: Date.utc_today(),
+        lower: Date.new!(2024, 1, 1),
         upper: nil,
         lower_inclusive: true,
         upper_inclusive: true
       }
     }
 
-    {:ok, member} = Memberships.add_member(organization, member_attrs)
+    {:ok, member} = Memberships.add_membership(organization, member_attrs)
 
     {:ok, tenure} =
       Tenures.create_tenure(member, position, %{
