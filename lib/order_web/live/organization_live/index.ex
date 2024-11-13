@@ -34,8 +34,16 @@ defmodule OrderWeb.OrganizationLive.Index do
   end
 
   @impl true
-  def handle_info({OrderWeb.OrganizationLive.FormComponent, {:saved, organization}}, socket) do
+  def handle_info(
+        {OrderWeb.OrganizationLive.OrganizationFormComponent, {:saved, organization}},
+        socket
+      ) do
     {:noreply, stream_insert(socket, :organizations, organization)}
+  end
+
+  def handle_info(msg, socket) do
+    IO.inspect(msg, label: "Unhandled message")
+    {:noreply, socket}
   end
 
   @impl true

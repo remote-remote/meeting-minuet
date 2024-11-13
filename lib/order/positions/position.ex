@@ -1,4 +1,4 @@
-defmodule Order.Organizations.Position do
+defmodule Order.Positions.Position do
   use Ecto.Schema
   import Ecto.Changeset
 

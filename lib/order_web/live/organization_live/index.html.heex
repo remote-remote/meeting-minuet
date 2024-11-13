@@ -14,9 +14,6 @@
 >
   <:col :let={{_id, organization}} label="Name"><%= organization.name %></:col>
   <:col :let={{_id, organization}} label="Description"><%= organization.description %></:col>
-  <:col :let={{_id, organization}} label="Current Position">
-    <%= organization.current_position %>
-  </:col>
   <:action :let={{_id, organization}}>
     <div class="sr-only">
       <.link navigate={~p"/organizations/#{organization}"}>Show</.link>

@@ -42,7 +42,12 @@ defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_new(:form, fn -> to_form(Meetings.change_meeting(meeting)) end)}
+     |> assign(:members, nil)
+     |> assign_new(:form, fn ->
+       meeting
+       |> Meetings.change_meeting()
+       |> to_form()
+     end)}
   end
 
   def handle_event(
@@ -59,23 +64,31 @@ defmodule OrderWeb.OrganizationLive.MeetingFormComponent do
     {:noreply, assign(socket, form: form)}
   end
 
+  # TODO: handle updating a meeting a different way, need to go to meeting invitations for new
   def handle_event("save", %{"meeting" => meeting_params}, socket) do
     save_meeting(socket, socket.assigns.action, meeting_params)
+  end
+
+  def handle_event(event, socket) do
+    IO.inspect(event, label: "Unhandled event")
+    {:noreply, socket}
   end
 
   def save_meeting(
         %{assigns: %{organization: organization}} = socket,
         :new_meeting,
-        meeting_params
+        attrs
       ) do
-    case Meetings.create_meeting(meeting_params, organization) do
-      {:ok, meeting} ->
-        notify_parent({:saved, meeting})
+    case Meetings.create_meeting(organization, attrs) do
+      {:ok, saved_meeting} ->
+        notify_parent({:saved, saved_meeting})
 
         {:noreply,
          socket
          |> put_flash(:info, "Meeting created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+         |> push_patch(
+           to: ~p"/organizations/#{organization}/meetings/#{saved_meeting.id}/attendees"
+         )}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset, action: :validate))}

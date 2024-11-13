@@ -12,16 +12,15 @@
 
 alias Order.Organizations
 alias Order.Accounts
+alias Order.Positions
+alias Order.Members
 
 # Create some users
 Enum.each(1..3, fn n ->
   {:ok, user} =
     Accounts.register_user(%{
       email: "owner@org#{n}",
-      password: "password!!!!!",
-      first_name: "Owner",
-      last_name: "Org#{n}",
-      phone_number: "123-456-7890"
+      password: "password!!!!!"
     })
 
   {:ok, organization} =
@@ -32,18 +31,28 @@ Enum.each(1..3, fn n ->
       user
     )
 
-  Enum.each(["Chair", "Secretary", "Treasurer", "Fluffer"], fn name ->
-    {:ok, position} = Organizations.create_position(organization, %{"name" => name})
+  Enum.each(["Chair", "Secretary", "Treasurer", "Fluffer"], fn position_name ->
+    {:ok, position} = Positions.create_position(organization, %{"name" => position_name})
 
-    {:ok, member} =
+    {:ok, user} =
       Accounts.register_user(%{
-        email: "#{String.downcase(name)}@org#{n}",
-        password: "password!!!!!",
-        first_name: "Org#{n}",
-        last_name: name,
-        phone_number: "123-456-7890"
+        email: "#{String.downcase(position_name)}@org#{n}",
+        password: "password!!!!!"
       })
 
-    {:ok, member} = Organizations.add_member(organization, position, member)
+    member = %{
+      "name" => "Organization #{n} #{position_name}",
+      "email" => user.email,
+      "phone" => "555-555-5555",
+      "user_id" => user.id,
+      "active_range" => %Postgrex.Range{
+        lower: Date.utc_today(),
+        upper: nil,
+        lower_inclusive: true,
+        upper_inclusive: true
+      }
+    }
+
+    {:ok, member} = Members.add_member(organization, member)
   end)
 end)

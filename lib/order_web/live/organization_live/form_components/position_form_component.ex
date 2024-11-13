@@ -1,7 +1,7 @@
 defmodule OrderWeb.OrganizationLive.PositionFormComponent do
   use OrderWeb, :live_component
 
-  alias Order.Organizations
+  alias Order.Positions
 
   @impl true
   def mount(socket) do
@@ -40,13 +40,13 @@ defmodule OrderWeb.OrganizationLive.PositionFormComponent do
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
-       to_form(Organizations.change_position(position))
+       to_form(Positions.change_position(position))
      end)}
   end
 
   @impl true
   def handle_event("validate", %{"position" => position_params}, socket) do
-    changeset = Organizations.change_position(socket.assigns.position, position_params)
+    changeset = Positions.change_position(socket.assigns.position, position_params)
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
@@ -55,7 +55,7 @@ defmodule OrderWeb.OrganizationLive.PositionFormComponent do
   end
 
   defp save_position(socket, :edit, position_params) do
-    case Organizations.update_position(socket.assigns.position, position_params) do
+    case Positions.update_position(socket.assigns.position, position_params) do
       {:ok, position} ->
         notify_parent({:saved, position})
 
@@ -70,7 +70,7 @@ defmodule OrderWeb.OrganizationLive.PositionFormComponent do
   end
 
   defp save_position(socket, :new_position, position_params) do
-    case Organizations.create_position(socket.assigns.organization, position_params) do
+    case Positions.create_position(socket.assigns.organization, position_params) do
       {:ok, position} ->
         notify_parent({:saved, position})
 

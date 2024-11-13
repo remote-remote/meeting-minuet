@@ -1,8 +1,9 @@
 defmodule OrderWeb.OrganizationLive.Show do
   use OrderWeb, :live_view
-  import OrderWeb.DateComponents
+  import OrderWeb.DateComponents, warn: false
 
   alias Order.Organizations
+  alias Order.Positions
   alias Order.Meetings
   alias Order.Presence
 
@@ -23,7 +24,7 @@ defmodule OrderWeb.OrganizationLive.Show do
 
     socket
     |> assign(:organization, organization)
-    |> assign(:positions, Organizations.list_positions(organization))
+    |> assign(:positions, Positions.list_positions(organization))
     |> assign(:meetings, Meetings.list_meetings(organization))
     |> apply_action(socket.assigns.live_action, params)
   end
@@ -37,11 +38,17 @@ defmodule OrderWeb.OrganizationLive.Show do
     }
   end
 
+  def apply_action(socket, :edit, %{"id" => _}) do
+    {:noreply,
+     socket
+     |> assign(:page_title, page_title(:edit))}
+  end
+
   def apply_action(socket, :new_position, _params) do
     {:noreply,
      socket
      |> assign(:page_title, page_title(:new_position))
-     |> assign(:position, %Organizations.Position{})}
+     |> assign(:position, %Positions.Position{})}
   end
 
   def apply_action(socket, :new_meeting, _params) do
@@ -51,10 +58,17 @@ defmodule OrderWeb.OrganizationLive.Show do
      |> assign(:meeting, %Meetings.Meeting{})}
   end
 
-  def apply_action(socket, :edit, %{"id" => _}) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(:edit))}
+  def apply_action(socket, :invite_members, %{"meeting_id" => meeting_id}) do
+    # meeting = Meetings.get_meeting!(meeting_id, socket.assigns.current_user)
+    # TODO: Implement this
+    IO.puts("Invite members: meeting_id=#{meeting_id}")
+
+    {:noreply, socket}
+  end
+
+  def apply_action(socket, action, _params) do
+    IO.inspect(action, label: "Unhandled action")
+    {:noreply, socket}
   end
 
   # Handle Events

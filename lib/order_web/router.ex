@@ -45,10 +45,11 @@ defmodule OrderWeb.Router do
         OrderWeb.UserAuth,
         :ensure_authenticated
       } do
-      live "/show/edit", OrganizationLive.Show, :edit
+      live "/edit", OrganizationLive.Show, :edit
       live "/", OrganizationLive.Show, :show
       live "/positions/new", OrganizationLive.Show, :new_position
       live "/meetings/new", OrganizationLive.Show, :new_meeting
+      live "/meetings/:meeting_id/attendees", OrganizationLive.Show, :show_attendees
     end
   end
 

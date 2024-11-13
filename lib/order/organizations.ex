@@ -6,8 +6,8 @@ defmodule Order.Organizations do
   import Ecto.Query, warn: false
   alias Order.Accounts.User
   alias Order.Repo
-
-  alias Order.Organizations.{Organization, Membership, Position, OrganizationWithCurrentPosition}
+  alias Order.Organizations.Organization
+  alias Order.Members.Member
 
   @doc """
   Returns the list of organizations.
@@ -15,19 +15,18 @@ defmodule Order.Organizations do
   ## Examples
 
       iex> list_organizations()
-      [%OrganizationWithCurrentPosition{}, ...]
+      [%{}, ...]
 
   """
   def list_organizations(%User{} = user) do
     Repo.all(
-      from [o, m, p] in user_organization_query(user),
-        select: %OrganizationWithCurrentPosition{
+      from [o, m] in user_organization_query(user),
+        select: %Organization{
           id: o.id,
           name: o.name,
           description: o.description,
           inserted_at: o.inserted_at,
-          updated_at: o.updated_at,
-          current_position: p.name
+          updated_at: o.updated_at
         }
     )
   end
@@ -48,60 +47,9 @@ defmodule Order.Organizations do
   """
   def get_organization!(organization_id, %User{} = user) do
     Repo.one!(
-      from [o, m, p] in user_organization_query(user),
+      from [o, m] in user_organization_query(user),
         where: o.id == ^organization_id,
         select: o
-    )
-  end
-
-  def list_positions(%Organization{} = organization) do
-    Repo.all(
-      from p in Position,
-        left_join: m in Membership,
-        on: m.position_id == p.id,
-        left_join: u in User,
-        on: u.id == m.user_id,
-        where: p.organization_id == ^organization.id,
-        select: %{
-          id: p.id,
-          title: p.name,
-          member: %{
-            id: u.id,
-            first_name: u.first_name,
-            last_name: u.last_name,
-            email: u.email,
-            phone_number: u.phone_number,
-            since: m.inserted_at
-          }
-        }
-    )
-  end
-
-  def create_position(%Organization{} = organization, attrs) do
-    %Position{}
-    |> Position.changeset(Map.put(attrs, "organization_id", organization.id))
-    |> Repo.insert()
-  end
-
-  def add_member(%Organization{} = organization, %Position{} = position, %User{} = user) do
-    %Membership{}
-    |> Membership.changeset(%{
-      organization_id: organization.id,
-      position_id: position.id,
-      user_id: user.id
-    })
-    |> Repo.insert()
-  end
-
-  def list_memberships(%Organization{} = organization) do
-    Repo.all(
-      from m in Membership,
-        where: m.organization_id == ^organization.id,
-        join: p in Position,
-        on: p.id == m.position_id,
-        join: u in User,
-        on: u.id == m.user_id,
-        select: %{position: p.name, email: u.email, member_since: m.inserted_at}
     )
   end
 
@@ -117,9 +65,9 @@ defmodule Order.Organizations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_organization(attrs, %User{id: owner_id}) do
-    %Organization{}
-    |> Organization.changeset(Map.put(attrs, "owner_id", owner_id))
+  def create_organization(attrs, %User{} = user) do
+    %Organization{owner_id: user.id}
+    |> Organization.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -170,22 +118,10 @@ defmodule Order.Organizations do
     Organization.changeset(organization, attrs)
   end
 
-  def change_position(%Position{} = position, attrs \\ %{}) do
-    Position.changeset(position, attrs)
-  end
-
-  def update_position(%Position{} = position, attrs) do
-    position
-    |> Position.changeset(attrs)
-    |> Repo.update()
-  end
-
-  defp user_organization_query(%User{id: user_id}) do
+  defp user_organization_query(%User{} = user) do
     from o in Organization,
-      left_join: m in Membership,
-      on: m.organization_id == o.id and m.user_id == ^user_id,
-      left_join: p in Position,
-      on: p.id == m.position_id,
-      where: m.user_id == ^user_id or o.owner_id == ^user_id
+      left_join: m in Member,
+      on: m.organization_id == o.id and m.email == ^user.email,
+      where: m.email == ^user.email or o.owner_id == ^user.id
   end
 end
