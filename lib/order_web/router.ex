@@ -19,6 +19,7 @@ defmodule OrderWeb.Router do
 
   scope "/", OrderWeb do
     pipe_through :browser
+    get "/", PageController, :home
   end
 
   scope "/", OrderWeb do
@@ -30,8 +31,6 @@ defmodule OrderWeb.Router do
         OrderWeb.UserAuth,
         :ensure_authenticated
       } do
-      # TODO: figure out how to redirect this?
-      live "/", OrganizationLive.Index, :index
       live "/organizations", OrganizationLive.Index, :index
       live "/organizations/new", OrganizationLive.Index, :new
     end
@@ -51,7 +50,7 @@ defmodule OrderWeb.Router do
       live "/meetings/new", OrganizationLive.Show, :new_meeting
 
       live "/meetings/:meeting_id", MeetingLive.Show, :show
-      live "/meetings/:meeting_id/attendees", MeetingLive.Show, :edit_attendees
+      live "/meetings/:meeting_id/attendees/edit", MeetingLive.Show, :edit_attendees
     end
   end
 

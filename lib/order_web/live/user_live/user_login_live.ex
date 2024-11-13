@@ -3,7 +3,7 @@ defmodule OrderWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto p-8 max-w-md bg-orange-100 rounded-lg border border-orange-300">
       <.header class="text-center">
         Log in to account
         <:subtitle>

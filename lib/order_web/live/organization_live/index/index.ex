@@ -1,5 +1,7 @@
 defmodule OrderWeb.OrganizationLive.Index do
   use OrderWeb, :live_view
+  import OrderWeb.LayoutComponents
+  import OrderWeb.OrganizationLive.IndexComponents
 
   alias Order.Organizations
   alias Order.Organizations.Organization
@@ -7,7 +9,13 @@ defmodule OrderWeb.OrganizationLive.Index do
   @impl true
   def mount(_params, _session, socket) do
     %{current_user: current_user} = socket.assigns
-    {:ok, stream(socket, :organizations, Organizations.list_organizations(current_user))}
+
+    socket =
+      socket
+      |> stream(:owned_organizations, Organizations.owned_organizations(current_user))
+      |> stream(:member_organizations, Organizations.member_organizations(current_user))
+
+    {:ok, socket}
   end
 
   @impl true
@@ -38,7 +46,7 @@ defmodule OrderWeb.OrganizationLive.Index do
         {OrderWeb.OrganizationLive.OrganizationFormComponent, {:saved, organization}},
         socket
       ) do
-    {:noreply, stream_insert(socket, :organizations, organization)}
+    {:noreply, stream_insert(socket, :owned_organizations, organization)}
   end
 
   def handle_info(msg, socket) do
@@ -51,6 +59,6 @@ defmodule OrderWeb.OrganizationLive.Index do
     organization = Organizations.get_organization!(socket.assigns.current_user, id)
     {:ok, _} = Organizations.delete_organization(organization)
 
-    {:noreply, stream_delete(socket, :organizations, organization)}
+    {:noreply, stream_delete(socket, :owned_organizations, organization)}
   end
 end

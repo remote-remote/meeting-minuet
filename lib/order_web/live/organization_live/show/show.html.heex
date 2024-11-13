@@ -1,0 +1,61 @@
+<.card class="mt-4">
+  <.org_header organization={@organization} />
+</.card>
+<.card class="mt-4">
+  <.meetings organization={@organization} meetings={@meetings} />
+</.card>
+<.card class="mt-4">
+  <.positions organization={@organization} positions={@positions} presences={@presences} />
+</.card>
+
+<.back navigate={~p"/organizations"}>Back to organizations</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="organization-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
+    id={@organization.id}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    user={@current_user}
+    patch={~p"/organizations/#{@organization}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_position}
+  id="position-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.PositionFormComponent}
+    id={@position.id || :new}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    position={@position}
+    patch={~p"/organizations/#{@organization}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_meeting}
+  id="meeting-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.MeetingFormComponent}
+    id={@meeting.id || :new}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    meeting={@meeting}
+  />
+</.modal>

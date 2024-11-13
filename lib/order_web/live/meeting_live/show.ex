@@ -3,6 +3,7 @@ defmodule OrderWeb.MeetingLive.Show do
 
   alias Order.Meetings
   alias Order.Organizations
+  import OrderWeb.LayoutComponents
 
   @impl true
   def mount(_params, _session, socket) do

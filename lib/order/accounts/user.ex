@@ -14,7 +14,7 @@ defmodule Order.Accounts.User do
     has_many :memberships, Order.Memberships.Membership
     has_many :owned_organizations, Order.Organizations.Organization, foreign_key: :owner_id
 
-    many_to_many :organizations, Order.Organizations.Organization,
+    many_to_many :member_organizations, Order.Organizations.Organization,
       join_through: Order.Memberships.Membership
 
     timestamps(type: :utc_datetime)
@@ -60,7 +60,7 @@ defmodule Order.Accounts.User do
 
   defp validate_email(changeset, opts) do
     changeset
-    |> validate_required([:name, :email])
+    |> validate_required([:email])
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must have the @ sign and no spaces")
     |> validate_length(:email, max: 160)
     |> maybe_validate_unique_email(opts)

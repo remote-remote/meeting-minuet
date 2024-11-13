@@ -1,6 +1,8 @@
 defmodule OrderWeb.OrganizationLive.Show do
   use OrderWeb, :live_view
   import OrderWeb.DateComponents, warn: false
+  import OrderWeb.LayoutComponents
+  import OrderWeb.OrganizationLive.ShowComponents
 
   alias Order.Organizations
   alias Order.Positions

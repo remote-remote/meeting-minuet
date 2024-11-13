@@ -1,37 +1,41 @@
-<.header>
-  <%= @meeting.title %>
-  <:subtitle><%= @meeting.topic %></:subtitle>
-  <:actions></:actions>
-</.header>
-<.header>
-  Attendees
-  <:actions>
-    <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/attendees/edit"}>
-      <.button>Manage Attendees</.button>
-    </.link>
-  </:actions>
-</.header>
-<.table id="attendees" rows={@attendees}>
-  <:col :let={attendee} label="Name"><%= attendee.name %></:col>
-  <:col :let={attendee} label="Position">
-    <%= if attendee.position.name do %>
-      <%= attendee.position.name %>
-    <% else %>
-      General Member
-    <% end %>
-  </:col>
-  <:col :let={attendee} label="Online">
-    <%= if attendee.user_id do %>
-      <.icon
-        name="hero-user-circle"
-        class={
-          if @presences[Integer.to_string(attendee.user_id)],
-            do: "text-green-500",
-            else: "text-slate-500"
-        }
-      />
-    <% end %>
-  </:col>
-</.table>
+<.card>
+  <.header>
+    <%= @meeting.title %>
+    <:subtitle><%= @meeting.topic %></:subtitle>
+    <:actions></:actions>
+  </.header>
+</.card>
+<.card class="mt-4">
+  <.header>
+    Attendees
+    <:actions>
+      <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/attendees/edit"}>
+        <.button>Manage Attendees</.button>
+      </.link>
+    </:actions>
+  </.header>
+  <.table id="attendees" rows={@attendees}>
+    <:col :let={attendee} label="Name"><%= attendee.name %></:col>
+    <:col :let={attendee} label="Position">
+      <%= if attendee.position.name do %>
+        <%= attendee.position.name %>
+      <% else %>
+        General Member
+      <% end %>
+    </:col>
+    <:col :let={attendee} label="Online">
+      <%= if attendee.user_id do %>
+        <.icon
+          name="hero-user-circle"
+          class={
+            if @presences[Integer.to_string(attendee.user_id)],
+              do: "text-green-500",
+              else: "text-slate-500"
+          }
+        />
+      <% end %>
+    </:col>
+  </.table>
+</.card>
 
 <.back navigate={~p"/organizations/#{@organization}"}>Back to Organization Dashboard</.back>

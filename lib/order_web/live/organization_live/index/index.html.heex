@@ -1,0 +1,40 @@
+<.grid rows={2} cols={3} gap={4}>
+  <.grid_cell height={2} col={1} row={1}>
+    <.card class="h-full">
+      <.header>
+        Upcoming Meetings
+      </.header>
+    </.card>
+  </.grid_cell>
+  <.grid_cell width={2} col={2}>
+    <.card>
+      <.organizations organizations={@streams.owned_organizations} title="Owned Organizations" />
+    </.card>
+  </.grid_cell>
+  <.grid_cell width={2} col={2} row={2}>
+    <.card>
+      <.organizations
+        organizations={@streams.member_organizations}
+        title="Member Organizations"
+        allow_actions={false}
+      />
+    </.card>
+  </.grid_cell>
+</.grid>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="organization-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations")}
+>
+  <.live_component
+    module={OrderWeb.OrganizationLive.OrganizationFormComponent}
+    id={@organization.id || :new}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    user={@current_user}
+    patch={~p"/organizations"}
+  />
+</.modal>

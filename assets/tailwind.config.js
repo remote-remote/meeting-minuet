@@ -11,10 +11,43 @@ module.exports = {
     "../lib/order_web.ex",
     "../lib/order_web/**/*.*ex"
   ],
+  safelist: [
+    { pattern: /col-start-/ },
+    { pattern: /col-span-/ },
+    { pattern: /row-start-/ },
+    { pattern: /row-span-/ },
+    { pattern: /grid-cols-/ },
+    { pattern: /grid-rows-/ },
+  ],
   theme: {
     extend: {
       colors: {
-        brand: "#FD4F00",
+        brand: {
+          '50': '#f5f8f7',
+          '100': '#ddeae7',
+          '200': '#bbd4d0',
+          '300': '#82aca7',
+          '400': '#6b9693',
+          '500': '#507c79',
+          '600': '#3f6260',
+          '700': '#35504f',
+          '800': '#2d4241',
+          '900': '#293838',
+          '950': '#141f1f',
+        },
+        action: {
+          '50': '#fffaec',
+          '100': '#fff3d3',
+          '200': '#ffe4a5',
+          '300': '#ffce6d',
+          '400': '#ffae32',
+          '500': '#ff930a',
+          '600': '#ff7b00',
+          '700': '#cc5902',
+          '800': '#a1450b',
+          '900': '#823b0c',
+          '950': '#461b04',
+        }
       }
     },
   },
@@ -25,15 +58,15 @@ module.exports = {
     //
     //     <div class="phx-click-loading:animate-ping">
     //
-    plugin(({addVariant}) => addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])),
-    plugin(({addVariant}) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
-    plugin(({addVariant}) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
-    plugin(({addVariant}) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"])),
+    plugin(({ addVariant }) => addVariant("phx-no-feedback", [".phx-no-feedback&", ".phx-no-feedback &"])),
+    plugin(({ addVariant }) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
+    plugin(({ addVariant }) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
+    plugin(({ addVariant }) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"])),
 
     // Embeds Heroicons (https://heroicons.com) into your app.css bundle
     // See your `CoreComponents.icon/1` for more information.
     //
-    plugin(function({matchComponents, theme}) {
+    plugin(function({ matchComponents, theme }) {
       let iconsDir = path.join(__dirname, "./vendor/heroicons/optimized")
       let values = {}
       let icons = [
@@ -44,11 +77,11 @@ module.exports = {
       icons.forEach(([suffix, dir]) => {
         fs.readdirSync(path.join(iconsDir, dir)).forEach(file => {
           let name = path.basename(file, ".svg") + suffix
-          values[name] = {name, fullPath: path.join(iconsDir, dir, file)}
+          values[name] = { name, fullPath: path.join(iconsDir, dir, file) }
         })
       })
       matchComponents({
-        "hero": ({name, fullPath}) => {
+        "hero": ({ name, fullPath }) => {
           let content = fs.readFileSync(fullPath).toString().replace(/\r?\n|\r/g, "")
           return {
             [`--hero-${name}`]: `url('data:image/svg+xml;utf8,${content}')`,
@@ -62,7 +95,7 @@ module.exports = {
             "height": theme("spacing.5")
           }
         }
-      }, {values})
+      }, { values })
     })
   ]
 }

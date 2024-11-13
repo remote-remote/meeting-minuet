@@ -1,6 +1,6 @@
-defmodule Order.AccountsTest do
+defmodule Order.ContextBuilderTest do
   use Order.DataCase
-  import Order.OrgStructureBuilder
+  import Order.ContextBuilder
   import Order.Repo
   alias Order.Accounts.User
   alias Order.Organizations.Organization
@@ -46,7 +46,7 @@ defmodule Order.AccountsTest do
   describe "organizations" do
     setup do
       structure =
-        build_org_scenario(@input)
+        build_context(@input)
 
       {:ok, structure}
     end

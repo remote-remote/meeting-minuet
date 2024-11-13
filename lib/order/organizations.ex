@@ -4,6 +4,7 @@ defmodule Order.Organizations do
   """
 
   import Ecto.Query, warn: false
+  alias Order.Memberships
   alias Order.Accounts.User
   alias Order.Repo
   alias Order.Organizations.Organization
@@ -18,8 +19,15 @@ defmodule Order.Organizations do
 
   """
   def list_organizations(%User{} = user) do
-    # TODO: this might bite me later
     Ecto.assoc(user, :organizations) |> Repo.all()
+  end
+
+  def owned_organizations(%User{} = user) do
+    Ecto.assoc(user, :owned_organizations) |> Repo.all()
+  end
+
+  def member_organizations(%User{} = user) do
+    Ecto.assoc(user, :member_organizations) |> Repo.all()
   end
 
   @doc """
@@ -38,8 +46,11 @@ defmodule Order.Organizations do
   """
   def get_organization!(%User{} = user, organization_id) do
     Repo.one!(
-      from o in Ecto.assoc(user, :organizations),
-        where: o.id == ^organization_id
+      from o in Organization,
+        where: o.id == ^organization_id,
+        left_join: m in assoc(o, :memberships),
+        where: m.user_id == ^user.id or o.owner_id == ^user.id,
+        distinct: true
     )
   end
 
