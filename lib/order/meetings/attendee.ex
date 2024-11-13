@@ -8,6 +8,10 @@ defmodule Order.Meetings.Attendee do
 
     field :meeting_id, :id
     field :member_id, :id
+    field :rsvp_date, :utc_datetime
+    field :marked_present_at, :utc_datetime
+    field :in_person, :boolean
+    field :online, :boolean
 
     timestamps(type: :utc_datetime)
   end
@@ -15,7 +19,15 @@ defmodule Order.Meetings.Attendee do
   @doc false
   def changeset(attendee, attrs) do
     attendee
-    |> cast(attrs, [:status])
-    |> validate_required([:status])
+    |> cast(attrs, [
+      :status,
+      :meeting_id,
+      :member_id,
+      :rsvp_date,
+      :marked_present_at,
+      :in_person,
+      :online
+    ])
+    |> validate_required([:status, :meeting_id, :member_id])
   end
 end

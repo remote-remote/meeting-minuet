@@ -32,25 +32,29 @@ defmodule Order.Organizations do
   end
 
   @doc """
-  Gets a single organization.
+  Gets a single organization if it belongs to the User.
 
   Raises `Ecto.NoResultsError` if the Organization does not exist.
 
   ## Examples
 
-      iex> get_organization!(123)
+      iex> get_organization!(%User{id: 1}, 123)
       %Organization{}
 
-      iex> get_organization!(456)
+      iex> get_organization!(%User{id:1}, 456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_organization!(organization_id, %User{} = user) do
+  def get_organization!(%User{} = user, organization_id) do
     Repo.one!(
       from [o, m] in user_organization_query(user),
         where: o.id == ^organization_id,
         select: o
     )
+  end
+
+  def get_organization!(organization_id) do
+    Repo.get!(Organization, organization_id)
   end
 
   @doc """
@@ -65,8 +69,14 @@ defmodule Order.Organizations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_organization(attrs, %User{} = user) do
-    %Organization{owner_id: user.id}
+  def create_organization(%User{} = user, attrs) do
+    Ecto.build_assoc(user, :organizations)
+    |> Organization.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_organization(attrs) do
+    %Organization{}
     |> Organization.changeset(attrs)
     |> Repo.insert()
   end
@@ -122,6 +132,6 @@ defmodule Order.Organizations do
     from o in Organization,
       left_join: m in Member,
       on: m.organization_id == o.id and m.email == ^user.email,
-      where: m.email == ^user.email or o.owner_id == ^user.id
+      where: (not is_nil(m.email) and m.email == ^user.email) or o.owner_id == ^user.id
   end
 end

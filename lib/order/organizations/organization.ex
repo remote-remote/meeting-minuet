@@ -5,7 +5,11 @@ defmodule Order.Organizations.Organization do
   schema "organizations" do
     field :name, :string
     field :description, :string
-    field :owner_id, :id
+    belongs_to :owner, Order.Accounts.User, foreign_key: :owner_id
+    has_many :members, Order.Members.Member
+    has_many :meetings, Order.Meetings.Meeting
+    has_many :positions, Order.Positions.Position
+    # has_many :tenures, through: [:positions, :members]
 
     timestamps(type: :utc_datetime)
   end

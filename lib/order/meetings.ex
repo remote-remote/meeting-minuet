@@ -8,10 +8,9 @@ defmodule Order.Meetings do
     Meeting.changeset(meeting, attrs)
   end
 
-  def create_meeting(%Organization{id: organization_id}, attrs) do
-    # TODO: understand how this changeset works, why doesn't it start from the original struct?
-    %Meeting{organization_id: organization_id}
-    |> Meeting.changeset(Map.put(attrs, "organization_id", organization_id))
+  def create_meeting(%Organization{} = organization, attrs) do
+    Ecto.build_assoc(organization, :meetings)
+    |> Meeting.changeset(attrs)
     |> Repo.insert()
   end
 

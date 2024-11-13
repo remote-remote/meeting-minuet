@@ -47,7 +47,9 @@ defmodule OrderWeb.OrganizationLiveTest do
     test "updates organization in listing", %{conn: conn, organization: organization} do
       {:ok, index_live, _html} = live(conn, ~p"/organizations")
 
-      assert index_live |> element("#organizations-#{organization.id} a", "Edit") |> render_click() =~
+      assert index_live
+             |> element("#organizations-#{organization.id} a", "Edit")
+             |> render_click() =~
                "Edit Organization"
 
       assert_patch(index_live, ~p"/organizations/#{organization}/edit")
@@ -69,7 +71,10 @@ defmodule OrderWeb.OrganizationLiveTest do
     test "deletes organization in listing", %{conn: conn, organization: organization} do
       {:ok, index_live, _html} = live(conn, ~p"/organizations")
 
-      assert index_live |> element("#organizations-#{organization.id} a", "Delete") |> render_click()
+      assert index_live
+             |> element("#organizations-#{organization.id} a", "Delete")
+             |> render_click()
+
       refute has_element?(index_live, "#organizations-#{organization.id}")
     end
   end
@@ -89,7 +94,7 @@ defmodule OrderWeb.OrganizationLiveTest do
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Organization"
 
-      assert_patch(show_live, ~p"/organizations/#{organization}/show/edit")
+      assert_patch(show_live, ~p"/organizations/#{organization}/edit")
 
       assert show_live
              |> form("#organization-form", organization: @invalid_attrs)

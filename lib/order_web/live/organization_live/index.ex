@@ -18,7 +18,7 @@ defmodule OrderWeb.OrganizationLive.Index do
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
     |> assign(:page_title, "Edit Organization")
-    |> assign(:organization, Organizations.get_organization!(id, socket.assigns.current_user))
+    |> assign(:organization, Organizations.get_organization!(socket.assigns.current_user, id))
   end
 
   defp apply_action(socket, :new, _params) do
@@ -48,7 +48,7 @@ defmodule OrderWeb.OrganizationLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
-    organization = Organizations.get_organization!(id, socket.assigns.current_user)
+    organization = Organizations.get_organization!(socket.assigns.current_user, id)
     {:ok, _} = Organizations.delete_organization(organization)
 
     {:noreply, stream_delete(socket, :organizations, organization)}

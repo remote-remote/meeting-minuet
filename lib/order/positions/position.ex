@@ -5,7 +5,10 @@ defmodule Order.Positions.Position do
   schema "positions" do
     field :name, :string
     field :description, :string
-    field :organization_id, :id
+
+    belongs_to :organization, Order.Organizations.Organization
+    has_many :tenures, Order.Tenures.Tenure
+    has_many :members, through: [:tenures, :member]
 
     timestamps(type: :utc_datetime)
   end

@@ -14,6 +14,7 @@ alias Order.Organizations
 alias Order.Accounts
 alias Order.Positions
 alias Order.Members
+alias Order.Tenures
 
 # Create some users
 Enum.each(1..3, fn n ->
@@ -25,10 +26,10 @@ Enum.each(1..3, fn n ->
 
   {:ok, organization} =
     Organizations.create_organization(
+      user,
       %{
         "name" => "Organization #{n}"
-      },
-      user
+      }
     )
 
   Enum.each(["Chair", "Secretary", "Treasurer", "Fluffer"], fn position_name ->
@@ -54,5 +55,10 @@ Enum.each(1..3, fn n ->
     }
 
     {:ok, member} = Members.add_member(organization, member)
+
+    {:ok, tenure} =
+      Tenures.create_tenure(member, position, %{
+        "active_range" => {Date.new!(2024, 1, 1), nil}
+      })
   end)
 end)

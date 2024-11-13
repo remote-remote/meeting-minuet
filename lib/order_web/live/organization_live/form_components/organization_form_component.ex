@@ -66,7 +66,7 @@ defmodule OrderWeb.OrganizationLive.OrganizationFormComponent do
   end
 
   defp save_organization(socket, :new, organization_params) do
-    case Organizations.create_organization(organization_params, socket.assigns.user) do
+    case Organizations.create_organization(socket.assigns.user, organization_params) do
       {:ok, %Organizations.Organization{} = organization} ->
         notify_parent({:saved, organization})
 

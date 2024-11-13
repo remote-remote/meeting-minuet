@@ -2,7 +2,7 @@
   <%= @organization.name %>
   <:subtitle><%= @organization.description %></:subtitle>
   <:actions>
-    <.link patch={~p"/organizations/#{@organization}/show/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/organizations/#{@organization}/edit"} phx-click={JS.push_focus()}>
       <.button>Edit organization</.button>
     </.link>
   </:actions>
@@ -23,25 +23,25 @@
   }
 >
   <:col :let={position} label="Title"><%= position.title %></:col>
-  <%!-- <:col :let={position} label="Current Holder"> --%>
-  <%!--   <%= if position.member.id do %> --%>
-  <%!--     <%= position.member.name %> --%>
-  <%!--   <% else %> --%>
-  <%!--     Vacant --%>
-  <%!--   <% end %> --%>
-  <%!-- </:col> --%>
-  <%!-- <:col :let={position} label="Online"> --%>
-  <%!--   <%= if position.member.id do %> --%>
-  <%!--     <.icon --%>
-  <%!--       name="hero-user-circle" --%>
-  <%!--       class={ --%>
-  <%!--         if @presences[Integer.to_string(position.member.id)], --%>
-  <%!--           do: "text-green-500", --%>
-  <%!--           else: "text-slate-500" --%>
-  <%!--       } --%>
-  <%!--     /> --%>
-  <%!--   <% end %> --%>
-  <%!-- </:col> --%>
+  <:col :let={position} label="Current Holder">
+    <%= if position.member.id do %>
+      <%= position.member.name %>
+    <% else %>
+      Vacant
+    <% end %>
+  </:col>
+  <:col :let={position} label="Online">
+    <%= if position.member.id do %>
+      <.icon
+        name="hero-user-circle"
+        class={
+          if @presences[Integer.to_string(position.member.id)],
+            do: "text-green-500",
+            else: "text-slate-500"
+        }
+      />
+    <% end %>
+  </:col>
 </.table>
 
 <.header>

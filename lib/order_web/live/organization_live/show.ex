@@ -20,7 +20,7 @@ defmodule OrderWeb.OrganizationLive.Show do
 
   @impl true
   def handle_params(%{"id" => id} = params, _, socket) do
-    organization = Organizations.get_organization!(id, socket.assigns.current_user)
+    organization = Organizations.get_organization!(socket.assigns.current_user, id)
 
     socket
     |> assign(:organization, organization)

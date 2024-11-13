@@ -4,7 +4,7 @@ defmodule Order.Meetings.Meeting do
 
   schema "meetings" do
     field :status, Ecto.Enum,
-      values: [:scheduled, :started, :in_progress, :completed, :cancelled],
+      values: [:scheduled, :in_progress, :completed, :cancelled],
       default: :scheduled
 
     field :title, :string

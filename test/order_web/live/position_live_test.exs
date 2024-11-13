@@ -93,7 +93,7 @@ defmodule OrderWeb.PositionLiveTest do
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Position"
 
-      assert_patch(show_live, ~p"/positions/#{position}/show/edit")
+      assert_patch(show_live, ~p"/positions/#{position}/edit")
 
       assert show_live
              |> form("#position-form", position: @invalid_attrs)
