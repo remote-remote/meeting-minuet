@@ -2,7 +2,7 @@ defmodule OrderWeb.MeetingLive.Show do
   use OrderWeb, :live_view
 
   alias Order.Meetings
-  alias Order.Meetings.{Presence, Notifications, Permissions}
+  alias Order.Meetings.{Presence, Notifications}
   alias Order.Organizations
   import OrderWeb.LayoutComponents
 
@@ -16,7 +16,6 @@ defmodule OrderWeb.MeetingLive.Show do
     socket =
       socket
       |> assign(:presences, Presence.list_users(meeting_id))
-      |> assign(:permissions, %{})
 
     {:ok, socket}
   end
@@ -29,7 +28,6 @@ defmodule OrderWeb.MeetingLive.Show do
       ) do
     organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
     meeting = Meetings.get_meeting!(organization, meeting_id)
-    permissions = Permissions.get_permissions(socket.assigns.current_user, meeting)
     attendees = Meetings.list_attendees(meeting)
     attending_member_ids = attendees |> Enum.map(& &1.id)
 
@@ -41,7 +39,6 @@ defmodule OrderWeb.MeetingLive.Show do
     |> assign(:organization, organization)
     |> assign(:meeting, meeting)
     |> assign(:attendees, attendees)
-    |> assign(:permissions, permissions)
     |> assign(:uninvited_members, uninvited_members)
     |> apply_action(socket.assigns.live_action, params)
   end
