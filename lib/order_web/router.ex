@@ -3,6 +3,7 @@ defmodule OrderWeb.Router do
 
   import OrderWeb.UserAuth
   import OrderWeb.OrgMemberAuth
+  import OrderWeb.MeetingAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -35,6 +36,52 @@ defmodule OrderWeb.Router do
       live "/organizations", OrganizationLive.Index, :index
       live "/organizations/new", OrganizationLive.Index, :new
     end
+
+    scope "/organizations/:organization_id" do
+      pipe_through [:fetch_membership]
+
+      live_session :organization_dashboard,
+        on_mount: [
+          {
+            OrderWeb.UserAuth,
+            :ensure_authenticated
+          },
+          {
+            OrderWeb.OrgMemberAuth,
+            :ensure_membership
+          }
+        ] do
+        live "/edit", OrganizationLive.Show, :edit
+        live "/", OrganizationLive.Show, :show
+        live "/positions/new", OrganizationLive.Show, :new_position
+        # TODO - implement
+        live "/positions/:position_id", OrganizationLive.Show, :show_position
+        live "/meetings/new", OrganizationLive.Show, :new_meeting
+        live "/members/invite", OrganizationLive.Show, :invite_member
+      end
+
+      scope "/meetings/:meeting_id" do
+        pipe_through [:fetch_attendee]
+
+        live_session :meeting,
+          on_mount: [
+            {
+              OrderWeb.UserAuth,
+              :ensure_authenticated
+            },
+            {
+              OrderWeb.OrgMemberAuth,
+              :ensure_membership
+            },
+            {
+              OrderWeb.MeetingAuth,
+              :mount_attendee
+            }
+          ] do
+          live "/", MeetingLive.Show, :show
+        end
+      end
+    end
   end
 
   # just an experiment
@@ -47,32 +94,6 @@ defmodule OrderWeb.Router do
         :ensure_authenticated
       } do
       live "/:id", NestedLive.Parent
-    end
-  end
-
-  scope "/organizations/:organization_id", OrderWeb do
-    pipe_through [:browser, :require_authenticated_user, :fetch_membership]
-
-    live_session :organization_dashboard,
-      on_mount: [
-        {
-          OrderWeb.UserAuth,
-          :ensure_authenticated
-        },
-        {
-          OrderWeb.OrgMemberAuth,
-          :ensure_membership
-        }
-      ] do
-      live "/edit", OrganizationLive.Show, :edit
-      live "/", OrganizationLive.Show, :show
-      live "/positions/new", OrganizationLive.Show, :new_position
-      # TODO - implement
-      live "/positions/:position_id", OrganizationLive.Show, :show_position
-      live "/meetings/new", OrganizationLive.Show, :new_meeting
-      live "/members/invite", OrganizationLive.Show, :invite_member
-
-      live "/meetings/:meeting_id", MeetingLive.Show, :show
     end
   end
 

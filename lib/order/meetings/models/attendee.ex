@@ -11,7 +11,10 @@ defmodule Order.Meetings.Attendee do
     field :marked_present_at, :utc_datetime
     field :in_person, :boolean
     field :online, :boolean
-    field :roles, {:array, Ecto.Enum}, values: [:attendee, :host, :owner], default: [:attendee]
+
+    field :roles, {:array, Ecto.Enum},
+      values: [:attendee, :host, :owner, :scribe],
+      default: [:attendee]
 
     belongs_to :meeting, Order.Meetings.Meeting
     belongs_to :membership, Order.Organizations.Membership

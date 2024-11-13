@@ -6,6 +6,17 @@ defmodule Order.Meetings.Attendees do
   alias Order.Meetings.{Meeting, Attendee, Notifications}
   alias Order.Organizations.Membership
 
+  def get_attendee(%Meeting{} = meeting, %Membership{} = membership) do
+    get_attendee(meeting.id, membership.id)
+  end
+
+  def get_attendee(meeting_id, membership_id) do
+    Repo.one(
+      from a in Attendee,
+        where: a.meeting_id == ^meeting_id and a.membership_id == ^membership_id
+    )
+  end
+
   def list_attendees(%Meeting{} = meeting) do
     Repo.all(from(a in Ecto.assoc(meeting, :attendees)))
     |> Repo.preload(membership: [:user, tenures: :position])

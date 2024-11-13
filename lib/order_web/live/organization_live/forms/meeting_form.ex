@@ -74,11 +74,12 @@ defmodule OrderWeb.OrganizationLive.MeetingForm do
   end
 
   def save_meeting(
-        %{assigns: %{organization: organization}} = socket,
+        %{assigns: %{organization: organization, membership: membership}} =
+          socket,
         :new_meeting,
         attrs
       ) do
-    case Meetings.create_meeting(organization, attrs) do
+    case Meetings.create_meeting(organization, membership, attrs) do
       {:ok, saved_meeting} ->
         notify_parent({:saved, saved_meeting})
 

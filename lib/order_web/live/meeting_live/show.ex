@@ -2,10 +2,11 @@ defmodule OrderWeb.MeetingLive.Show do
   alias OrderWeb.DTO.Member
   use OrderWeb, :live_view
 
+  import OrderWeb.LayoutComponents
+  import Order.Meetings.Permissions
   alias Order.Meetings
   alias Order.Meetings.{Presence, Notifications}
   alias Order.Organizations
-  import OrderWeb.LayoutComponents
 
   @impl true
   def mount(%{"meeting_id" => meeting_id}, _session, socket) do

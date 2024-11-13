@@ -2,10 +2,11 @@ defmodule Order.Meetings do
   import Ecto.Query
   alias Order.Repo
   alias Order.Meetings.Meeting
-  alias Order.Organizations.Organization
-  alias Order.Meetings.{Attendees, Notifications}
+  alias Order.Organizations.{Organization, Membership}
+  alias Order.Meetings.{Attendee, Attendees, Notifications}
 
   defdelegate list_attendees(meeting), to: Attendees
+  defdelegate get_attendee(meeting, membership_id), to: Attendees
   defdelegate add_attendee(meeting, membership), to: Attendees
   defdelegate remove_attendee(meeting, membership_id), to: Attendees
 
@@ -58,8 +59,17 @@ defmodule Order.Meetings do
     Meeting.changeset(meeting, attrs)
   end
 
-  def create_meeting(%Organization{} = organization, attrs) do
-    %Meeting{organization_id: organization.id}
+  def create_meeting(%Organization{} = organization, %Membership{} = membership, attrs) do
+    %Meeting{
+      organization_id: organization.id,
+      attendees: [
+        %Attendee{
+          membership_id: membership.id,
+          status: :invited,
+          roles: [:owner]
+        }
+      ]
+    }
     |> Meeting.changeset(attrs)
     |> Repo.insert()
   end
