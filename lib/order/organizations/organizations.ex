@@ -85,11 +85,11 @@ defmodule Order.Organizations do
 
     permissions =
       [
-        %{resource: "meetings", scope: "*", action: "*"},
-        %{resource: "organization", scope: "", action: "*"},
-        %{resource: "members", scope: "*", action: "*"},
-        %{resource: "positions", scope: "*", action: "*"},
-        %{resource: "permissions", scope: "*", action: "*"}
+        %{resource: :meetings, scope: "*", action: "*"},
+        %{resource: :organization, scope: "", action: "*"},
+        %{resource: :members, scope: "*", action: "*"},
+        %{resource: :positions, scope: "*", action: "*"},
+        %{resource: :permissions, scope: "*", action: "*"}
       ]
       |> Enum.map(
         &Map.merge(&1, %{

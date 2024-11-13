@@ -89,12 +89,12 @@ defmodule OrderWeb.MeetingLive.Show do
   end
 
   @impl true
-  # def handle_info({:added_attendee, attendee}, socket) do
-  #   {:noreply,
-  #    socket
-  #    |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
-  #    |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
-  # end
+  def handle_info({:added_attendee, attendee}, socket) do
+    {:noreply,
+     socket
+     |> update(:attendees, fn attendees -> attendees ++ [attendee] end)
+     |> update(:uninvited_members, fn members -> Enum.reject(members, &(&1.id == attendee.id)) end)}
+  end
 
   def handle_info({:removed_attendee, attendee}, socket) do
     member =

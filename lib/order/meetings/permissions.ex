@@ -1,7 +1,7 @@
 defmodule Order.Meetings.Permissions do
   import Ecto.Query
-  alias Order.Meetings.Permission
   alias Order.Repo
+  alias Order.Meetings.Permission
 
   def get_permissions(%Order.Accounts.User{} = user, %Order.DB.Meeting{} = meeting) do
     scope = "id:#{meeting.id}"

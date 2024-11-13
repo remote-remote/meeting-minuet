@@ -3,10 +3,10 @@
     <%= @meeting.title %>
     <:subtitle><%= @meeting.topic %></:subtitle>
     <:actions>
-      <.link :if={@meeting.status == :scheduled && @permissions[:start_end]} phx-click="start">
+      <.link :if={@meeting.status == :scheduled && @permissions.start_end} phx-click="start">
         <.button>Start Meeting</.button>
       </.link>
-      <.link :if={@meeting.status == :in_progress && @permissions[:start_end]} phx-click="end">
+      <.link :if={@meeting.status == :in_progress && @permissions.start_end} phx-click="end">
         <.button>End Meeting</.button>
       </.link>
     </:actions>
@@ -36,7 +36,7 @@
           />
         <% end %>
       </:col>
-      <:action :let={attendee} :if={@permissions[:invite]}>
+      <:action :let={attendee} :if={@permissions.invite}>
         <div phx-click="uninvite" phx-value-id={attendee.id}>
           <.icon name="hero-minus-circle" /> Remove
         </div>
@@ -52,7 +52,7 @@
       <:col :let={member} label="Current Positions">
         <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
       </:col>
-      <:action :let={member} :if={@permissions[:invite]}>
+      <:action :let={member} :if={@permissions.invite}>
         <div phx-click="invite" phx-value-id={member.id}>
           <.icon name="hero-plus-circle" /> Add
         </div>
