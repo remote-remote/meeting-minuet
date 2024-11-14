@@ -57,7 +57,8 @@ defmodule OrderWeb.Router do
         # TODO - implement
         live "/positions/:position_id", PositionLive.Show, :show
         live "/positions/:position_id/edit", PositionLive.Show, :edit
-        live "/positions/:position_id/assign", PositionLive.Show, :assign
+        live "/positions/:position_id/tenures/new", PositionLive.Show, :new_tenure
+        live "/positions/:position_id/tenures/:tenure_id/edit", PositionLive.Show, :edit_tenure
         live "/meetings/new", OrganizationLive.Show, :new_meeting
         live "/members/invite", OrganizationLive.Show, :invite_member
       end

@@ -4,6 +4,7 @@ defmodule OrderWeb.DTO.Tenure do
 
   @primary_key false
   embedded_schema do
+    field :id, :id
     field :position_id, :id
     field :membership_id, :id
     field :start_date, :date
@@ -28,25 +29,36 @@ defmodule OrderWeb.DTO.Tenure do
     end
   end
 
+  def map(%Order.Organizations.Tenure{} = tenure) do
+    %OrderWeb.DTO.Tenure{
+      id: tenure.id,
+      position_id: tenure.position_id,
+      membership_id: tenure.membership_id,
+      start_date: tenure.active_range.lower,
+      end_date: tenure.active_range.upper
+    }
+  end
+
   def unmap_attrs(%OrderWeb.DTO.Tenure{} = tenure, attrs \\ %{}) do
     tenure
     |> changeset(attrs)
     |> apply_changes()
     |> (fn t ->
           %{
+            id: t.id,
             position_id: t.position_id,
             membership_id: t.membership_id,
             active_range: %Postgrex.Range{lower: t.start_date, upper: t.end_date}
           }
         end).()
-    |> IO.inspect(label: "unmap_attrs")
   end
 
-  def unmap(%OrderWeb.DTO.Tenure{} = tenure) do
+  def unmap(%OrderWeb.DTO.Tenure{} = t) do
     %Order.Organizations.Tenure{
-      position_id: tenure.position_id,
-      membership_id: tenure.membership_id,
-      active_range: %Postgrex.Range{lower: tenure.start_date, upper: tenure.end_date}
+      id: t.id,
+      position_id: t.position_id,
+      membership_id: t.membership_id,
+      active_range: %Postgrex.Range{lower: t.start_date, upper: t.end_date}
     }
   end
 end

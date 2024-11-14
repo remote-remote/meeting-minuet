@@ -43,7 +43,7 @@ defmodule OrderWeb.OrganizationLive.Show do
       case action do
         :new_position ->
           socket
-          |> assign(:position, %Position{})
+          |> assign(:position, %DTO.Position{})
 
         :new_meeting ->
           socket

@@ -1,6 +1,6 @@
 defmodule Order.Organizations.Tenure do
   use Ecto.Schema
-  import Ecto.Changeset
+  import Ecto.{Changeset, Query}
   alias Order.Organizations.{Membership, Position}
 
   schema "tenures" do
@@ -19,5 +19,12 @@ defmodule Order.Organizations.Tenure do
     tenure
     |> cast(attrs, [:active_range, :position_id, :membership_id])
     |> validate_required([:active_range, :position_id, :membership_id])
+  end
+
+  def q_get(org_id, tenure_id) do
+    from t in __MODULE__,
+      join: p in Position,
+      on: p.id == t.position_id,
+      where: t.id == ^tenure_id and p.organization_id == ^org_id
   end
 end

@@ -50,7 +50,11 @@ defmodule Order.Organizations.Positions do
   def create_tenure(attrs) do
     %Tenure{}
     |> Tenure.changeset(attrs)
-    |> IO.inspect(label: "create_tenure")
     |> Repo.insert()
+  end
+
+  def get_tenure!(org_id, tenure_id) do
+    Tenure.q_get(org_id, tenure_id)
+    |> Repo.one!()
   end
 end

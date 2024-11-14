@@ -1,5 +1,5 @@
 <.card class="mb-4">
-  <.header text-class="text-3xl">
+  <.header text_class="text-3xl">
     <%= @organization.name %>
   </.header>
   <.header text_class="text-xl">
@@ -32,7 +32,7 @@
     <:actions>
       <.link
         :if={assign_positions?(@organization, @current_membership)}
-        patch={~p"/organizations/#{@organization}/positions/#{@position}/assign"}
+        patch={~p"/organizations/#{@organization}/positions/#{@position}/tenures/new"}
         phx-click={JS.push_focus()}
       >
         <.button class="w-20">Assign</.button>
@@ -42,9 +42,18 @@
   <.table id="current_tenures" rows={@position.current_tenures ++ @position.past_tenures}>
     <:col :let={tenure} label="Name"><%= tenure.name %></:col>
     <:col :let={tenure} label="Email"><%= tenure.email %></:col>
-    <:col :let={tenure} label="Range">
+    <:col :let={tenure} label="Date Range">
       <.date_range_text type="range" date_range={tenure.active_range} />
     </:col>
+    <:action :let={tenure}>
+      <.link
+        :if={assign_positions?(@organization, @current_membership)}
+        patch={~p"/organizations/#{@organization}/positions/#{@position}/tenures/#{tenure.id}/edit"}
+        phx-click={JS.push_focus()}
+      >
+        <.button class="w-20">Edit</.button>
+      </.link>
+    </:action>
   </.table>
 </.card>
 <.back navigate={~p"/organizations/#{@organization}"}>Back to <%= @organization.name %></.back>
@@ -67,16 +76,17 @@
 </.modal>
 
 <.modal
-  :if={@live_action == :assign}
-  id="position-modal"
+  :if={@live_action == :new_tenure or @live_action == :edit_tenure}
+  id="tenure-modal"
   show
   on_cancel={JS.patch(~p"/organizations/#{@organization}/positions/#{@position}")}
 >
   <.live_component
     module={OrderWeb.PositionLive.AssignForm}
-    id={@position.id || :new_position}
+    id={@tenure.id || :new_tenure}
     title={"Assign #{@position.name}"}
     action={@live_action}
+    tenure={@tenure}
     organization={@organization}
     position={@position}
     patch={~p"/organizations/#{@organization}/positions/#{@position}"}

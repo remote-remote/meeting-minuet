@@ -37,14 +37,12 @@ defmodule OrderWeb.PositionLive.AssignForm do
   end
 
   @impl true
-  def update(%{organization: organization, position: position} = assigns, socket) do
+  def update(%{organization: organization, position: position, tenure: tenure} = assigns, socket) do
     # TODO: We need to either take the memberships out of organizations or add the user to it
     members =
       Organizations.list_members(organization.id)
       |> DTO.Member.map_list()
       |> Enum.map(&{&1.name, &1.id})
-
-    tenure = %DTO.Tenure{position_id: position.id}
     form = DTO.Tenure.changeset(tenure, %{}) |> to_form()
 
     {:ok,
@@ -59,7 +57,8 @@ defmodule OrderWeb.PositionLive.AssignForm do
     form =
       tenure
       |> DTO.Tenure.changeset(form_params)
-      |> to_form()
+      |> to_form(action: :validate)
+      |> IO.inspect(label: "tenure form validate")
 
     {:noreply, assign(socket, form: form)}
   end
