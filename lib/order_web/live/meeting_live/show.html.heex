@@ -41,7 +41,11 @@
           <% end %>
         </:col>
         <:action :let={attendee}>
-          <div phx-click="uninvite" phx-value-id={attendee.membership_id}>
+          <div
+            :if={manage_attendees?(@current_attendee)}
+            phx-click="uninvite"
+            phx-value-id={attendee.membership_id}
+          >
             <.icon name="hero-minus-circle" /> Remove
           </div>
         </:action>
@@ -58,7 +62,11 @@
           <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
         </:col>
         <:action :let={member}>
-          <div phx-click="invite" phx-value-id={member.id}>
+          <div
+            :if={manage_attendees?(@current_attendee)}
+            phx-click="invite"
+            phx-value-id={member.id}
+          >
             <.icon name="hero-plus-circle" /> Add
           </div>
         </:action>

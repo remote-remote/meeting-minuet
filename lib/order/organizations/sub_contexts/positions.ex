@@ -1,6 +1,6 @@
 defmodule Order.Organizations.Positions do
   alias Order.Repo
-  alias Order.Organizations.{Position, Organization}
+  alias Order.Organizations.{Position, Organization, Tenure}
 
   # Positions
 
@@ -23,7 +23,11 @@ defmodule Order.Organizations.Positions do
   end
 
   def get_position!(%Organization{} = organization, position_id) do
-    Position.q_get_with_tenures(organization.id, position_id)
+    get_position!(organization.id, position_id)
+  end
+
+  def get_position!(org_id, position_id) do
+    Position.q_get_with_tenures(org_id, position_id)
     |> Repo.one!()
   end
 
@@ -34,6 +38,19 @@ defmodule Order.Organizations.Positions do
   def create_position(%Organization{} = organization, attrs) do
     %Position{organization_id: organization.id}
     |> Position.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def assign_position(%Position{} = position, attrs) do
+    position
+    |> Position.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def create_tenure(attrs) do
+    %Tenure{}
+    |> Tenure.changeset(attrs)
+    |> IO.inspect(label: "create_tenure")
     |> Repo.insert()
   end
 end

@@ -542,11 +542,11 @@ defmodule OrderWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
-          <dd class="text-zinc-700"><%= render_slot(item) %></dd>
+    <div class="mt-8">
+      <dl class="flex gap-8 -my-4 divide-y divide-zinc-100">
+        <div :for={item <- @item} class="flex-1 py-4 leading-6">
+          <dt class="text-lg text-zinc-500"><%= item.title %></dt>
+          <dd class="text-sm text-zinc-700"><%= render_slot(item) %></dd>
         </div>
       </dl>
     </div>

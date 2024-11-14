@@ -4,6 +4,7 @@ defmodule OrderWeb.DTO.Position do
   import Order.DateHelper
 
   defstruct id: nil,
+            organization_id: nil,
             name: "",
             description: "",
             requires_report: false,
@@ -12,6 +13,7 @@ defmodule OrderWeb.DTO.Position do
 
   @type t :: %Position{
           id: integer(),
+          organization_id: integer(),
           name: String.t(),
           description: String.t(),
           requires_report: boolean(),
@@ -19,11 +21,12 @@ defmodule OrderWeb.DTO.Position do
           past_tenures: [PositionTenure.t()]
         }
 
-  def map_preloaded_position(%Order.Organizations.Position{} = p) do
+  def map(%Order.Organizations.Position{} = p) do
     tenures = Enum.map(p.tenures, &PositionTenure.map_tenure/1)
 
     %Position{
       id: p.id,
+      organization_id: p.organization_id,
       name: p.name,
       description: p.description,
       requires_report: p.requires_report,
@@ -35,10 +38,20 @@ defmodule OrderWeb.DTO.Position do
   end
 
   def map_list([%Order.Organizations.Position{} | _] = positions) do
-    Enum.map(positions, &map_preloaded_position/1)
+    Enum.map(positions, &map/1)
   end
 
   def map_list([]), do: []
+
+  def unmap(%Position{} = p) do
+    %Order.Organizations.Position{
+      id: p.id,
+      organization_id: p.organization_id,
+      name: p.name,
+      description: p.description,
+      requires_report: p.requires_report
+    }
+  end
 end
 
 defmodule OrderWeb.DTO.PositionTenure do

@@ -19,6 +19,7 @@ defmodule Order.Organizations do
   defdelegate create_position(organization, attrs), to: Positions
   defdelegate change_position(position, attrs \\ %{}), to: Positions
   defdelegate update_position(position, attrs), to: Positions
+  defdelegate create_tenure(attrs), to: Positions
 
   defdelegate list_organizations(user), to: Organizations
   defdelegate get_organization!(user, organization_id), to: Organizations

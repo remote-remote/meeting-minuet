@@ -17,7 +17,7 @@ defmodule Order.Organizations.Tenure do
   @doc false
   def changeset(tenure, attrs) do
     tenure
-    |> cast(attrs, [:active_range])
-    |> validate_required([:active_range])
+    |> cast(attrs, [:active_range, :position_id, :membership_id])
+    |> validate_required([:active_range, :position_id, :membership_id])
   end
 end
