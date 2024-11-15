@@ -29,12 +29,15 @@ defmodule OrderWeb.PositionLive.Show do
   end
 
   def apply_action(socket, :edit_tenure, %{"tenure_id" => tenure_id, "organization_id" => org_id}) do
-    tenure = Organizations.get_tenure!(org_id, tenure_id) |> DTO.Tenure.map()
+    tenure = Organizations.get_tenure!(org_id, tenure_id)
     {:noreply, assign(socket, :tenure, tenure)}
   end
 
+  def apply_action(socket, :new_tenure, _params) do
+    {:noreply, assign(socket, :tenure, %Organizations.Tenure{})}
+  end
+
   def apply_action(socket, _action, _params) do
-    IO.puts("NOT EDIT TENURE")
     {:noreply, socket}
   end
 end

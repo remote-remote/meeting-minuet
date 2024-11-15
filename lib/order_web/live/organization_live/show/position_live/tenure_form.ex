@@ -1,4 +1,4 @@
-defmodule OrderWeb.PositionLive.AssignForm do
+defmodule OrderWeb.PositionLive.TenureForm do
   use OrderWeb, :live_component
   alias OrderWeb.DTO
   alias Order.Organizations
@@ -19,6 +19,7 @@ defmodule OrderWeb.PositionLive.AssignForm do
         phx-submit="save"
       >
         <.input
+          :if={@action == :new}
           field={@form[:membership_id]}
           type="select"
           label="Member"
@@ -37,18 +38,20 @@ defmodule OrderWeb.PositionLive.AssignForm do
   end
 
   @impl true
-  def update(%{organization: organization, position: position, tenure: tenure} = assigns, socket) do
+  def update(%{organization: organization, tenure: tenure} = assigns, socket) do
     # TODO: We need to either take the memberships out of organizations or add the user to it
     members =
       Organizations.list_members(organization.id)
       |> DTO.Member.map_list()
       |> Enum.map(&{&1.name, &1.id})
-    form = DTO.Tenure.changeset(tenure, %{}) |> to_form()
+
+    form =
+      tenure |> DTO.Tenure.map() |> DTO.Tenure.changeset(%{}) |> to_form()
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(position: position, members: members, tenure: tenure)
+     |> assign(members: members)
      |> assign_new(:form, fn -> form end)}
   end
 
@@ -56,6 +59,7 @@ defmodule OrderWeb.PositionLive.AssignForm do
   def handle_event("validate", %{"tenure" => form_params}, %{assigns: %{tenure: tenure}} = socket) do
     form =
       tenure
+      |> DTO.Tenure.map()
       |> DTO.Tenure.changeset(form_params)
       |> to_form(action: :validate)
       |> IO.inspect(label: "tenure form validate")
@@ -64,11 +68,31 @@ defmodule OrderWeb.PositionLive.AssignForm do
   end
 
   def handle_event("save", %{"tenure" => form_params}, socket) do
-    save_tenure(socket, socket.assigns.tenure, form_params)
+    save_tenure(socket, socket.assigns.action, form_params)
   end
 
-  def save_tenure(%{assigns: assigns} = socket, tenure, attrs) do
-    case DTO.Tenure.unmap_attrs(tenure, attrs) |> Organizations.create_tenure() do
+  def save_tenure(%{assigns: %{tenure: tenure} = assigns} = socket, :new, attrs) do
+    case DTO.Tenure.map(tenure)
+         |> DTO.Tenure.unmap_attrs(attrs)
+         |> Organizations.create_tenure() do
+      {:ok, _} ->
+        {:noreply,
+         push_navigate(socket,
+           to: ~p"/organizations/#{assigns.organization}/positions/#{assigns.position}"
+         )}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, form: changeset)}
+    end
+  end
+
+  def save_tenure(%{assigns: assigns} = socket, :edit, attrs) do
+    mapped_attrs =
+      assigns.tenure
+      |> DTO.Tenure.map()
+      |> DTO.Tenure.unmap_attrs(attrs)
+
+    case Organizations.update_tenure(assigns.tenure, mapped_attrs) do
       {:ok, _} ->
         {:noreply,
          push_navigate(socket,

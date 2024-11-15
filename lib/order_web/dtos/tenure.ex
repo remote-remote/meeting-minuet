@@ -16,17 +16,48 @@ defmodule OrderWeb.DTO.Tenure do
     |> cast(attrs, [:position_id, :membership_id, :start_date, :end_date])
     |> validate_required([:position_id, :membership_id, :start_date])
     |> validate_date_range()
+    |> validate_no_overlap()
+    |> IO.inspect(label: "VALIDATION")
+  end
+
+  defp validate_no_overlap(%Ecto.Changeset{valid?: true} = changeset) do
+    proposed_tenure = apply_changes(changeset) |> unmap()
+
+    # TODO: Check this  a better way
+    case Order.Organizations.tenures_overlap?(proposed_tenure) do
+      true ->
+        changeset
+        |> add_error(
+          :start_date,
+          "overlaps with existing tenure for this member and position"
+        )
+        |> add_error(
+          :end_date,
+          "overlaps with existing tenure for this member and position"
+        )
+
+      false ->
+        changeset
+    end
+  end
+
+  defp validate_no_overlap(changeset) do
+    changeset
   end
 
   defp validate_date_range(changeset) do
-    start_date = get_field(changeset, :start_date)
-    end_date = get_field(changeset, :end_date)
+    start_date = get_change(changeset, :start_date)
+    end_date = get_change(changeset, :end_date)
 
     if start_date && end_date && start_date > end_date do
       add_error(changeset, :end_date, "must be after start date")
     else
       changeset
     end
+  end
+
+  def map(%Order.Organizations.Tenure{id: nil}) do
+    %OrderWeb.DTO.Tenure{}
   end
 
   def map(%Order.Organizations.Tenure{} = tenure) do
@@ -45,7 +76,6 @@ defmodule OrderWeb.DTO.Tenure do
     |> apply_changes()
     |> (fn t ->
           %{
-            id: t.id,
             position_id: t.position_id,
             membership_id: t.membership_id,
             active_range: %Postgrex.Range{lower: t.start_date, upper: t.end_date}

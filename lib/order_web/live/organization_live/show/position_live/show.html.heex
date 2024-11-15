@@ -48,7 +48,9 @@
     <:action :let={tenure}>
       <.link
         :if={assign_positions?(@organization, @current_membership)}
-        patch={~p"/organizations/#{@organization}/positions/#{@position}/tenures/#{tenure.id}/edit"}
+        patch={
+          ~p"/organizations/#{@organization}/positions/#{@position}/tenures/#{tenure.id}/edit"
+        }
         phx-click={JS.push_focus()}
       >
         <.button class="w-20">Edit</.button>
@@ -82,10 +84,15 @@
   on_cancel={JS.patch(~p"/organizations/#{@organization}/positions/#{@position}")}
 >
   <.live_component
-    module={OrderWeb.PositionLive.AssignForm}
+    module={OrderWeb.PositionLive.TenureForm}
     id={@tenure.id || :new_tenure}
     title={"Assign #{@position.name}"}
-    action={@live_action}
+    action={
+      case @live_action do
+        :new_tenure -> :new
+        :edit_tenure -> :edit
+      end
+    }
     tenure={@tenure}
     organization={@organization}
     position={@position}

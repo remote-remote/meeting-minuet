@@ -21,9 +21,12 @@ defmodule Order.Organizations do
   defdelegate update_position(position, attrs), to: Positions
   defdelegate create_tenure(attrs), to: Positions
   defdelegate get_tenure!(org, tenure_id), to: Positions
+  defdelegate tenures_overlap?(proposed_tenure), to: Positions
+  defdelegate update_tenure(tenure, attrs), to: Positions
 
   defdelegate list_organizations(user), to: Organizations
   defdelegate get_organization!(user, organization_id), to: Organizations
+  defdelegate create_organization(attrs), to: Organizations
   defdelegate create_organization(attrs, user), to: Organizations
   defdelegate update_organization(organization, attrs), to: Organizations
   defdelegate delete_organization(organization), to: Organizations

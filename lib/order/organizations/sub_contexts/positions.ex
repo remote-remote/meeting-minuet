@@ -1,4 +1,5 @@
 defmodule Order.Organizations.Positions do
+  import Ecto.Query
   alias Order.Repo
   alias Order.Organizations.{Position, Organization, Tenure}
 
@@ -53,8 +54,37 @@ defmodule Order.Organizations.Positions do
     |> Repo.insert()
   end
 
+  def update_tenure(%Tenure{} = tenure, attrs) do
+    tenure
+    |> Tenure.changeset(attrs)
+    |> Repo.update()
+  end
+
   def get_tenure!(org_id, tenure_id) do
     Tenure.q_get(org_id, tenure_id)
     |> Repo.one!()
+  end
+
+  def tenures_overlap?(proposed_tenure) do
+    if proposed_tenure.active_range == nil do
+      false
+    else
+      from(t in Tenure,
+        where:
+          t.position_id == ^proposed_tenure.position_id and
+            t.membership_id == ^proposed_tenure.membership_id and
+            fragment("? && ?", t.active_range, ^proposed_tenure.active_range)
+      )
+      |> (fn q ->
+            if Map.has_key?(proposed_tenure, :id) do
+              IO.puts("checking id")
+              q |> where([t], t.id != ^proposed_tenure.id)
+            else
+              q
+            end
+          end).()
+      |> IO.inspect(label: "OVERLAP QUERY")
+      |> Repo.aggregate(:count) > 0
+    end
   end
 end
