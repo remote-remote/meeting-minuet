@@ -21,4 +21,12 @@ defmodule Order.DateHelper do
 
     gte_lower and lte_upper
   end
+
+  def lte?(nil, _), do: true
+  def lte?(_, nil), do: true
+
+  def lte?(%Date{} = date1, %Date{} = date2) do
+    comp = Date.compare(date1, date2)
+    comp == :lt or comp == :eq
+  end
 end

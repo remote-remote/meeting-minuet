@@ -8,7 +8,7 @@ defmodule OrderWeb.PositionLive.TenureForm do
     ~H"""
     <div>
       <.header>
-        Assign <%= @position.name %>
+        <%= @title %>
       </.header>
       <.simple_form
         for={@form}

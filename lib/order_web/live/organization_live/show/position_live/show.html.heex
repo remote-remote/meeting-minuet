@@ -86,7 +86,7 @@
   <.live_component
     module={OrderWeb.PositionLive.TenureForm}
     id={@tenure.id || :new_tenure}
-    title={"Assign #{@position.name}"}
+    title={@page_title}
     action={
       case @live_action do
         :new_tenure -> :new

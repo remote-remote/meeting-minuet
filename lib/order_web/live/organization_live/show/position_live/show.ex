@@ -30,14 +30,28 @@ defmodule OrderWeb.PositionLive.Show do
 
   def apply_action(socket, :edit_tenure, %{"tenure_id" => tenure_id, "organization_id" => org_id}) do
     tenure = Organizations.get_tenure!(org_id, tenure_id)
-    {:noreply, assign(socket, :tenure, tenure)}
+    {:noreply, assign(socket, tenure: tenure, page_title: page_title(socket))}
   end
 
-  def apply_action(socket, :new_tenure, _params) do
-    {:noreply, assign(socket, :tenure, %Organizations.Tenure{})}
+  def apply_action(socket, :new_tenure, %{"position_id" => position_id}) do
+    {:noreply,
+     assign(socket, :tenure, %Organizations.Tenure{position_id: position_id})
+     |> assign(:page_title, page_title(socket))}
   end
 
   def apply_action(socket, _action, _params) do
-    {:noreply, socket}
+    {:noreply, assign(socket, :page_title, page_title(socket))}
+  end
+
+  defp page_title(%{assigns: %{live_action: :edit_tenure, position: position}}) do
+    "Edit Tenure for #{position.name}"
+  end
+
+  defp page_title(%{assigns: %{live_action: :new_tenure, position: position}}) do
+    "New Tenure for #{position.name}"
+  end
+
+  defp page_title(%{assigns: %{position: position}}) do
+    position.name
   end
 end
