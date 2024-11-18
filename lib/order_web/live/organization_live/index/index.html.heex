@@ -6,7 +6,11 @@
   </div>
   <div class="col-span-3 col-start-3 row-start-1">
     <.card>
-      <.organizations organizations={@streams.organizations} title="Organizations" />
+      <.organizations
+        organizations={@streams.organizations}
+        current_user={@current_user}
+        title="Organizations"
+      />
     </.card>
   </div>
 </div>

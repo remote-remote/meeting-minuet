@@ -1,12 +1,11 @@
 defmodule Order.Organizations.Organizations do
   alias Order.Repo
   alias Order.Accounts.User
-  alias Order.Organizations.{Organization, Permissions}
+  alias Order.Organizations.Organization
 
   def list_organizations(%User{} = user) do
     Organization.q_list_with_memberships(user.id)
     |> Repo.all()
-    |> Enum.map(&Permissions.with_permissions(&1, user))
   end
 
   @doc """
@@ -23,11 +22,10 @@ defmodule Order.Organizations.Organizations do
       ** (Ecto.NoResultsError)
 
   """
-  @spec get_organization!(User.t(), integer) :: Organization.t()
+  @spec get_organization!(%User{}, integer()) :: %Organization{}
   def get_organization!(%User{} = user, organization_id) do
     Organization.q_get_with_memberships(user.id, organization_id)
     |> Repo.one!()
-    |> Permissions.with_permissions(user)
   end
 
   @doc """
@@ -53,7 +51,7 @@ defmodule Order.Organizations.Organizations do
     case Ecto.build_assoc(user, :owned_organizations)
          |> Organization.changeset(attrs)
          |> Repo.insert() do
-      {:ok, organization} -> {:ok, Permissions.with_permissions(organization, user)}
+      {:ok, organization} -> {:ok, organization}
       {:error, changeset} -> {:error, changeset}
     end
   end

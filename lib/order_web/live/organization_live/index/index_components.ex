@@ -1,9 +1,11 @@
 defmodule OrderWeb.OrganizationLive.IndexComponents do
+  import Order.Organizations.Permissions
   use OrderWeb, :live_component
   import OrderWeb.CoreComponents
   alias Phoenix.LiveView.JS
 
   attr :organizations, :list, required: true
+  attr :current_user, :map, required: true
   attr :allow_actions, :boolean, default: true
   attr :title, :string, default: "Organizations"
 
@@ -29,7 +31,7 @@ defmodule OrderWeb.OrganizationLive.IndexComponents do
       </:col>
       <:action :let={{_id, organization}} :if={@allow_actions}>
         <.link
-          :if={organization.permissions.edit_organization}
+          :if={edit_organization?(organization, @current_user)}
           patch={~p"/organizations/#{organization}/edit"}
         >
           Edit
@@ -37,7 +39,7 @@ defmodule OrderWeb.OrganizationLive.IndexComponents do
       </:action>
       <:action :let={{id, organization}} :if={@allow_actions}>
         <.link
-          :if={organization.permissions.delete_organization}
+          :if={delete_organization?(organization, @current_user)}
           phx-click={JS.push("delete", value: %{id: organization.id}) |> hide("##{id}")}
           data-confirm="Are you sure?"
         >

@@ -28,7 +28,7 @@ defmodule Order.Organizations.Organization do
   end
 
   @doc """
-  Returns the organization with the given id.
+  Returns an Ecto.Query for listing organizations with preloaded memberships for a user.
   """
   @spec q_list_with_memberships(integer()) :: Ecto.Query.t()
   def q_list_with_memberships(user_id) do
@@ -39,6 +39,9 @@ defmodule Order.Organizations.Organization do
       preload: [:memberships]
   end
 
+  @doc """
+  Returns an Ecto.Query for getting one organization with preloaded memberships for a user.
+  """
   def q_get_with_memberships(user_id, org_id) do
     q_list_with_memberships(user_id)
     |> where([o], o.id == ^org_id)
