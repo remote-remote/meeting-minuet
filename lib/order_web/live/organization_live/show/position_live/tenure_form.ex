@@ -62,41 +62,26 @@ defmodule OrderWeb.PositionLive.TenureForm do
       |> DTO.Tenure.map()
       |> DTO.Tenure.changeset(form_params)
       |> to_form(action: :validate)
-      |> IO.inspect(label: "tenure form validate")
 
     {:noreply, assign(socket, form: form)}
   end
 
   def handle_event("save", %{"tenure" => form_params}, socket) do
-    save_tenure(socket, socket.assigns.action, form_params)
-  end
+    save_result =
+      case socket.assigns.action do
+        :new ->
+          DTO.Tenure.create(socket.assigns.tenure, form_params)
 
-  def save_tenure(%{assigns: %{tenure: tenure} = assigns} = socket, :new, attrs) do
-    case DTO.Tenure.map(tenure)
-         |> DTO.Tenure.unmap_attrs(attrs)
-         |> Organizations.create_tenure() do
+        :edit ->
+          DTO.Tenure.update(socket.assigns.tenure, form_params)
+      end
+
+    case save_result do
       {:ok, _} ->
         {:noreply,
          push_navigate(socket,
-           to: ~p"/organizations/#{assigns.organization}/positions/#{assigns.position}"
-         )}
-
-      {:error, changeset} ->
-        {:noreply, assign(socket, form: changeset)}
-    end
-  end
-
-  def save_tenure(%{assigns: assigns} = socket, :edit, attrs) do
-    mapped_attrs =
-      assigns.tenure
-      |> DTO.Tenure.map()
-      |> DTO.Tenure.unmap_attrs(attrs)
-
-    case Organizations.update_tenure(assigns.tenure, mapped_attrs) do
-      {:ok, _} ->
-        {:noreply,
-         push_navigate(socket,
-           to: ~p"/organizations/#{assigns.organization}/positions/#{assigns.position}"
+           to:
+             ~p"/organizations/#{socket.assigns.organization}/positions/#{socket.assigns.position}"
          )}
 
       {:error, changeset} ->

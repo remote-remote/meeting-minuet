@@ -66,7 +66,7 @@ defmodule Order.Organizations.Positions do
   end
 
   def tenures_overlap?(proposed_tenure) do
-    if proposed_tenure.active_range == nil do
+    if is_nil(proposed_tenure.active_range) do
       false
     else
       from(t in Tenure,
@@ -75,16 +75,16 @@ defmodule Order.Organizations.Positions do
             t.membership_id == ^proposed_tenure.membership_id and
             fragment("? && ?", t.active_range, ^proposed_tenure.active_range)
       )
-      |> (fn q ->
-            if Map.has_key?(proposed_tenure, :id) do
-              IO.puts("checking id")
-              q |> where([t], t.id != ^proposed_tenure.id)
-            else
-              q
-            end
-          end).()
-      |> IO.inspect(label: "OVERLAP QUERY")
+      |> q_exclude_self(proposed_tenure)
       |> Repo.aggregate(:count) > 0
+    end
+  end
+
+  defp q_exclude_self(q, tenure) do
+    if Map.has_key?(tenure, :id) and not is_nil(tenure.id) do
+      q |> where([t], t.id != ^tenure.id)
+    else
+      q
     end
   end
 end

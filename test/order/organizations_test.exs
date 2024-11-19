@@ -150,8 +150,6 @@ defmodule Order.OrganizationsTest do
       assert length(members) == 2
       assert Enum.at(members, 0).user_id == get_user(context, :user1).id
       assert Enum.at(members, 1).user_id == get_user(context, :user2).id
-
-      IO.inspect(members)
     end
   end
 end
