@@ -24,6 +24,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        ...require("./tailwind.colors.json"),
+        action: {
+          '50': '#fffaec',
+          '100': '#fff3d3',
+          '200': '#ffe4a5',
+          '300': '#ffce6d',
+          '400': '#ffae32',
+          '500': '#ff930a',
+          '600': '#ff7b00',
+          '700': '#cc5902',
+          '800': '#a1450b',
+          '900': '#823b0c',
+          '950': '#461b04',
+        },
         brand: {
           '50': '#f5f8f7',
           '100': '#ddeae7',
@@ -37,23 +51,12 @@ module.exports = {
           '900': '#293838',
           '950': '#141f1f',
         },
-        action: {
-          '50': '#fffaec',
-          '100': '#fff3d3',
-          '200': '#ffe4a5',
-          '300': '#ffce6d',
-          '400': '#ffae32',
-          '500': '#ff930a',
-          '600': '#ff7b00',
-          '700': '#cc5902',
-          '800': '#a1450b',
-          '900': '#823b0c',
-          '950': '#461b04',
-        }
       }
-    },
+    }
   },
   plugins: [
+    require("@tailwindcss/typography"),
+    require("tailwindcss-animate"),
     require("@tailwindcss/forms"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:

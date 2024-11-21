@@ -16,6 +16,7 @@ defmodule OrderWeb.CoreComponents do
   """
   use Phoenix.Component
 
+  alias OrderWeb.Component.Button
   alias Phoenix.LiveView.JS
   import OrderWeb.Gettext
 
@@ -232,7 +233,7 @@ defmodule OrderWeb.CoreComponents do
 
   def button(assigns) do
     ~H"""
-    <button
+    <Button.button
       type={@type}
       class={[
         "phx-submit-loading:opacity-75 rounded-lg #{if @disabled, do: "bg-zinc-200", else: "bg-action-500 hover:bg-action-600"} py-2 px-3",
@@ -243,7 +244,7 @@ defmodule OrderWeb.CoreComponents do
       {@rest}
     >
       <%= render_slot(@inner_block) %>
-    </button>
+    </Button.button>
     """
   end
 

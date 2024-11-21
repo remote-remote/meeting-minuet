@@ -10,6 +10,15 @@ defmodule Order.Meetings do
   defdelegate add_attendee(meeting, membership), to: Attendees
   defdelegate remove_attendee(meeting, membership_id), to: Attendees
 
+  def is_attendee?(meeting_id, user_id) do
+    attendee =
+      Attendee
+      |> where([a], a.meeting_id == ^meeting_id and a.user_id == ^user_id)
+      |> Repo.one()
+
+    !is_nil(attendee)
+  end
+
   def get_meeting!(%Organization{} = organization, meeting_id) do
     Repo.one!(
       from m in Meeting,

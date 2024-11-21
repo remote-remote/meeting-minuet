@@ -1,89 +1,105 @@
-<.card class="mt-4">
-  <.org_header organization={@organization} membership={@current_membership} />
-</.card>
-<.card class="mt-4">
-  <.meetings organization={@organization} membership={@current_membership} meetings={@meetings} />
-</.card>
-<.card class="mt-4">
-  <.positions
+<div
+  id={"organization-#{@organization.id}"}
+  data-chat-id={"organization:#{@organization.id}"}
+  phx-hook="Chat"
+>
+  <.org_header
+    chat_messages={@chat_messages}
     organization={@organization}
     membership={@current_membership}
-    positions={@positions}
-    presences={@presences}
   />
-</.card>
-<.card class="mt-4">
-  <.members
-    organization={@organization}
-    membership={@current_membership}
-    members={@members}
-    presences={@presences}
-  />
-</.card>
 
-<.back navigate={~p"/organizations"}>Back to organizations</.back>
+  <.card class="mt-4">
+    <.meetings organization={@organization} membership={@current_membership} meetings={@meetings} />
+  </.card>
+  <.card class="mt-4">
+    <.positions
+      organization={@organization}
+      membership={@current_membership}
+      positions={@positions}
+      presences={@presences}
+    />
+  </.card>
+  <.card class="mt-4">
+    <.members
+      organization={@organization}
+      membership={@current_membership}
+      members={@members}
+      presences={@presences}
+    />
+  </.card>
 
-<.modal
-  :if={@live_action == :edit}
-  id="organization-modal"
-  show
-  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
->
-  <.live_component
-    module={OrderWeb.OrganizationLive.OrganizationForm}
-    id={@organization.id}
-    title={@page_title}
-    action={@live_action}
-    organization={@organization}
-    user={@current_user}
-    patch={~p"/organizations/#{@organization}"}
-  />
-</.modal>
+  <.back navigate={~p"/organizations"}>Back to organizations</.back>
 
-<.modal
-  :if={@live_action == :new_position}
-  id="position-modal"
-  show
-  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
->
-  <.live_component
-    module={OrderWeb.OrganizationLive.PositionForm}
-    id={@position.id || :new_position}
-    title={@page_title}
-    action={@live_action}
-    organization={@organization}
-    position={@position}
-    patch={~p"/organizations/#{@organization}"}
-  />
-</.modal>
+  <.modal
+    :if={@live_action == :edit}
+    id="organization-modal"
+    show
+    on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+  >
+    <.live_component
+      module={OrderWeb.OrganizationLive.OrganizationForm}
+      id={@organization.id}
+      title={@page_title}
+      action={@live_action}
+      organization={@organization}
+      user={@current_user}
+      patch={~p"/organizations/#{@organization}"}
+    />
+  </.modal>
 
-<.modal
-  :if={@live_action == :new_meeting}
-  id="meeting-modal"
-  show
-  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
->
-  <.live_component
-    module={OrderWeb.OrganizationLive.MeetingForm}
-    id={@meeting.id || :new_meeting}
-    title={@page_title}
-    membership={@current_membership}
-    action={@live_action}
-    organization={@organization}
-    meeting={@meeting}
-  />
-</.modal>
+  <.modal
+    :if={@live_action == :new_position}
+    id="position-modal"
+    show
+    on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+  >
+    <.live_component
+      module={OrderWeb.OrganizationLive.PositionForm}
+      id={@position.id || :new_position}
+      title={@page_title}
+      action={@live_action}
+      organization={@organization}
+      position={@position}
+      patch={~p"/organizations/#{@organization}"}
+    />
+  </.modal>
 
-<.modal
-  :if={@live_action == :invite_member}
-  id="member-modal"
-  show
-  on_cancel={JS.patch(~p"/organizations/#{@organization}")}
->
-  <.live_component
-    module={OrderWeb.OrganizationLive.InvitationForm}
-    id="invite_member"
-    title={@page_title}
-    organization={@organization}
-  />
-</.modal>
+  <.modal
+    :if={@live_action == :new_meeting}
+    id="meeting-modal"
+    show
+    on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+  >
+    <.live_component
+      module={OrderWeb.OrganizationLive.MeetingForm}
+      id={@meeting.id || :new_meeting}
+      title={@page_title}
+      membership={@current_membership}
+      action={@live_action}
+      organization={@organization}
+      meeting={@meeting}
+    />
+  </.modal>
+
+  <.modal
+    :if={@live_action == :invite_member}
+    id="member-modal"
+    show
+    on_cancel={JS.patch(~p"/organizations/#{@organization}")}
+  >
+    <.live_component
+      module={OrderWeb.OrganizationLive.InvitationForm}
+      id="invite_member"
+      title={@page_title}
+      organization={@organization}
+    />
+  </.modal>
+</div>
+
+<script>
+  if (window.__mmState == null) {
+    window.__mmState = {};
+  }
+  window.__mmState.userToken = "<%= @user_token %>";
+</script>

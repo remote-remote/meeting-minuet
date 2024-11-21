@@ -69,4 +69,8 @@ defmodule Order.Organizations.Members do
         where: m.organization_id == ^organization_id and m.user_id == ^user_id
     )
   end
+
+  def is_member?(organization_id, user_id) do
+    !is_nil(get_membership(organization_id, user_id))
+  end
 end

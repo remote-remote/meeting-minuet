@@ -3,23 +3,64 @@ defmodule OrderWeb.OrganizationLive.ShowComponents do
   import Order.Organizations.Permissions
   import OrderWeb.CoreComponents
   import OrderWeb.DateComponents
+  import OrderWeb.Component.Sheet
   alias Phoenix.LiveView.JS
 
   attr :organization, :map, required: true
+  attr :chat_messages, :list, default: []
+
+  def chat(assigns) do
+    ~H"""
+    <.sheet>
+      <.sheet_trigger target="org_chat">
+        <.icon name="hero-chat-bubble-left-ellipsis" class="w-6 h-6 cursor-pointer" />
+      </.sheet_trigger>
+      <.sheet_content id="org_chat" side="right">
+        <.sheet_header>
+          <.sheet_title><%= @organization.name %> Chat</.sheet_title>
+          <.sheet_description></.sheet_description>
+        </.sheet_header>
+        <div id="org_chat_messages" class="h-[80%] overflow-y-auto">
+          <%= for message <- @chat_messages do %>
+            <div class="my-4">
+              <span class="p-2 border rounded-lg bg-zinc-200">
+                <span class="font-bold"><%= message["user_name"] %>:</span>
+                <span><%= message["body"] %></span>
+              </span>
+            </div>
+          <% end %>
+        </div>
+
+        <form id="message-form">
+          <.input id="message-input" name="message" value="" />
+          <.button class="w-full my-4" phx-click="">Send</.button>
+        </form>
+        <div></div>
+      </.sheet_content>
+    </.sheet>
+    """
+  end
+
+  attr :organization, :map, required: true
   attr :membership, :map, required: true
+  attr :chat_messages, :list, default: []
 
   def org_header(assigns) do
     ~H"""
-    <.header class="py-4" text_class="text-4xl">
+    <.header text_class="text-3xl">
       <%= @organization.name %>
-      <:subtitle><%= @organization.description %></:subtitle>
+
+      <:subtitle>
+        <%= @organization.description %>
+      </:subtitle>
       <:actions>
+        <.chat organization={@organization} chat_messages={@chat_messages} />
         <.link
           :if={edit_organization?(@organization, @membership)}
           patch={~p"/organizations/#{@organization}/edit"}
           phx-click={JS.push_focus()}
         >
-          <.button class="w-20">Edit</.button>
+          <.icon name="hero-pencil" class="w-5 h-5" />
         </.link>
       </:actions>
     </.header>

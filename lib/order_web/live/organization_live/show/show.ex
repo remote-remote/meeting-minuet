@@ -1,20 +1,36 @@
 defmodule OrderWeb.OrganizationLive.Show do
+  alias Order.Chats
   use OrderWeb, :live_view
   import OrderWeb.DateComponents, warn: false
   import OrderWeb.LayoutComponents
   import OrderWeb.OrganizationLive.ShowComponents
-  import Order.Organizations.Permissions
 
   alias OrderWeb.DTO
-  alias Order.Organizations.{Presence, Position}
+  alias Order.Organizations.Presence
   alias Order.{Meetings, Organizations}
   alias Order.Meetings.Meeting
 
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
     connect_presence(socket, org_id)
+    user_token = Phoenix.Token.sign(OrderWeb.Endpoint, "user", socket.assigns.current_user.id)
 
-    {:ok, assign(socket, :presences, Presence.list_users(org_id))}
+    recent_messages =
+      Chats.list_messages("organization", org_id)
+      |> Enum.map(
+        &%{
+          "user_name" => &1.user.name,
+          "user_id" => &1.user.id,
+          "body" => &1.body
+        }
+      )
+
+    {:ok,
+     assign(socket,
+       presences: Presence.list_users(org_id),
+       user_token: user_token,
+       chat_messages: recent_messages
+     )}
   end
 
   @impl true
@@ -98,6 +114,11 @@ defmodule OrderWeb.OrganizationLive.Show do
   def handle_info(msg, socket) do
     IO.inspect(msg, label: "Unhandled message")
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("new_message", payload, socket) do
+    {:noreply, update(socket, :chat_messages, &(&1 ++ [payload]))}
   end
 
   defp page_title(:show), do: "Show Organization"

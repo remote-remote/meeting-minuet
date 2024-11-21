@@ -12,6 +12,7 @@ defmodule Order.Organizations do
   defdelegate get_member!(membership_id), to: Members
   defdelegate get_member!(organization, user), to: Members
   defdelegate invite_member(organization, url_fn, attrs), to: Members
+  defdelegate is_member?(organization, user), to: Members
 
   # Positions (maybe don't need all this?)
   defdelegate list_positions(organization), to: Positions
