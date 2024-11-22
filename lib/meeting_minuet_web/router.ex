@@ -129,7 +129,10 @@ defmodule MeetingMinuetWeb.Router do
 
     live_session :redirect_if_user_is_authenticated,
       on_mount: [{MeetingMinuetWeb.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/users/register", UserRegistrationLive, :new
+      if Application.compile_env(:meeting_minuet, :dev_routes) do
+        live "/users/register", UserRegistrationLive, :new
+      end
+
       live "/users/log_in", UserLoginLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
       live "/users/reset_password/:token", UserResetPasswordLive, :edit

@@ -11,6 +11,7 @@
       >
         <%= text %>
       </a>
+
       <%= if @current_user do %>
         <span class="text-brand-300">
           <%= @current_user.email %>
@@ -22,9 +23,11 @@
           Log out
         </.link>
       <% else %>
-        <.link href={~p"/users/register"} class="text-brand-500 hover:underline">
-          Register
-        </.link>
+        <%= if @is_dev do %>
+          <.link href={~p"/users/register"} class="text-brand-500 hover:underline">
+            Register
+          </.link>
+        <% end %>
         <.link href={~p"/users/log_in"} class="text-brand-500 hover:underline">
           Log in
         </.link>
