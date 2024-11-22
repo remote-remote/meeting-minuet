@@ -67,6 +67,5 @@ defmodule Order.Chats do
     |> preload(:user)
     |> limit(^limit)
     |> Repo.all()
-    |> Enum.reverse()
   end
 end

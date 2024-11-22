@@ -3,8 +3,6 @@ export const Hooks = {
     mounted() {
       const chatId = this.el.dataset.chatId
 
-      console.log(chatId)
-
       // Join the chat channel
       this.channel = window.socket.channel(`chat:${chatId}`, {
         userToken: window.__mmState.userToken
@@ -16,9 +14,8 @@ export const Hooks = {
 
       // Listen for new messages
       this.channel.on("new_message", (payload) => {
-        console.log('received new message', payload)
         // Update the LiveView with the new message
-        this.pushEvent("new_message", payload)
+        this.pushEventTo(this.el, "new_message", payload)
       })
 
       // Handle form submission
@@ -36,14 +33,12 @@ export const Hooks = {
 
         // Send the message to the channel
         this.channel.push("new_message", { body: messageBody })
-          .receive("ok", (resp) => {
-            console.log("Message sent:", resp);
+          .receive("ok", (_resp) => {
             messageInput.value = ""; // Clear the input field
           })
           .receive("error", (resp) => {
             console.log("Failed to send message:", resp);
           });
-        messageInput.value = ""
       });
     },
 

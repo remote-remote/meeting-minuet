@@ -4,62 +4,52 @@ defmodule OrderWeb.ChatChannel do
   alias Order.Organizations
   alias Order.Meetings
 
-  def join("chat:group:" <> chat_group_id, _params, socket) do
+  def join("chat:group:" <> chat_group_id, %{"userToken" => user_token}, socket) do
     chat_group_id = String.to_integer(chat_group_id)
-    user = socket.assigns.current_user
 
-    case Chats.is_member?(chat_group_id, user.id) do
-      true ->
-        {:ok, assign(socket, :chat_group_id, chat_group_id)}
-
-      false ->
-        {:error, %{reason: "You are not a member of this group"}}
+    with {:ok, user_id} <- Phoenix.Token.verify(OrderWeb.Endpoint, "user", user_token),
+         user <- Order.Accounts.get_user!(user_id),
+         true <- Chats.is_member?(chat_group_id, user.id) do
+      {:ok,
+       assign(socket, current_user: user, chattable_type: :group, chattable_id: chat_group_id)}
+    else
+      {:error, _} -> {:error, %{reason: "Invalid user token"}}
+      false -> {:error, %{reason: "You are not a member of this chat group"}}
     end
 
     {:ok, assign(socket, chattable_type: :group, chattable_id: chat_group_id)}
   end
 
-  def join("chat:meeting:" <> meeting_id, _params, socket) do
+  def join("chat:meeting:" <> meeting_id, %{"userToken" => user_token}, socket) do
     meeting_id = String.to_integer(meeting_id)
-    user = socket.assigns.current_user
 
-    case Meetings.is_attendee?(meeting_id, user.id) do
-      true ->
-        {:ok, assign(socket, chattable_type: :meeting, chattable_id: meeting_id)}
-
-      false ->
-        {:error, %{reason: "You are not an attendee of this meeting"}}
+    with {:ok, user_id} <- Phoenix.Token.verify(OrderWeb.Endpoint, "user", user_token),
+         user <- Order.Accounts.get_user!(user_id),
+         true <- Meetings.is_attendee?(meeting_id, user.id) do
+      {:ok,
+       assign(socket, current_user: user, chattable_type: :meeting, chattable_id: meeting_id)}
+    else
+      {:error, _} -> {:error, %{reason: "Invalid user token"}}
+      false -> {:error, %{reason: "You are not an attendee of this meeting"}}
     end
   end
 
   def join("chat:organization:" <> org_id, %{"userToken" => user_token}, socket) do
     org_id = String.to_integer(org_id)
 
-    case Phoenix.Token.verify(OrderWeb.Endpoint, "user", user_token) do
-      {:ok, user_id} ->
-        user = Order.Accounts.get_user!(user_id)
-
-        case Organizations.is_member?(org_id, user.id) do
-          true ->
-            {:ok,
-             assign(socket,
-               chattable_type: :organization,
-               chattable_id: org_id,
-               current_user: user
-             )}
-
-          false ->
-            {:error, %{reason: "You are not a member of this organization"}}
-        end
-
-      _ ->
-        {:error, %{reason: "Invalid user token"}}
+    with {:ok, user_id} <- Phoenix.Token.verify(OrderWeb.Endpoint, "user", user_token),
+         user <- Order.Accounts.get_user!(user_id),
+         true <- Organizations.is_member?(org_id, user_id) do
+      {:ok,
+       assign(socket, current_user: user, chattable_type: :organization, chattable_id: org_id)}
+    else
+      {:error, _} -> {:error, %{reason: "Invalid user token"}}
+      false -> {:error, %{reason: "You are not a member of this organization"}}
     end
   end
 
   # Handle incoming messages
   def handle_in("new_message", %{"body" => body}, socket) do
-    IO.inspect(socket.assigns, label: "new message assigns")
     user = socket.assigns.current_user
     # Store the message in your business context
     case Chats.create_message(%{
@@ -76,7 +66,13 @@ defmodule OrderWeb.ChatChannel do
           body: message.body
         })
 
-        {:noreply, socket}
+        {:reply,
+         {:ok,
+          %{
+            user_id: user.id,
+            user_name: user.name,
+            body: message.body
+          }}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}

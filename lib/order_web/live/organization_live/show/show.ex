@@ -13,23 +13,10 @@ defmodule OrderWeb.OrganizationLive.Show do
   @impl true
   def mount(%{"organization_id" => org_id}, _session, socket) do
     connect_presence(socket, org_id)
-    user_token = Phoenix.Token.sign(OrderWeb.Endpoint, "user", socket.assigns.current_user.id)
-
-    recent_messages =
-      Chats.list_messages("organization", org_id)
-      |> Enum.map(
-        &%{
-          "user_name" => &1.user.name,
-          "user_id" => &1.user.id,
-          "body" => &1.body
-        }
-      )
 
     {:ok,
      assign(socket,
-       presences: Presence.list_users(org_id),
-       user_token: user_token,
-       chat_messages: recent_messages
+       presences: Presence.list_users(org_id)
      )}
   end
 
@@ -114,11 +101,6 @@ defmodule OrderWeb.OrganizationLive.Show do
   def handle_info(msg, socket) do
     IO.inspect(msg, label: "Unhandled message")
     {:noreply, socket}
-  end
-
-  @impl true
-  def handle_event("new_message", payload, socket) do
-    {:noreply, update(socket, :chat_messages, &(&1 ++ [payload]))}
   end
 
   defp page_title(:show), do: "Show Organization"
