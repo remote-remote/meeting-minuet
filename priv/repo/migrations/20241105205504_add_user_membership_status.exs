@@ -1,4 +1,4 @@
-defmodule Order.Repo.Migrations.AddUserMembershipStatus do
+defmodule MeetingMinuet.Repo.Migrations.AddUserMembershipStatus do
   use Ecto.Migration
 
   def change do

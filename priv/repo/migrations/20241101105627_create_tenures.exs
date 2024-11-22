@@ -1,4 +1,4 @@
-defmodule Order.Repo.Migrations.CreateTenures do
+defmodule MeetingMinuet.Repo.Migrations.CreateTenures do
   use Ecto.Migration
 
   def change do

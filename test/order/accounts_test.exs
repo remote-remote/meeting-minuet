@@ -1,10 +1,10 @@
-defmodule Order.AccountsTest do
-  use Order.DataCase
+defmodule MeetingMinuet.AccountsTest do
+  use MeetingMinuet.DataCase
 
-  alias Order.Accounts
+  alias MeetingMinuet.Accounts
 
-  import Order.AccountsFixtures
-  alias Order.Accounts.{User, UserToken}
+  import MeetingMinuet.AccountsFixtures
+  alias MeetingMinuet.Accounts.{User, UserToken}
 
   describe "get_user_by_email/1" do
     test "does not return the user if the email does not exist" do

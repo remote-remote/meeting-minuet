@@ -1,0 +1,33 @@
+<div class="grid grid-cols-5 grid-rows-5 gap-4">
+  <div class="row-span-2 col-span-2 row-start-1 col-start-1">
+    <.card class="h-full">
+      <.upcoming_meetings upcoming_meetings={@upcoming_meetings} organization={@organization} />
+    </.card>
+  </div>
+  <div class="col-span-3 col-start-3 row-start-1">
+    <.card>
+      <.organizations
+        organizations={@streams.organizations}
+        current_user={@current_user}
+        title="Organizations"
+      />
+    </.card>
+  </div>
+</div>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="organization-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations")}
+>
+  <.live_component
+    module={MeetingMinuetWeb.OrganizationLive.OrganizationForm}
+    id={@organization.id || :new}
+    title={@page_title}
+    action={@live_action}
+    organization={@organization}
+    user={@current_user}
+    patch={~p"/organizations"}
+  />
+</.modal>

@@ -1,9 +1,9 @@
-defmodule OrderWeb.UserSettingsLiveTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserSettingsLiveTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
-  alias Order.Accounts
+  alias MeetingMinuet.Accounts
   import Phoenix.LiveViewTest
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
   describe "Settings page" do
     test "renders settings page", %{conn: conn} do

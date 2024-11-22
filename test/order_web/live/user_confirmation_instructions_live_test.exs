@@ -1,11 +1,11 @@
-defmodule OrderWeb.UserConfirmationInstructionsLiveTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserConfirmationInstructionsLiveTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
-  alias Order.Accounts
-  alias Order.Repo
+  alias MeetingMinuet.Accounts
+  alias MeetingMinuet.Repo
 
   setup do
     %{user: user_fixture()}

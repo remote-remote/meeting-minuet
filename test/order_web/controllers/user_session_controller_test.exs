@@ -1,7 +1,7 @@
-defmodule OrderWeb.UserSessionControllerTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserSessionControllerTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
   setup do
     %{user: user_fixture()}
@@ -35,7 +35,7 @@ defmodule OrderWeb.UserSessionControllerTest do
           }
         })
 
-      assert conn.resp_cookies["_order_web_user_remember_me"]
+      assert conn.resp_cookies["_meeting_minuet_web_user_remember_me"]
       assert redirected_to(conn) == ~p"/"
     end
 

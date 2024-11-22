@@ -1,4 +1,4 @@
-defmodule Order.Repo.Migrations.AddPermission do
+defmodule MeetingMinuet.Repo.Migrations.AddPermission do
   use Ecto.Migration
 
   # << organization ud, memberships crud, attendees crud, position crud >>  

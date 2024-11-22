@@ -1,0 +1,101 @@
+<.card class="mb-4">
+  <.header text_class="text-3xl">
+    <%= @organization.name %>
+  </.header>
+  <.header text_class="text-xl">
+    <%= @position.name %>
+    <:actions>
+      <.link
+        :if={edit_positions?(@organization, @current_membership)}
+        patch={~p"/organizations/#{@organization}/positions/#{@position}/edit"}
+        phx-click={JS.push_focus()}
+      >
+        <.button class="w-20">Edit</.button>
+      </.link>
+    </:actions>
+  </.header>
+  <.list>
+    <:item title="Description"><%= @position.description %></:item>
+    <:item title="Requires Report">
+      <%= if @position.requires_report do %>
+        Yes
+      <% else %>
+        No
+      <% end %>
+    </:item>
+  </.list>
+</.card>
+
+<.card>
+  <.header>
+    Tenures
+    <:actions>
+      <.link
+        :if={assign_positions?(@organization, @current_membership)}
+        patch={~p"/organizations/#{@organization}/positions/#{@position}/tenures/new"}
+        phx-click={JS.push_focus()}
+      >
+        <.button class="w-20">Assign</.button>
+      </.link>
+    </:actions>
+  </.header>
+  <.table id="current_tenures" rows={@position.current_tenures ++ @position.past_tenures}>
+    <:col :let={tenure} label="Name"><%= tenure.name %></:col>
+    <:col :let={tenure} label="Email"><%= tenure.email %></:col>
+    <:col :let={tenure} label="Date Range">
+      <.date_range_text type="range" date_range={tenure.active_range} />
+    </:col>
+    <:action :let={tenure}>
+      <.link
+        :if={assign_positions?(@organization, @current_membership)}
+        patch={
+          ~p"/organizations/#{@organization}/positions/#{@position}/tenures/#{tenure.id}/edit"
+        }
+        phx-click={JS.push_focus()}
+      >
+        <.button class="w-20">Edit</.button>
+      </.link>
+    </:action>
+  </.table>
+</.card>
+<.back navigate={~p"/organizations/#{@organization}"}>Back to <%= @organization.name %></.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="position-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}/positions/#{@position}")}
+>
+  <.live_component
+    module={MeetingMinuetWeb.OrganizationLive.PositionForm}
+    id={@position.id || :new_position}
+    title={"Edit #{@position.name}"}
+    action={@live_action}
+    organization={@organization}
+    position={@position}
+    patch={~p"/organizations/#{@organization}/positions/#{@position}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :new_tenure or @live_action == :edit_tenure}
+  id="tenure-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}/positions/#{@position}")}
+>
+  <.live_component
+    module={MeetingMinuetWeb.PositionLive.TenureForm}
+    id={@tenure.id || :new_tenure}
+    title={@page_title}
+    action={
+      case @live_action do
+        :new_tenure -> :new
+        :edit_tenure -> :edit
+      end
+    }
+    tenure={@tenure}
+    organization={@organization}
+    position={@position}
+    patch={~p"/organizations/#{@organization}/positions/#{@position}"}
+  />
+</.modal>

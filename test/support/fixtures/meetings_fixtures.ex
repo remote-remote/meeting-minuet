@@ -1,12 +1,12 @@
-defmodule Order.MeetingsFixtures do
+defmodule MeetingMinuet.MeetingsFixtures do
   def meeting_fixture(organization_id, attrs \\ %{}) do
     attrs = valid_meeting_attributes(attrs)
 
-    %Order.Meetings.Meeting{
+    %MeetingMinuet.Meetings.Meeting{
       organization_id: organization_id
     }
-    |> Order.Meetings.Meeting.changeset(attrs)
-    |> Order.Repo.insert!()
+    |> MeetingMinuet.Meetings.Meeting.changeset(attrs)
+    |> MeetingMinuet.Repo.insert!()
   end
 
   def valid_meeting_attributes(attrs) do

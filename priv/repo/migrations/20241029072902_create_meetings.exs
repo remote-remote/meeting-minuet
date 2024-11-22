@@ -1,4 +1,4 @@
-defmodule Order.Repo.Migrations.CreateMeetings do
+defmodule MeetingMinuet.Repo.Migrations.CreateMeetings do
   use Ecto.Migration
 
   def change do

@@ -1,8 +1,8 @@
-defmodule OrderWeb.UserRegistrationLiveTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserRegistrationLiveTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do

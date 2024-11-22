@@ -1,11 +1,11 @@
-defmodule OrderWeb.UserForgotPasswordLiveTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserForgotPasswordLiveTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
-  alias Order.Accounts
-  alias Order.Repo
+  alias MeetingMinuet.Accounts
+  alias MeetingMinuet.Repo
 
   describe "Forgot password page" do
     test "renders email page", %{conn: conn} do

@@ -1,17 +1,17 @@
-defmodule OrderWeb.UserAuthTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserAuthTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
   alias Phoenix.LiveView
-  alias Order.Accounts
-  alias OrderWeb.UserAuth
-  import Order.AccountsFixtures
+  alias MeetingMinuet.Accounts
+  alias MeetingMinuetWeb.UserAuth
+  import MeetingMinuet.AccountsFixtures
 
-  @remember_me_cookie "_order_web_user_remember_me"
+  @remember_me_cookie "_meeting_minuet_web_user_remember_me"
 
   setup %{conn: conn} do
     conn =
       conn
-      |> Map.replace!(:secret_key_base, OrderWeb.Endpoint.config(:secret_key_base))
+      |> Map.replace!(:secret_key_base, MeetingMinuetWeb.Endpoint.config(:secret_key_base))
       |> init_test_session(%{})
 
     %{user: user_fixture(), conn: conn}
@@ -66,7 +66,7 @@ defmodule OrderWeb.UserAuthTest do
 
     test "broadcasts to the given live_socket_id", %{conn: conn} do
       live_socket_id = "users_sessions:abcdef-token"
-      OrderWeb.Endpoint.subscribe(live_socket_id)
+      MeetingMinuetWeb.Endpoint.subscribe(live_socket_id)
 
       conn
       |> put_session(:live_socket_id, live_socket_id)
@@ -164,7 +164,7 @@ defmodule OrderWeb.UserAuthTest do
       session = conn |> put_session(:user_token, user_token) |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: OrderWeb.Endpoint,
+        endpoint: MeetingMinuetWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 
@@ -176,7 +176,7 @@ defmodule OrderWeb.UserAuthTest do
       session = conn |> get_session()
 
       socket = %LiveView.Socket{
-        endpoint: OrderWeb.Endpoint,
+        endpoint: MeetingMinuetWeb.Endpoint,
         assigns: %{__changed__: %{}, flash: %{}}
       }
 

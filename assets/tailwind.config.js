@@ -10,8 +10,8 @@ const sizeMods = ['sm', 'md', 'lg', 'xl', '2xl', 'xs', 'sm:max-lg', 'lg:max-xl']
 module.exports = {
   content: [
     "./js/**/*.js",
-    "../lib/order_web.ex",
-    "../lib/order_web/**/*.*ex"
+    "../lib/meeting_minuet_web.ex",
+    "../lib/meeting_minuet_web/**/*.*ex"
   ],
   safelist: [
     { pattern: /col-start-/, variants: sizeMods },

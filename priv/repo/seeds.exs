@@ -5,12 +5,12 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     Order.Repo.insert!(%Order.SomeSchema{})
+#     MeetingMinuet.Repo.insert!(%MeetingMinuet.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-import Order.ContextBuilder
+import MeetingMinuet.ContextBuilder
 
 build_context(%{
   users: %{

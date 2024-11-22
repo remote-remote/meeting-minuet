@@ -1,11 +1,11 @@
-defmodule Order.OrganizationsFixtures do
+defmodule MeetingMinuet.OrganizationsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Order.Organizations` context.
+  entities via the `MeetingMinuet.Organizations` context.
   """
 
-  alias Order.Repo
-  alias Order.Organizations.Organization
+  alias MeetingMinuet.Repo
+  alias MeetingMinuet.Organizations.Organization
 
   @doc """
   Generate a organization.

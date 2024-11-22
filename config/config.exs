@@ -7,19 +7,19 @@
 # General application configuration
 import Config
 
-config :order,
-  ecto_repos: [Order.Repo],
+config :meeting_minuet,
+  ecto_repos: [MeetingMinuet.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :order, OrderWeb.Endpoint,
+config :meeting_minuet, MeetingMinuetWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
-    formats: [html: OrderWeb.ErrorHTML, json: OrderWeb.ErrorJSON],
+    formats: [html: MeetingMinuetWeb.ErrorHTML, json: MeetingMinuetWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Order.PubSub,
+  pubsub_server: MeetingMinuet.PubSub,
   live_view: [signing_salt: "WkqrKnWF"]
 
 # Configures the mailer
@@ -29,7 +29,7 @@ config :order, OrderWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :order, Order.Mailer, adapter: Swoosh.Adapters.Local
+config :meeting_minuet, MeetingMinuet.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

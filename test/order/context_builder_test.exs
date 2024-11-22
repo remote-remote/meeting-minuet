@@ -1,9 +1,9 @@
-defmodule Order.ContextBuilderTest do
-  use Order.DataCase
-  import Order.ContextBuilder
-  import Order.Repo
-  alias Order.Accounts.User
-  alias Order.Organizations.{Organization, Position, Membership, Tenure}
+defmodule MeetingMinuet.ContextBuilderTest do
+  use MeetingMinuet.DataCase
+  import MeetingMinuet.ContextBuilder
+  import MeetingMinuet.Repo
+  alias MeetingMinuet.Accounts.User
+  alias MeetingMinuet.Organizations.{Organization, Position, Membership, Tenure}
 
   @input %{
     # username: %{ ??? future config }

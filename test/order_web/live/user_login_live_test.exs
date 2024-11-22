@@ -1,8 +1,8 @@
-defmodule OrderWeb.UserLoginLiveTest do
-  use OrderWeb.ConnCase, async: true
+defmodule MeetingMinuetWeb.UserLoginLiveTest do
+  use MeetingMinuetWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import Order.AccountsFixtures
+  import MeetingMinuet.AccountsFixtures
 
   describe "Log in page" do
     test "renders log in page", %{conn: conn} do

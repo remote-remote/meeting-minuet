@@ -1,9 +1,9 @@
-defmodule Order.OrganizationsTest do
-  use Order.DataCase
+defmodule MeetingMinuet.OrganizationsTest do
+  use MeetingMinuet.DataCase
 
-  import Order.ContextBuilder
-  alias Order.Organizations.Organization
-  alias Order.Organizations
+  import MeetingMinuet.ContextBuilder
+  alias MeetingMinuet.Organizations.Organization
+  alias MeetingMinuet.Organizations
 
   describe "organizations crud" do
     setup do

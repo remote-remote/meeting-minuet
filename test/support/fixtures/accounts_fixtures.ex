@@ -1,7 +1,7 @@
-defmodule Order.AccountsFixtures do
+defmodule MeetingMinuet.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Order.Accounts` context.
+  entities via the `MeetingMinuet.Accounts` context.
   """
 
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
@@ -19,7 +19,7 @@ defmodule Order.AccountsFixtures do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> Order.Accounts.register_user()
+      |> MeetingMinuet.Accounts.register_user()
 
     user
   end

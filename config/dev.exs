@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :order, Order.Repo,
+config :meeting_minuet, MeetingMinuet.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "order_dev",
+  database: "meeting_minuet_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -16,7 +16,7 @@ config :order, Order.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :order, OrderWeb.Endpoint,
+config :meeting_minuet, MeetingMinuetWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
@@ -53,17 +53,17 @@ config :order, OrderWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :order, OrderWeb.Endpoint,
+config :meeting_minuet, MeetingMinuetWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/order_web/(controllers|live|components)/.*(ex|heex)$"
+      ~r"lib/meeting_minuet_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :order, dev_routes: true
+config :meeting_minuet, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -82,4 +82,4 @@ config :phoenix_live_view, :debug_heex_annotations, true
 config :swoosh, :api_client, false
 
 # Path to install SaladUI components
-config :salad_ui, components_path: Path.join(File.cwd!(), "lib/order_web/components")
+config :salad_ui, components_path: Path.join(File.cwd!(), "lib/meeting_minuet_web/components")
