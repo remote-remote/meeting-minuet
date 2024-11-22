@@ -108,7 +108,10 @@ if config_env() == :prod do
     relay: "smtp.mailersend.net",
     username: System.get_env("SMTP_USERNAME"),
     password: System.get_env("SMTP_PASSWORD"),
-    port: 587
+    port: 587,
+    ssl: false,
+    tls: :always,
+    tls_options: [verify: :verify_none]
 
   #
   # For this example you need include a HTTP client required by Swoosh API client.
