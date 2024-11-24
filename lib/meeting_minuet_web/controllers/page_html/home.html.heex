@@ -1,34 +1,34 @@
 <.flash_group flash={@flash} />
 
-<header class="bg-brand-100 p-6 shadow-md">
+<header class="bg-foreground p-6 shadow-md">
   <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-4xl font-bold text-brand-400">Meeting Minuet</h1>
+    <h1 class="text-4xl font-bold text-zinc-400">Meeting Minuet</h1>
     <nav class="space-x-6">
       <a
         :for={{text, href} <- [{"Home", "#"}, {"Features", "#"}, {"Contact", "#"}]}
         href={href}
-        class="text-brand-500 hover:underline"
+        class="text-zinc-500 hover:underline"
       >
         <%= text %>
       </a>
 
       <%= if @current_user do %>
-        <span class="text-brand-300">
+        <span class="text-zinc-300">
           <%= @current_user.email %>
         </span>
-        <.link href={~p"/users/settings"} class="text-brand-500 hover:underline">
+        <.link href={~p"/users/settings"} class="text-zinc-500 hover:underline">
           Settings
         </.link>
-        <.link href={~p"/users/log_out"} method="delete" class="text-brand-500 hover:underline">
+        <.link href={~p"/users/log_out"} method="delete" class="text-zinc-500 hover:underline">
           Log out
         </.link>
       <% else %>
         <%= if @is_dev do %>
-          <.link href={~p"/users/register"} class="text-brand-500 hover:underline">
+          <.link href={~p"/users/register"} class="text-zinc-500 hover:underline">
             Register
           </.link>
         <% end %>
-        <.link href={~p"/users/log_in"} class="text-brand-500 hover:underline">
+        <.link href={~p"/users/log_in"} class="text-zinc-500 hover:underline">
           Log in
         </.link>
       <% end %>
@@ -40,21 +40,21 @@
   <!-- Branding Sections -->
   <div class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-6">
     <!-- Branding Section 1 -->
-    <section class="flex-1 bg-brand-100 text-slate-800 p-16 rounded-md shadow-lg">
+    <section class="flex-1 bg-zinc-100 text-slate-800 p-16 rounded-md shadow-lg">
       <h2 class="text-3xl font-semibold mb-4">Effortless Minute Taking</h2>
       <p class="text-lg">
         Record motions, votes, and meeting minutes in real time with ease. Let Meeting Minuet handle the documentation so you can focus on the discussion.
       </p>
     </section>
     <!-- Branding Section 2 -->
-    <section class="flex-1 bg-brand-100 text-slate-800 p-16 rounded-md shadow-lg">
+    <section class="flex-1 bg-accent-foreground text-accent p-16 rounded-md shadow-lg">
       <h2 class="text-3xl font-semibold mb-4">Real-Time Updates</h2>
       <p class="text-lg">
         See reports, minutes, and decisions unfold live. Engage your members with instant notifications for motions and voting.
       </p>
     </section>
     <!-- Branding Section 3 -->
-    <section class="flex-1 bg-brand-100 text-slate-800 p-16 rounded-md shadow-lg">
+    <section class="flex-1 bg-primary-foreground text-primary p-16 rounded-md shadow-lg">
       <h2 class="text-3xl font-semibold mb-4">Seamless Collaboration</h2>
       <p class="text-lg">
         Invite members, track attendance, and review meeting history effortlessly. Meeting Minuet brings order to your organizational needs.

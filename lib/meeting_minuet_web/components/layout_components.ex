@@ -48,7 +48,7 @@ defmodule MeetingMinuetWeb.LayoutComponents do
 
   def card(assigns) do
     ~H"""
-    <div class={"bg-brand-50 border border-brand-200 shadow-md rounded-lg p-6 #{@class}"}>
+    <div class={"bg-card border border-black-200 shadow-md rounded-lg p-6 #{@class}"}>
       <%= render_slot(@inner_block) %>
     </div>
     """

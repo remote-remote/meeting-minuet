@@ -38,31 +38,37 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
 
   def positions(assigns) do
     ~H"""
-    <.header>
-      Positions
-      <:actions>
-        <.link
-          :if={create_positions?(@organization, @membership)}
-          patch={~p"/organizations/#{@organization}/positions/new"}
+    <div class="h-full flex flex-col">
+      <.header>
+        Positions
+        <:actions>
+          <.link
+            :if={create_positions?(@organization, @membership)}
+            patch={~p"/organizations/#{@organization}/positions/new"}
+          >
+            <.icon name="hero-plus" class="w-5 h-5" />
+          </.link>
+        </:actions>
+      </.header>
+      <div class="flex-grow overflow-y-auto">
+        <.table
+          id="positions"
+          rows={@positions}
+          row_click={
+            fn row -> JS.navigate(~p"/organizations/#{@organization}/positions/#{row.id}") end
+          }
         >
-          <.button class="w-20">New</.button>
-        </.link>
-      </:actions>
-    </.header>
-    <.table
-      id="positions"
-      rows={@positions}
-      row_click={fn row -> JS.navigate(~p"/organizations/#{@organization}/positions/#{row.id}") end}
-    >
-      <:col :let={position} label="Title"><%= position.name %></:col>
-      <:col :let={position} label="Description"><%= position.description %></:col>
-      <:col :let={position} label="Current Tenures">
-        <%= position.current_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
-      </:col>
-      <:col :let={position} label="Past Tenures">
-        <%= position.past_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
-      </:col>
-    </.table>
+          <:col :let={position} label="Title"><%= position.name %></:col>
+          <:col :let={position} label="Description"><%= position.description %></:col>
+          <:col :let={position} label="Current Tenures">
+            <%= position.current_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
+          </:col>
+          <:col :let={position} label="Past Tenures">
+            <%= position.past_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
+          </:col>
+        </.table>
+      </div>
+    </div>
     """
   end
 
@@ -80,7 +86,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
             :if={create_meetings?(@organization, @membership)}
             patch={~p"/organizations/#{@organization}/meetings/new"}
           >
-            <.button>New</.button>
+            <.icon name="hero-plus" class="w-5 h-5" />
           </.link>
         </:actions>
       </.header>
@@ -119,7 +125,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
             :if={add_members?(@organization, @membership)}
             patch={~p"/organizations/#{@organization}/members/invite"}
           >
-            <.button>New</.button>
+            <.icon name="hero-plus" class="w-5 h-5" />
           </.link>
         </:actions>
       </.header>

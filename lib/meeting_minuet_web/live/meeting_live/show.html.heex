@@ -1,23 +1,33 @@
-<.card>
-  <.header>
-    <%= @meeting.title %>
-    <:subtitle><%= @meeting.topic %></:subtitle>
-    <:actions>
-      <.link
-        :if={@meeting.status == :scheduled and start_meeting?(@current_attendee)}
-        phx-click="start"
-      >
-        <.button>Start Meeting</.button>
-      </.link>
-      <.link :if={@meeting.status == :in_progress} phx-click="end">
-        <.button>End Meeting</.button>
-      </.link>
-    </:actions>
-  </.header>
-</.card>
-<div :if={@meeting.status == :scheduled}>
-  <div class="grid grid-cols-2 gap-4">
-    <.card class="mt-4 col col-span-1">
+<.header>
+  <%= @meeting.title %>
+  <:subtitle><%= @meeting.topic %></:subtitle>
+  <:actions>
+    <.link
+      :if={@meeting.status == :scheduled and start_meeting?(@current_attendee)}
+      phx-click="start"
+    >
+      <.button>Start Meeting</.button>
+    </.link>
+    <.link :if={@meeting.status == :in_progress} phx-click="end">
+      <.button>End Meeting</.button>
+    </.link>
+  </:actions>
+</.header>
+<div class="h-screen grid grid-cols-3 grid-rows-5 gap-4">
+  <div class="col col-span-1 row-span-4">
+    <.card class="h-full">
+      <.live_component
+        module={MeetingMinuetWeb.ChatComponent}
+        id="chat"
+        title="Chat"
+        chattable_type="meeting"
+        chattable_id={@meeting.id}
+        current_user={@current_user}
+      />
+    </.card>
+  </div>
+  <div :if={@meeting.status == :scheduled} class="col-start-2 col-span-1 row-span-4">
+    <.card class="h-full">
       <.header>
         Attendees
       </.header>
@@ -51,7 +61,9 @@
         </:action>
       </.table>
     </.card>
-    <.card class="mt-4 col col-span-1">
+  </div>
+  <div :if={@meeting.status == :scheduled} class="col-span-1 row-span-4">
+    <.card class="h-full">
       <.header>
         Uninvited Members
       </.header>

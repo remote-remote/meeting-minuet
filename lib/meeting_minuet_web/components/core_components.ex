@@ -233,16 +233,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
 
   def button(assigns) do
     ~H"""
-    <Button.button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg #{if @disabled, do: "bg-zinc-200", else: "bg-action-500 hover:bg-action-600"} py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
-        @class
-      ]}
-      disabled={@disabled}
-      {@rest}
-    >
+    <Button.button type={@type} class={@class} disabled={@disabled} {@rest}>
       <%= render_slot(@inner_block) %>
     </Button.button>
     """

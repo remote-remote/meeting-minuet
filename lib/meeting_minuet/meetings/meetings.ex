@@ -12,8 +12,13 @@ defmodule MeetingMinuet.Meetings do
 
   def is_attendee?(meeting_id, user_id) do
     attendee =
-      Attendee
-      |> where([a], a.meeting_id == ^meeting_id and a.user_id == ^user_id)
+      from(a in Attendee,
+        join: m in assoc(a, :membership),
+        join: u in assoc(m, :user),
+        where:
+          a.meeting_id == ^meeting_id and
+            u.id == ^user_id
+      )
       |> Repo.one()
 
     !is_nil(attendee)
