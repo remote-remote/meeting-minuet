@@ -73,7 +73,7 @@ defmodule MeetingMinuetWeb.DTO.Tenure do
   defp unmap_changes(changeset) do
     changes = changeset.changes |> Map.reject(fn {k, _} -> k in [:start_date, :end_date] end)
 
-    if changeset.changes |> Map.take([:start_date, :end_date]) |> Map.size() do
+    if changeset.changes |> Map.take([:start_date, :end_date]) |> map_size() do
       changeset
       |> apply_changes()
       |> unmap()

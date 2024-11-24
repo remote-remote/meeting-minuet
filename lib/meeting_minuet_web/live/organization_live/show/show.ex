@@ -1,5 +1,4 @@
 defmodule MeetingMinuetWeb.OrganizationLive.Show do
-  alias MeetingMinuet.Chats
   use MeetingMinuetWeb, :live_view
   import MeetingMinuetWeb.DateComponents, warn: false
   import MeetingMinuetWeb.LayoutComponents

@@ -6,7 +6,7 @@ defmodule MeetingMinuetWeb.UserSocket do
   channel "chat:*", MeetingMinuetWeb.ChatChannel
 
   ## Transports
-  transport(:websocket, Phoenix.Transports.WebSocket)
+  # transport(:websocket, Phoenix.Transports.WebSocket)
 
   # def connect(%{"token" => token}, socket, _connect_info) do
   #   case verify_user(token) do
