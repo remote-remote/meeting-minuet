@@ -21,6 +21,7 @@ defmodule MeetingMinuet.Meetings.Meeting do
     belongs_to :organization, MeetingMinuet.Organizations.Organization
     has_many :attendees, MeetingMinuet.Meetings.Attendee
     has_many :users, through: [:attendees, :user]
+    has_many :agenda_items, MeetingMinuet.Meetings.AgendaItem
 
     timestamps(type: :utc_datetime)
   end

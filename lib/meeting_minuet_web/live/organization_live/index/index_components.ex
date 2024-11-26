@@ -6,14 +6,13 @@ defmodule MeetingMinuetWeb.OrganizationLive.IndexComponents do
 
   attr :organizations, :list, required: true
   attr :current_user, :map, required: true
-  attr :allow_actions, :boolean, default: true
   attr :title, :string, default: "Organizations"
 
   def organizations(assigns) do
     ~H"""
     <.header>
       <%= @title %>
-      <:actions :if={@allow_actions}>
+      <:actions>
         <.link patch={~p"/organizations/new"}>
           <.button>Create</.button>
         </.link>
@@ -29,7 +28,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.IndexComponents do
       <:col :let={{_id, organization}} label="Description">
         <%= organization.description %>
       </:col>
-      <:action :let={{_id, organization}} :if={@allow_actions}>
+      <:action :let={{_id, organization}}>
         <.link
           :if={edit_organization?(organization, @current_user)}
           patch={~p"/organizations/#{organization}/edit"}
@@ -37,7 +36,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.IndexComponents do
           Edit
         </.link>
       </:action>
-      <:action :let={{id, organization}} :if={@allow_actions}>
+      <:action :let={{id, organization}}>
         <.link
           :if={delete_organization?(organization, @current_user)}
           phx-click={JS.push("delete", value: %{id: organization.id}) |> hide("##{id}")}

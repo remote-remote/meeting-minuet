@@ -1,5 +1,6 @@
 defmodule MeetingMinuet.Meetings do
   import Ecto.Query
+  alias MeetingMinuet.Meetings.AgendaItem
   alias MeetingMinuet.Repo
   alias MeetingMinuet.Meetings.Meeting
   alias MeetingMinuet.Organizations.{Organization, Membership}
@@ -9,6 +10,70 @@ defmodule MeetingMinuet.Meetings do
   defdelegate get_attendee(meeting, membership_id), to: Attendees
   defdelegate add_attendee(meeting, membership), to: Attendees
   defdelegate remove_attendee(meeting, membership_id), to: Attendees
+
+  def list_agenda_items(meeting_id) do
+    Repo.all(
+      from i in AgendaItem,
+        where: i.meeting_id == ^meeting_id,
+        order_by: [asc: i.order],
+        preload: [:position]
+    )
+  end
+
+  def create_agenda_item!(attrs) do
+    item_orders = list_agenda_items(attrs["meeting_id"]) |> Enum.reverse() |> Enum.map(& &1.order)
+    order = List.first(item_orders, 0) + 100
+
+    AgendaItem.create!(Map.put(attrs, "order", order))
+  end
+
+  def remove_agenda_item!(item_id) do
+    Repo.delete!(%AgendaItem{id: item_id})
+  end
+
+  def move_agenda_item_up(item) do
+    case Repo.all(
+           from i in AgendaItem,
+             where: i.meeting_id == ^item.meeting_id and i.order < ^item.order,
+             order_by: [desc: i.order],
+             limit: 2
+         ) do
+      [max] ->
+        new_order = div(max.order, 2)
+        update_agenda_item(item, %{order: new_order})
+
+      [max, min] ->
+        new_order = min.order + div(max.order - min.order, 2)
+        update_agenda_item(item, %{order: new_order})
+
+      [] ->
+        nil
+    end
+  end
+
+  def move_agenda_item_down(item) do
+    case Repo.all(
+           from i in AgendaItem,
+             where: i.meeting_id == ^item.meeting_id and i.order > ^item.order,
+             order_by: [asc: i.order],
+             limit: 2
+         ) do
+      [min] ->
+        new_order = min.order + 100
+        update_agenda_item(item, %{order: new_order})
+
+      [min, max] ->
+        new_order = min.order + div(max.order - min.order, 2)
+        update_agenda_item(item, %{order: new_order})
+
+      [] ->
+        nil
+    end
+  end
+
+  def update_agenda_item(item, attrs) do
+    item |> AgendaItem.changeset(attrs) |> Repo.update()
+  end
 
   def is_attendee?(meeting_id, user_id) do
     attendee =

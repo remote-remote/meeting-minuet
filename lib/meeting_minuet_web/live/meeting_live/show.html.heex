@@ -3,7 +3,11 @@
   <:subtitle><%= @meeting.topic %></:subtitle>
   <:actions>
     <.link
-      :if={@meeting.status == :scheduled and start_meeting?(@current_attendee)}
+      :if={
+        @meeting.status == :scheduled and
+          start_meeting?(@current_attendee) and
+          @meeting.date == Date.utc_today()
+      }
       phx-click="start"
     >
       <.button>Start Meeting</.button>
@@ -13,6 +17,54 @@
     </.link>
   </:actions>
 </.header>
+<div>
+  <.card>
+    <.header>
+      Agenda
+      <:actions>
+        <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/agenda_items/new"}>
+          <.icon name="hero-plus" class="h-5 w-5" />
+        </.link>
+      </:actions>
+    </.header>
+    <.table
+      id="agenda-items"
+      rows={@agenda_items}
+      row_click={
+        fn item ->
+          JS.navigate(
+            ~p"/organizations/#{@organization}/meetings/#{@meeting}/agenda_items/#{item.id}"
+          )
+        end
+      }
+    >
+      <:col :let={item} label="Name"><%= item.name %></:col>
+      <:col :let={item} label="Position"><%= item.position && item.position.name %></:col>
+      <:col :let={item} label="Description"><%= item.description %></:col>
+      <:action :let={item}>
+        <.link
+          :if={List.first(@agenda_items) != item}
+          phx-click={JS.push("move_agenda_item_up", value: %{id: item.id})}
+        >
+          <.icon name="hero-arrow-up" class="h-5 w-5" />
+        </.link>
+      </:action>
+      <:action :let={item}>
+        <.link
+          :if={List.last(@agenda_items) != item}
+          phx-click={JS.push("move_agenda_item_down", value: %{id: item.id})}
+        >
+          <.icon name="hero-arrow-down" class="h-5 w-5" />
+        </.link>
+      </:action>
+      <:action :let={item}>
+        <.link phx-click={JS.push("delete_agenda_item", value: %{id: item.id})}>
+          Delete
+        </.link>
+      </:action>
+    </.table>
+  </.card>
+</div>
 <div class="h-screen grid grid-cols-3 grid-rows-5 gap-4">
   <div class="col col-span-1 row-span-4">
     <.card class="h-full">
@@ -26,7 +78,7 @@
       />
     </.card>
   </div>
-  <div :if={@meeting.status == :scheduled} class="col-start-2 col-span-1 row-span-4">
+  <div class="col col-span-1 row-span-4">
     <.card class="h-full">
       <.header>
         Attendees
@@ -62,7 +114,8 @@
       </.table>
     </.card>
   </div>
-  <div :if={@meeting.status == :scheduled} class="col-span-1 row-span-4">
+
+  <div class="col col-span-1 row-span-4">
     <.card class="h-full">
       <.header>
         Uninvited Members
@@ -86,20 +139,31 @@
     </.card>
   </div>
 </div>
-<div :if={@meeting.status == :in_progress}>
-  <.card class="mt-4">
-    <.header>
-      Meeting Minutes
-    </.header>
-  </.card>
-</div>
-<div :if={@meeting.status == :completed}>
-  <.card class="mt-4">
-    <.header>
-      Meeting is Completed
-    </.header>
-  </.card>
-</div>
+
+<.modal
+  :if={@live_action == :new_agenda_item}
+  id="agenda-item-modal"
+  show
+  on_cancel={JS.patch(~p"/organizations/#{@organization}/meetings/#{@meeting}")}
+>
+  <.header>Add Agenda Item</.header>
+
+  <.simple_form for={@item_form} id="agenda-item-form" phx-submit="save_agenda_item">
+    <.input field={@item_form[:name]} type="text" label="Name" />
+    <.input field={@item_form[:description]} type="textarea" label="Description" />
+    <.input
+      field={@item_form[:position_id]}
+      type="select"
+      options={@positions}
+      label="Position Report"
+      value={nil}
+    />
+
+    <:actions>
+      <.button phx-disable-with="Saving...">Save Item</.button>
+    </:actions>
+  </.simple_form>
+</.modal>
 
 <.back navigate={~p"/organizations/#{@organization}"}>
   Back to <%= @organization.name %> Dashboard
