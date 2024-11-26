@@ -16,7 +16,8 @@ defmodule MeetingMinuetWeb.OrganizationLive.InvitationForm do
         phx-debounce="500"
         phx-submit="save"
       >
-        <.input field={@form[:email]} type="email" label="Email" />
+        <.input field={@form[:name]} phx-debounce="500" type="text" label="Name" />
+        <.input field={@form[:email]} phx-debounce="500" type="email" label="Email" />
         <:actions>
           <.button phx-disable-with="Sending...">Invite</.button>
         </:actions>
@@ -65,7 +66,8 @@ defmodule MeetingMinuetWeb.OrganizationLive.InvitationForm do
 
         {:noreply,
          socket
-         |> push_navigate(to: ~p"/organizations/#{organization.id}")}
+         |> put_flash(:info, "Invitation sent")
+         |> push_patch(to: socket.assigns.patch)}
 
       {:error, changeset} ->
         {:noreply, socket |> assign(:form, changeset)}

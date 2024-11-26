@@ -35,6 +35,7 @@ defmodule MeetingMinuetWeb.Router do
       } do
       live "/organizations", OrganizationLive.Index, :index
       live "/organizations/new", OrganizationLive.Index, :new
+      live "/organizations/:organization_id/edit", OrganizationLive.Index, :edit
     end
 
     scope "/organizations/:organization_id" do
@@ -51,7 +52,7 @@ defmodule MeetingMinuetWeb.Router do
             :ensure_membership
           }
         ] do
-        live "/edit", OrganizationLive.Show, :edit
+        live "/show/edit", OrganizationLive.Show, :edit
         live "/", OrganizationLive.Show, :show
         live "/positions/new", OrganizationLive.Show, :new_position
         # TODO - implement

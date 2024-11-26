@@ -59,6 +59,7 @@ defmodule MeetingMinuet.Accounts.User do
   def invitation_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:name, :email])
+    |> validate_required([:name])
     |> validate_email(opts)
     |> put_change(:hashed_password, "NOTAPASS")
     |> put_change(:status, :invited)

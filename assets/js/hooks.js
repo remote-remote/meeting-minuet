@@ -1,4 +1,10 @@
 export const Hooks = {
+  Flash: {
+    mounted() {
+      const flashId = this.el.dataset.kind
+      setTimeout(() => this.pushEvent("lv:clear-flash", { key: flashId }), 5000)
+    },
+  },
   Chat: {
     mounted() {
       const chatId = this.el.dataset.chatId

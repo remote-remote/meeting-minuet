@@ -27,23 +27,42 @@ defmodule MeetingMinuet.Organizations.Organization do
     |> validate_required([:name, :owner_id])
   end
 
+  def q_list(user_id) do
+    from o in Organization,
+      left_join: m in assoc(o, :memberships),
+      on: m.user_id == ^user_id,
+      where: not is_nil(m.id) or o.owner_id == ^user_id
+  end
+
+  def q_get(user_id, org_id) do
+    q_list(user_id)
+    |> where([o], o.id == ^org_id)
+  end
+
   @doc """
   Returns an Ecto.Query for listing organizations with preloaded memberships for a user.
   """
   @spec q_list_with_memberships(integer()) :: Ecto.Query.t()
   def q_list_with_memberships(user_id) do
-    from o in Organization,
-      left_join: m in assoc(o, :memberships),
-      on: m.user_id == ^user_id,
-      where: not is_nil(m.id) or o.owner_id == ^user_id,
-      preload: [:memberships]
+    q_list(user_id)
+    |> preload(:memberships)
   end
 
   @doc """
   Returns an Ecto.Query for getting one organization with preloaded memberships for a user.
   """
   def q_get_with_memberships(user_id, org_id) do
-    q_list_with_memberships(user_id)
-    |> where([o], o.id == ^org_id)
+    q_get(user_id, org_id)
+    |> preload(:memberships)
+  end
+
+  def q_get_with_everything(user_id, org_id) do
+    q_get(user_id, org_id)
+    |> preload([
+      :owner,
+      :meetings,
+      memberships: [:user, tenures: :position],
+      positions: [tenures: :user]
+    ])
   end
 end

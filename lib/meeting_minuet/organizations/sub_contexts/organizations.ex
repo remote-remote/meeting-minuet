@@ -29,6 +29,11 @@ defmodule MeetingMinuet.Organizations.Organizations do
     |> Repo.one!()
   end
 
+  def get_fully_preloaded_organization!(%User{} = user, org_id) do
+    Organization.q_get_with_everything(user.id, org_id)
+    |> Repo.one!()
+  end
+
   def get_organization!(organization_id) do
     Repo.one!(
       from o in Organization,

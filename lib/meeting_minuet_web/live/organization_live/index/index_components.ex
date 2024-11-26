@@ -58,21 +58,21 @@ defmodule MeetingMinuetWeb.OrganizationLive.IndexComponents do
       Upcoming Meetings
     </.header>
     <.table
-      rows={@upcoming_meetings}
       id="user_meetings"
+      rows={@upcoming_meetings}
       row_click={
-        fn meeting ->
+        fn {_id, meeting} ->
           JS.navigate(~p"/organizations/#{meeting.organization_id}/meetings/#{meeting.id}")
         end
       }
     >
-      <:col :let={meeting} label="Title">
+      <:col :let={{_id, meeting}} label="Title">
         <%= meeting.title %>
       </:col>
-      <:col :let={meeting} label="Organization">
+      <:col :let={{_id, meeting}} label="Organization">
         <%= meeting.organization.name %>
       </:col>
-      <:col :let={meeting} label="Scheduled At">
+      <:col :let={{_id, meeting}} label="Scheduled At">
         <%= meeting.date %> <%= meeting.scheduled_start_time %>
       </:col>
     </.table>

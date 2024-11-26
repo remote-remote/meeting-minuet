@@ -46,7 +46,7 @@ defmodule MeetingMinuet.Accounts.UserNotifier do
 
     ==============================
 
-    Hi #{user.email},
+    Hi #{user.name},
 
     You have been invited to join an organization. You can accept the invitation by visiting the URL below:
 

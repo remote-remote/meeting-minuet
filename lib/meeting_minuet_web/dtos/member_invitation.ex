@@ -3,18 +3,20 @@ defmodule MeetingMinuetWeb.DTO.MemberInvitation do
   import Ecto.Changeset
 
   @primary_key false
-  schema "member_invitations" do
+  embedded_schema do
     field :email, :string
+    field :name, :string
   end
 
   def changeset(invitation, attrs) do
     invitation
-    |> cast(attrs, [:email])
-    |> validate_required([:email])
+    |> cast(attrs, [:email, :name])
+    |> validate_required([:email, :name])
   end
 
   def validate(invitation) do
     invitation
     |> validate_format(:email, ~r/@/)
+    |> validate_required([:name])
   end
 end

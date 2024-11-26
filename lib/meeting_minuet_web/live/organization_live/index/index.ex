@@ -13,7 +13,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.Index do
     socket =
       socket
       |> stream(:organizations, Organizations.list_organizations(current_user))
-      |> assign(
+      |> stream(
         :upcoming_meetings,
         MeetingMinuet.Meetings.list_user_meetings(current_user.id, status: :scheduled)
       )
@@ -26,7 +26,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, :edit, %{"organization_id" => id}) do
     socket
     |> assign(:page_title, "Edit Organization")
     |> assign(:organization, Organizations.get_organization!(socket.assigns.current_user, id))
@@ -46,7 +46,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.Index do
 
   @impl true
   def handle_info(
-        {MeetingMinuetWeb.OrganizationLive.OrganizationFormComponent, {:saved, organization}},
+        {MeetingMinuetWeb.OrganizationLive.OrganizationForm, {:saved, organization}},
         socket
       ) do
     {:noreply, stream_insert(socket, :organizations, organization)}

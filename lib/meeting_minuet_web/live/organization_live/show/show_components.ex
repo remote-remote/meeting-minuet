@@ -21,7 +21,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
       <:actions>
         <.link
           :if={edit_organization?(@organization, @membership)}
-          patch={~p"/organizations/#{@organization}/edit"}
+          patch={~p"/organizations/#{@organization}/show/edit"}
           phx-click={JS.push_focus()}
         >
           <.icon name="hero-pencil" class="w-5 h-5" />
@@ -55,15 +55,15 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
           id="positions"
           rows={@positions}
           row_click={
-            fn row -> JS.navigate(~p"/organizations/#{@organization}/positions/#{row.id}") end
+            fn {_id, row} -> JS.navigate(~p"/organizations/#{@organization}/positions/#{row.id}") end
           }
         >
-          <:col :let={position} label="Title"><%= position.name %></:col>
-          <:col :let={position} label="Description"><%= position.description %></:col>
-          <:col :let={position} label="Current Tenures">
+          <:col :let={{_id, position}} label="Title"><%= position.name %></:col>
+          <:col :let={{_id, position}} label="Description"><%= position.description %></:col>
+          <:col :let={{_id, position}} label="Current Tenures">
             <%= position.current_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
           </:col>
-          <:col :let={position} label="Past Tenures">
+          <:col :let={{_id, position}} label="Past Tenures">
             <%= position.past_tenures |> Enum.map(fn t -> t.name end) |> Enum.join(", ") %>
           </:col>
         </.table>
@@ -95,15 +95,15 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
           id="meetings"
           rows={@meetings}
           row_click={
-            fn row -> JS.navigate(~p"/organizations/#{@organization}/meetings/#{row.id}") end
+            fn {_id, row} -> JS.navigate(~p"/organizations/#{@organization}/meetings/#{row.id}") end
           }
         >
-          <:col :let={meeting} label="Title"><%= meeting.title %></:col>
-          <:col :let={meeting} label="Topic"><%= meeting.topic %></:col>
-          <:col :let={meeting} label="Date"><%= meeting.date %></:col>
-          <:col :let={meeting} label="Start"><%= meeting.scheduled_start_time %></:col>
-          <:col :let={meeting} label="End"><%= meeting.scheduled_end_time %></:col>
-          <:col :let={meeting} label="Location"><%= meeting.location %></:col>
+          <:col :let={{_id, meeting}} label="Title"><%= meeting.title %></:col>
+          <:col :let={{_id, meeting}} label="Topic"><%= meeting.topic %></:col>
+          <:col :let={{_id, meeting}} label="Date"><%= meeting.date %></:col>
+          <:col :let={{_id, meeting}} label="Start"><%= meeting.scheduled_start_time %></:col>
+          <:col :let={{_id, meeting}} label="End"><%= meeting.scheduled_end_time %></:col>
+          <:col :let={{_id, meeting}} label="Location"><%= meeting.location %></:col>
         </.table>
       </div>
     </div>
@@ -131,17 +131,17 @@ defmodule MeetingMinuetWeb.OrganizationLive.ShowComponents do
       </.header>
       <div class="flex-grow overflow-y-auto">
         <.table id="members" rows={@members}>
-          <:col :let={member} label="Name"><%= member.name %></:col>
-          <:col :let={member} label="Current Positions">
+          <:col :let={{_id, member}} label="Name"><%= member.name %></:col>
+          <:col :let={{_id, member}} label="Current Positions">
             <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
           </:col>
-          <:col :let={member} label="Past Positions">
+          <:col :let={{_id, member}} label="Past Positions">
             <%= member.past_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
           </:col>
-          <:col :let={member} label="Member Since">
+          <:col :let={{_id, member}} label="Member Since">
             <.date_range_text date_range={member.active_range} type="start" />
           </:col>
-          <:col :let={member} label="Online">
+          <:col :let={{_id, member}} label="Online">
             <%= if member.user_id do %>
               <.icon
                 name="hero-user-circle"

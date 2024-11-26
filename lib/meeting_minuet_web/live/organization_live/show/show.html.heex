@@ -16,14 +16,14 @@
       <.meetings
         organization={@organization}
         membership={@current_membership}
-        meetings={@meetings}
+        meetings={@streams.meetings}
       />
     </.card>
     <.card class="col-span-1 row-span-2">
       <.positions
         organization={@organization}
         membership={@current_membership}
-        positions={@positions}
+        positions={@streams.positions}
         presences={@presences}
       />
     </.card>
@@ -31,7 +31,7 @@
       <.members
         organization={@organization}
         membership={@current_membership}
-        members={@members}
+        members={@streams.members}
         presences={@presences}
       />
     </.card>
@@ -102,5 +102,6 @@
     id="invite_member"
     title={@page_title}
     organization={@organization}
+    patch={~p"/organizations/#{@organization}"}
   />
 </.modal>

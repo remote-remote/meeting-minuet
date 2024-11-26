@@ -1,7 +1,10 @@
 <div class="grid grid-cols-5 grid-rows-5 gap-4">
   <div class="row-span-2 col-span-2 row-start-1 col-start-1">
     <.card class="h-full">
-      <.upcoming_meetings upcoming_meetings={@upcoming_meetings} organization={@organization} />
+      <.upcoming_meetings
+        upcoming_meetings={@streams.upcoming_meetings}
+        organization={@organization}
+      />
     </.card>
   </div>
   <div class="col-span-3 col-start-3 row-start-1">

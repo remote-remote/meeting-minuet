@@ -6,7 +6,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.Show do
 
   alias MeetingMinuetWeb.DTO
   alias MeetingMinuet.Organizations.Presence
-  alias MeetingMinuet.{Meetings, Organizations}
+  alias MeetingMinuet.Organizations
   alias MeetingMinuet.Meetings.Meeting
 
   @impl true
@@ -16,24 +16,27 @@ defmodule MeetingMinuetWeb.OrganizationLive.Show do
     {:ok,
      assign(socket,
        presences: Presence.list_users(org_id)
-     )}
+     )
+     |> assign_new(:organization, fn ->
+       Organizations.get_fully_preloaded_organization!(socket.assigns.current_user, org_id)
+     end)
+     |> stream(:positions, [])
+     |> stream(:meetings, [])
+     |> stream(:members, [])}
   end
 
   @impl true
-  def handle_params(%{"organization_id" => org_id} = params, _, socket) do
-    organization = Organizations.get_organization!(socket.assigns.current_user, org_id)
-
+  def handle_params(params, _, %{assigns: %{organization: organization}} = socket) do
     socket
-    |> assign(:organization, organization)
-    |> assign(
+    |> stream(
       :positions,
-      Organizations.list_positions(org_id)
+      organization.positions
       |> DTO.Position.map_list()
     )
-    |> assign(:meetings, Meetings.list_org_meetings(org_id))
-    |> assign(
+    |> stream(:meetings, organization.meetings)
+    |> stream(
       :members,
-      Organizations.list_members(org_id)
+      organization.memberships
       |> DTO.Member.map_list()
     )
     |> apply_action(socket.assigns.live_action, params)
@@ -77,12 +80,19 @@ defmodule MeetingMinuetWeb.OrganizationLive.Show do
     {:noreply, Presence.handle_diff(socket, diff)}
   end
 
-  def handle_info({MeetingMinuetWeb.PositionLive.FormComponent, {:saved, _position}}, socket) do
-    {:noreply, socket}
+  def handle_info({MeetingMinuetWeb.OrganizationLive.PositionForm, {:saved, position}}, socket) do
+    {:noreply,
+     stream_insert(
+       socket,
+       :positions,
+       position
+       |> Organizations.Positions.load_tenures()
+       |> DTO.Position.map()
+     )}
   end
 
   def handle_info(
-        {MeetingMinuetWeb.OrganizationLive.FormComponent, {:saved, organization}},
+        {MeetingMinuetWeb.OrganizationLive.OrganizationForm, {:saved, organization}},
         socket
       ) do
     Phoenix.PubSub.broadcast(
@@ -92,6 +102,15 @@ defmodule MeetingMinuetWeb.OrganizationLive.Show do
     )
 
     {:noreply, socket}
+  end
+
+  def handle_info(
+        {MeetingMinuetWeb.OrganizationLive.InvitationForm, {:member_invited, membership}},
+        socket
+      ) do
+    member = Organizations.get_member!(membership.id) |> DTO.Member.map_preloaded_membership()
+
+    {:noreply, stream_insert(socket, :members, member)}
   end
 
   def handle_info({:organization_saved, organization}, socket) do

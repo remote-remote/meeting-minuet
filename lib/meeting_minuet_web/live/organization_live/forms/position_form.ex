@@ -21,11 +21,10 @@ defmodule MeetingMinuetWeb.OrganizationLive.PositionForm do
         id="position-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-debounce="500"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:description]} type="text" label="Description" />
+        <.input field={@form[:name]} phx-debounce="500" type="text" label="Name" />
+        <.input field={@form[:description]} phx-debounce="500" type="text" label="Description" />
         <.input field={@form[:requires_report]} type="checkbox" label="Requires Report" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Position</.button>

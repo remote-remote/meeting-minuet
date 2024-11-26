@@ -172,7 +172,7 @@ defmodule MeetingMinuet.Meetings do
         join: mb in assoc(a, :membership),
         where: mb.user_id == ^user_id,
         preload: [:organization, :attendees],
-        order_by: [desc: m.date, desc: m.scheduled_start_time],
+        order_by: [asc: m.date, asc: m.scheduled_start_time],
         limit: ^opts[:limit]
     )
   end

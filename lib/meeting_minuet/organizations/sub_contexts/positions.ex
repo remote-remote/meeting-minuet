@@ -12,6 +12,10 @@ defmodule MeetingMinuet.Organizations.Positions do
     Position.changeset(position, attrs)
   end
 
+  def load_tenures(%Position{} = position) do
+    position |> Repo.preload(tenures: :user)
+  end
+
   def update_position(%Position{} = position, attrs) do
     position
     |> Position.changeset(attrs)
