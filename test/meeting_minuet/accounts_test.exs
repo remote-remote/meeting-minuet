@@ -97,7 +97,7 @@ defmodule MeetingMinuet.AccountsTest do
   describe "change_user_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_registration(%User{})
-      assert changeset.required == [:password, :email, :name]
+      assert changeset.required == [:password, :email, :name, :roles]
     end
 
     test "allows fields to be set" do

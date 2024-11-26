@@ -34,13 +34,6 @@ defmodule MeetingMinuet.Reports.Report do
     |> cast_assoc(:agenda_item_report)
   end
 
-  defp maybe_put_assoc(cs, assoc, assoc_change) do
-    case get_change(cs, assoc) do
-      nil -> put_assoc(cs, assoc, assoc_change)
-      _ -> cs
-    end
-  end
-
   def agenda_item_position_report_changeset(%Report{} = report, attrs \\ %{}) do
     report
     |> cast(attrs, [:text])

@@ -26,6 +26,7 @@ defmodule MeetingMinuet.Organizations do
   defdelegate update_tenure(tenure, attrs), to: Positions
 
   defdelegate list_organizations(user), to: Organizations
+  defdelegate get_organization!(organization_id), to: Organizations
   defdelegate get_organization!(user, organization_id), to: Organizations
   defdelegate create_organization(attrs), to: Organizations
   defdelegate create_organization(attrs, user), to: Organizations

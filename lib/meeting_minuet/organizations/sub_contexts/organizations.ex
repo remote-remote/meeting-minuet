@@ -2,6 +2,7 @@ defmodule MeetingMinuet.Organizations.Organizations do
   alias MeetingMinuet.Repo
   alias MeetingMinuet.Accounts.User
   alias MeetingMinuet.Organizations.Organization
+  import Ecto.Query
 
   def list_organizations(%User{} = user) do
     Organization.q_list_with_memberships(user.id)
@@ -26,6 +27,14 @@ defmodule MeetingMinuet.Organizations.Organizations do
   def get_organization!(%User{} = user, organization_id) do
     Organization.q_get_with_memberships(user.id, organization_id)
     |> Repo.one!()
+  end
+
+  def get_organization!(organization_id) do
+    Repo.one!(
+      from o in Organization,
+        where: o.id == ^organization_id,
+        preload: [:memberships]
+    )
   end
 
   @doc """

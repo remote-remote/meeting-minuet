@@ -23,6 +23,8 @@ config :meeting_minuet, MeetingMinuetWeb.Endpoint,
   secret_key_base: "aAX125w55G0GvVKBcaEAxxPoBEopsa9iyxCtsaF2zd0MwngxSmox91DNFX/cc5hs",
   server: false
 
+config :meeting_minuet, registration_enabled: true
+
 # In test we don't send emails.
 config :meeting_minuet, MeetingMinuet.Mailer, adapter: Swoosh.Adapters.Test
 

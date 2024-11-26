@@ -23,7 +23,7 @@
           Log out
         </.link>
       <% else %>
-        <%= if @is_dev do %>
+        <%= if @registration_enabled do %>
           <.link href={~p"/users/register"} class="text-brand-500 hover:underline">
             Register
           </.link>

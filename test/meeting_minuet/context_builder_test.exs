@@ -1,9 +1,8 @@
 defmodule MeetingMinuet.ContextBuilderTest do
   use MeetingMinuet.DataCase
   import MeetingMinuet.ContextBuilder
-  import MeetingMinuet.Repo
   alias MeetingMinuet.Accounts.User
-  alias MeetingMinuet.Organizations.{Organization, Position, Membership, Tenure}
+  alias MeetingMinuet.Organizations.{Organization, Position, Membership}
 
   @input %{
     # username: %{ ??? future config }
@@ -26,7 +25,7 @@ defmodule MeetingMinuet.ContextBuilderTest do
         positions: %{
           chair: %{
             # keyof member and users: active_range
-            user1: {Date.new!(2023, 1, 1), 2023, 12, 31},
+            user1: {Date.new!(2023, 1, 1), Date.new!(2023, 12, 31)},
             user2: {Date.new!(2024, 1, 1), nil}
           },
           fluffer: %{},
@@ -35,6 +34,7 @@ defmodule MeetingMinuet.ContextBuilderTest do
       },
       org2: %{
         owner: :user1,
+        memberships: %{},
         positions: %{}
       }
     }
@@ -69,7 +69,7 @@ defmodule MeetingMinuet.ContextBuilderTest do
     end
 
     test "orgs were saved", structure do
-      assert Map.size(@input[:orgs]) == Repo.aggregate(Organization, :count, :id)
+      assert map_size(@input[:orgs]) == Repo.aggregate(Organization, :count, :id)
       user1 = Repo.get_by!(User, name: "user1")
       org1 = Repo.get_by!(Organization, name: "org1")
       org2 = Repo.get_by!(Organization, name: "org2")
@@ -82,7 +82,7 @@ defmodule MeetingMinuet.ContextBuilderTest do
     end
 
     test "users were saved", structure do
-      assert Map.size(@input[:users]) == Repo.aggregate(User, :count, :id)
+      assert map_size(@input[:users]) == Repo.aggregate(User, :count, :id)
       user1 = Repo.get_by!(User, name: "user1")
       user2 = Repo.get_by!(User, name: "user2")
       user3 = Repo.get_by!(User, name: "user3")

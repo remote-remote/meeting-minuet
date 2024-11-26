@@ -1,7 +1,7 @@
 defmodule MeetingMinuetWeb.UserLoginLive do
   use MeetingMinuetWeb, :live_view
 
-  @is_dev Application.compile_env(:meeting_minuet, :dev_routes)
+  @registration_enabled Application.compile_env(:meeting_minuet, :registration_enabled)
 
   def render(assigns) do
     ~H"""
@@ -9,7 +9,7 @@ defmodule MeetingMinuetWeb.UserLoginLive do
       <.header class="text-center">
         Log in to account
         <:subtitle>
-          <%= if @is_dev do %>
+          <%= if @registration_enabled do %>
             Don't have an account?
             <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
               Sign up
@@ -42,6 +42,8 @@ defmodule MeetingMinuetWeb.UserLoginLive do
   def mount(_params, _session, socket) do
     email = Phoenix.Flash.get(socket.assigns.flash, :email)
     form = to_form(%{"email" => email}, as: "user")
-    {:ok, assign(socket, form: form, is_dev: @is_dev), temporary_assigns: [form: form]}
+
+    {:ok, assign(socket, form: form, registration_enabled: @registration_enabled),
+     temporary_assigns: [form: form]}
   end
 end

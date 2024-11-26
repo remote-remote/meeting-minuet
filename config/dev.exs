@@ -64,6 +64,7 @@ config :meeting_minuet, MeetingMinuetWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :meeting_minuet, dev_routes: true
+config :meeting_minuet, registration_enabled: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

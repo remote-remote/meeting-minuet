@@ -28,8 +28,8 @@ defmodule MeetingMinuetWeb.UserSocket do
   def id(_socket), do: nil
 
   # Implement your user verification logic
-  defp verify_user(_token) do
-    # For simplicity, we'll skip this
-    {:ok, %{}}
-  end
+  # defp verify_user(_token) do
+  #   # For simplicity, we'll skip this
+  #   {:ok, %{}}
+  # end
 end

@@ -18,7 +18,7 @@ defmodule MeetingMinuetWeb.UserLoginLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/users/log_in")
-        |> follow_redirect(conn, "/")
+        |> follow_redirect(conn, "/organizations")
 
       assert {:ok, _conn} = result
     end
@@ -36,7 +36,7 @@ defmodule MeetingMinuetWeb.UserLoginLiveTest do
 
       conn = submit_form(form, conn)
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/organizations"
     end
 
     test "redirects to login page with a flash error if there are no valid credentials", %{
@@ -63,7 +63,7 @@ defmodule MeetingMinuetWeb.UserLoginLiveTest do
 
       {:ok, _login_live, login_html} =
         lv
-        |> element(~s|main a:fl-contains("Sign up")|)
+        |> element(~s|div a:fl-contains("Sign up")|)
         |> render_click()
         |> follow_redirect(conn, ~p"/users/register")
 

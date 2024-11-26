@@ -36,10 +36,27 @@ defmodule MeetingMinuet.OrganizationsTest do
     end
 
     @invalid_attrs %{name: nil, description: nil}
-
-    test "get_organization!/1 returns the organization with given id", context do
+    test "get_organization!/1 returns the organization", context do
       organization = get_org(context, :org1)
-      assert Organizations.get_organization!(organization.id) == organization
+
+      assert Organizations.get_organization!(organization.id).id == organization.id
+    end
+
+    test "get_organization!/2 returns the organization for owner", context do
+      organization = get_org(context, :org1)
+      owner = get_user(context, :user1)
+      assert Organizations.get_organization!(owner, organization.id).id == organization.id
+    end
+
+    test "get_organization!/2 returns nil for non-owner", context do
+      organization = get_org(context, :org1)
+      non_owner = get_user(context, :user2)
+
+      assert_raise Ecto.NoResultsError,
+                   fn ->
+                     Organizations.get_organization!(non_owner, organization.id).id ==
+                       organization.id
+                   end
     end
 
     test "create_organization/1 with valid data creates a organization", context do
@@ -70,9 +87,9 @@ defmodule MeetingMinuet.OrganizationsTest do
       assert {:ok, %Organization{} = organization} =
                Organizations.update_organization(organization, update_attrs)
 
-      assert organization == Organizations.get_organization!(organization.id)
-      assert organization.name == "some updated name"
-      assert organization.description == "some updated description"
+      found_org = Organizations.get_organization!(organization.id)
+      assert found_org.name == "some updated name"
+      assert found_org.description == "some updated description"
     end
 
     test "update_organization/2 with invalid data returns error changeset", context do
@@ -81,7 +98,8 @@ defmodule MeetingMinuet.OrganizationsTest do
       assert {:error, %Ecto.Changeset{}} =
                Organizations.update_organization(organization, @invalid_attrs)
 
-      assert organization == Organizations.get_organization!(organization.id)
+      assert organization |> Repo.preload(:memberships) ==
+               Organizations.get_organization!(organization.id)
     end
 
     test "delete_organization/1 deletes the organization", context do
