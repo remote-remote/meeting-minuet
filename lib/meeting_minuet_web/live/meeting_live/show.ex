@@ -3,7 +3,6 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
   alias MeetingMinuetWeb.DTO.Member
   use MeetingMinuetWeb, :live_view
 
-  import MeetingMinuetWeb.LayoutComponents
   import MeetingMinuet.Meetings.Permissions
   alias MeetingMinuet.Meetings
   alias MeetingMinuet.Meetings.{Presence, Notifications}
@@ -58,6 +57,10 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
     |> apply_action(socket.assigns.live_action, params)
   end
 
+  def apply_action(socket, :edit, _params) do
+    {:noreply, socket |> assign(:page_title, "Edit meeting")}
+  end
+
   def apply_action(socket, :show, _params) do
     {:noreply, socket |> assign(:page_title, "Show Meeting")}
   end
@@ -77,8 +80,6 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
   end
 
   def apply_action(socket, :edit_agenda_item, %{"agenda_item_id" => item_id}) do
-    IO.inspect(socket.assigns, label: "edit agenda item socket")
-
     item =
       Enum.find(socket.assigns.agenda_items, fn item -> item.id == String.to_integer(item_id) end)
 
@@ -123,7 +124,7 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
     end
 
     if socket.assigns.live_action == :edit_agenda_item do
-      Meetings.update_agenda_item(socket.agenda_item, attrs)
+      Meetings.update_agenda_item(socket.assigns.agenda_item, attrs)
     end
 
     assign(socket, :agenda_items, Meetings.list_agenda_items(socket.assigns.meeting.id))

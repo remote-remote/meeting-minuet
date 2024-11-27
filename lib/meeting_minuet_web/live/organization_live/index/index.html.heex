@@ -1,19 +1,72 @@
 <div class="grid grid-cols-5 grid-rows-5 gap-4">
   <div class="row-span-2 col-span-2 row-start-1 col-start-1">
     <.card class="h-full">
-      <.upcoming_meetings
-        upcoming_meetings={@streams.upcoming_meetings}
-        organization={@organization}
-      />
+      <:header>
+        Upcoming Meetings
+      </:header>
+      <.table
+        id="user_meetings"
+        rows={@streams.upcoming_meetings}
+        row_click={
+          fn {_id, meeting} ->
+            JS.navigate(~p"/organizations/#{meeting.organization_id}/meetings/#{meeting.id}")
+          end
+        }
+      >
+        <:col :let={{_id, meeting}} label="Title">
+          <%= meeting.title %>
+        </:col>
+        <:col :let={{_id, meeting}} label="Organization">
+          <%= meeting.organization.name %>
+        </:col>
+        <:col :let={{_id, meeting}} label="Scheduled At">
+          <%= meeting.date %> <%= meeting.scheduled_start_time %>
+        </:col>
+      </.table>
     </.card>
   </div>
   <div class="col-span-3 col-start-3 row-start-1">
     <.card>
-      <.organizations
-        organizations={@streams.organizations}
-        current_user={@current_user}
-        title="Organizations"
-      />
+      <:header>
+        Organizations
+      </:header>
+      <:header_action>
+        <.link patch={~p"/organizations/new"}>
+          <.button>
+            <.icon name="hero-plus" class="h-3 w-3" /> Create
+          </.button>
+        </.link>
+      </:header_action>
+
+      <.table
+        id="organizations"
+        rows={@streams.organizations}
+        row_click={
+          fn {_id, organization} -> JS.navigate(~p"/organizations/#{organization.id}") end
+        }
+      >
+        <:col :let={{_id, organization}} label="Name"><%= organization.name %></:col>
+        <:col :let={{_id, organization}} label="Description">
+          <%= organization.description %>
+        </:col>
+        <:action :let={{_id, organization}}>
+          <.link
+            :if={edit_organization?(organization, @current_user)}
+            patch={~p"/organizations/#{organization}/edit"}
+          >
+            Edit
+          </.link>
+        </:action>
+        <:action :let={{id, organization}}>
+          <.link
+            :if={delete_organization?(organization, @current_user)}
+            phx-click={JS.push("delete", value: %{id: organization.id}) |> hide("##{id}")}
+            data-confirm="Are you sure?"
+          >
+            Delete
+          </.link>
+        </:action>
+      </.table>
     </.card>
   </div>
 </div>

@@ -1,6 +1,5 @@
 defmodule MeetingMinuetWeb.PositionLive.Show do
   use MeetingMinuetWeb, :live_view
-  import MeetingMinuetWeb.LayoutComponents
   import MeetingMinuetWeb.DateComponents
   alias MeetingMinuetWeb.DTO
   alias MeetingMinuet.Organizations

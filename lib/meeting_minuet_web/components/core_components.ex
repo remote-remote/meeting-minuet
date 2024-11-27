@@ -16,7 +16,6 @@ defmodule MeetingMinuetWeb.CoreComponents do
   """
   use Phoenix.Component
 
-  alias MeetingMinuetWeb.Component.Button
   alias Phoenix.LiveView.JS
   import MeetingMinuetWeb.Gettext
 
@@ -40,6 +39,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
   attr :id, :string, required: true
   attr :show, :boolean, default: false
   attr :on_cancel, JS, default: %JS{}
+  attr :title, :string, default: ""
   slot :inner_block, required: true
 
   def modal(assigns) do
@@ -53,7 +53,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
     >
       <div
         id={"#{@id}-bg"}
-        class="bg-brand-500/90 fixed inset-0 transition-opacity"
+        class="bg-secondary-950/70 fixed inset-0 transition-opacity"
         aria-hidden="true"
       />
       <div
@@ -71,19 +71,22 @@ defmodule MeetingMinuetWeb.CoreComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-brand-700/10 ring-brand-700/10 relative hidden rounded-lg bg-brand-50 p-14 shadow-lg ring-1 transition"
+              class="shadow-secondary-700/10 ring-secondary-700/10 relative hidden rounded bg-secondary-50 shadow-lg ring-1 transition"
             >
-              <div class="absolute top-6 right-5">
-                <button
-                  phx-click={JS.exec("data-cancel", to: "##{@id}")}
-                  type="button"
-                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
-                  aria-label={gettext("close")}
-                >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
-                </button>
+              <div class="py-4 px-8 border-b">
+                <h1 class="text-lg font-medium"><%= @title %></h1>
+                <div class="absolute top-4 right-4">
+                  <button
+                    phx-click={JS.exec("data-cancel", to: "##{@id}")}
+                    type="button"
+                    class="-m-3 flex-none p-3 opacity-40 hover:opacity-60"
+                    aria-label={gettext("close")}
+                  >
+                    <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  </button>
+                </div>
               </div>
-              <div id={"#{@id}-content"}>
+              <div id={"#{@id}-content" } class="p-8">
                 <%= render_slot(@inner_block) %>
               </div>
             </.focus_wrap>
@@ -208,9 +211,9 @@ defmodule MeetingMinuetWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8">
+      <div class="space-y-6">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div :for={action <- @actions} class="mt-2 flex items-center justify-end gap-6">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -235,18 +238,18 @@ defmodule MeetingMinuetWeb.CoreComponents do
 
   def button(assigns) do
     ~H"""
-    <Button.button
+    <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg #{if @disabled, do: "bg-zinc-200", else: "bg-action-500 hover:bg-action-600"} py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 rounded border #{if @disabled, do: "bg-secondary-200/50", else: "bg-secondary-50 hover:shadow-sm"} py-1 px-3",
+        "text-sm leading-6",
         @class
       ]}
       disabled={@disabled}
       {@rest}
     >
       <%= render_slot(@inner_block) %>
-    </Button.button>
+    </button>
     """
   end
 
@@ -342,7 +345,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
       <select
         id={@id}
         name={@name}
-        class="mt-2 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
+        class="mt-2 block w-full rounded border border-secondary-300 bg-secondary-50 shadow-sm focus:border-zinc-400 focus:ring-0 sm:text-sm"
         multiple={@multiple}
         {@rest}
       >
@@ -362,7 +365,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           "min-h-[6rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -385,9 +388,9 @@ defmodule MeetingMinuetWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
+          "block px-0 border-0 border-b bg-transparent w-full text-secondary-950 focus:ring-0 sm:text-sm sm:leading-6",
+          "phx-no-feedback:border-secondary-300 phx-no-feedback:focus:border-secondary-400",
+          @errors == [] && "border-secondary-300 focus:border-secondary-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
@@ -405,7 +408,7 @@ defmodule MeetingMinuetWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm leading-6 text-secondary-500">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -484,11 +487,13 @@ defmodule MeetingMinuetWeb.CoreComponents do
 
     ~H"""
     <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
+      <table class="w-[40rem] sm:w-full">
+        <thead class="text-sm text-left leading-6 text-secondary-950">
           <tr>
-            <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal"><%= col[:label] %></th>
-            <th :if={@action != []} class="relative p-0 pb-4">
+            <th :for={col <- @col} class="px-6 py-2 font-normal">
+              <%= col[:label] %>
+            </th>
+            <th :if={@action != []} class="relative p-0">
               <span class="sr-only"><%= gettext("Actions") %></span>
             </th>
           </tr>
@@ -496,27 +501,31 @@ defmodule MeetingMinuetWeb.CoreComponents do
         <tbody
           id={@id}
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
+          class="relative divide-y divide-secondary-100 border-t border-secondary-100 text-sm leading-6 text-secondary-700"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-brand-100">
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="group hover:bg-secondary-100/50"
+          >
             <td
               :for={{col, i} <- Enum.with_index(@col)}
               phx-click={@row_click && @row_click.(row)}
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
-              <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-brand-100 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
+              <div class="block px-6 py-4">
+                <span class="absolute -inset-y-px right-0 -left-4 " />
+                <span class={["relative", i == 0 && "font-medium text-secondary-900"]}>
                   <%= render_slot(col, @row_item.(row)) %>
                 </span>
               </div>
             </td>
             <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-brand-100 sm:rounded-r-xl" />
+              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium pr-6">
+                <span class="absolute -inset-y-px -right-4 left-0" />
                 <span
                   :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+                  class="relative ml-4 font-semibold leading-6 text-secondary-900 hover:text-secondary-700"
                 >
                   <%= render_slot(action, @row_item.(row)) %>
                 </span>
@@ -604,6 +613,40 @@ defmodule MeetingMinuetWeb.CoreComponents do
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
+    """
+  end
+
+  attr :class, :string, default: ""
+  slot :inner_block, required: true
+  slot :header
+  slot :sub_header
+  slot :header_action
+
+  def card(assigns) do
+    ~H"""
+    <div class={[
+      "bg-secondary-50 border border-secondary-100 shadow rounded-md grid grid-rows-[auto,1fr]",
+      @class
+    ]}>
+      <div :if={@header != []} class="flex justify-between border-b">
+        <div class="px-6 py-4">
+          <div class="font-medium text-lg">
+            <%= render_slot(@header) %>
+          </div>
+          <div :if={@sub_header != []} class="text-sm">
+            <%= render_slot(@sub_header) %>
+          </div>
+        </div>
+        <div :if={@header_action != []} class="text-sm font-normal my-auto mr-6">
+          <%= render_slot(@header_action) %>
+        </div>
+      </div>
+      <div class="row-span-1 h-full overflow-hidden flex flex-col">
+        <div class="flex-grow overflow-y-auto">
+          <%= render_slot(@inner_block) %>
+        </div>
+      </div>
+    </div>
     """
   end
 

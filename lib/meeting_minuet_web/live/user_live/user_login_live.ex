@@ -5,10 +5,12 @@ defmodule MeetingMinuetWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto p-8 max-w-md bg-brand-100 rounded-lg border border-brand-300">
-      <.header class="text-center">
-        Log in to account
-        <:subtitle>
+    <div class="mx-auto p-8 max-w-md">
+      <.card class="">
+        <:header>
+          Log in to account
+        </:header>
+        <:sub_header>
           <%= if @registration_enabled do %>
             Don't have an account?
             <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
@@ -16,25 +18,26 @@ defmodule MeetingMinuetWeb.UserLoginLive do
             </.link>
             for an account now.
           <% end %>
-        </:subtitle>
-      </.header>
+        </:sub_header>
+        <div class="p-8">
+          <.simple_form for={@form} id="login_form" action={~p"/users/log_in"} phx-update="ignore">
+            <.input field={@form[:email]} type="email" label="Email" required />
+            <.input field={@form[:password]} type="password" label="Password" required />
 
-      <.simple_form for={@form} id="login_form" action={~p"/users/log_in"} phx-update="ignore">
-        <.input field={@form[:email]} type="email" label="Email" required />
-        <.input field={@form[:password]} type="password" label="Password" required />
-
-        <:actions>
-          <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
-          <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
-            Forgot your password?
-          </.link>
-        </:actions>
-        <:actions>
-          <.button phx-disable-with="Logging in..." class="w-full">
-            Log in <span aria-hidden="true">→</span>
-          </.button>
-        </:actions>
-      </.simple_form>
+            <:actions>
+              <.input field={@form[:remember_me]} type="checkbox" label="Keep me logged in" />
+              <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
+                Forgot your password?
+              </.link>
+            </:actions>
+            <:actions>
+              <.button phx-disable-with="Logging in..." class="w-full">
+                Log in <span aria-hidden="true">→</span>
+              </.button>
+            </:actions>
+          </.simple_form>
+        </div>
+      </.card>
     </div>
     """
   end

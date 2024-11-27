@@ -12,10 +12,6 @@ defmodule MeetingMinuetWeb.OrganizationLive.PositionForm do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-      </.header>
-
       <.simple_form
         for={@form}
         id="position-form"

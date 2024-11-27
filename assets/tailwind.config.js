@@ -24,26 +24,49 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ...require("./tailwind.colors.json"),
         brand: {
-          '50': '#f5f8f7',
-          '100': '#ddeae7',
-          '200': '#bbd4d0',
-          '300': '#82aca7',
-          '400': '#6b9693',
-          '500': '#507c79',
-          '600': '#3f6260',
-          '700': '#35504f',
-          '800': '#2d4241',
-          '900': '#293838',
-          '950': '#141f1f',
+          '50': '#f3f7fc',
+          '100': '#e6eff8',
+          '200': '#c7ddf0',
+          '300': '#96c1e3',
+          '400': '#5da1d3',
+          '500': '#3985be',
+          '600': '#2869a1',
+          '700': '#225482',
+          '800': '#20496c',
+          '900': '#1f3e5b',
+          '950': '#193049',
+        },
+        secondary: {
+          '50': '#f5f4f1',
+          '100': '#e5e3dc',
+          '200': '#ccc9bc',
+          '300': '#afa995',
+          '400': '#988e77',
+          '500': '#8e836d',
+          '600': '#756959',
+          '700': '#5f5449',
+          '800': '#524841',
+          '900': '#48403b',
+          '950': '#282220',
+        },
+        action: {
+          '50': '#fffaec',
+          '100': '#fff3d3',
+          '200': '#ffe4a5',
+          '300': '#ffce6d',
+          '400': '#ffae32',
+          '500': '#ff930a',
+          '600': '#ff7b00',
+          '700': '#cc5902',
+          '800': '#a1450b',
+          '900': '#823b0c',
+          '950': '#461b04',
         },
       }
     }
   },
   plugins: [
-    require("@tailwindcss/typography"),
-    require("tailwindcss-animate"),
     require("@tailwindcss/forms"),
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:

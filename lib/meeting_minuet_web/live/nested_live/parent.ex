@@ -1,6 +1,5 @@
 defmodule MeetingMinuetWeb.NestedLive.Parent do
   use MeetingMinuetWeb, :live_view
-  import MeetingMinuetWeb.LayoutComponents
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, pid: self())}

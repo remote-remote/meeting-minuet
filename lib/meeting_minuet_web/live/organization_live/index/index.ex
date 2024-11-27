@@ -1,7 +1,6 @@
 defmodule MeetingMinuetWeb.OrganizationLive.Index do
   use MeetingMinuetWeb, :live_view
-  import MeetingMinuetWeb.LayoutComponents
-  import MeetingMinuetWeb.OrganizationLive.IndexComponents
+  import MeetingMinuet.Organizations.Permissions
 
   alias MeetingMinuet.Organizations
   alias MeetingMinuet.Organizations.Organization

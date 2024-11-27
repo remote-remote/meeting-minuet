@@ -5,24 +5,19 @@ defmodule MeetingMinuetWeb.OrganizationLive.MeetingForm do
   def render(assigns) do
     ~H"""
     <div>
-      <.header>
-        <%= @title %>
-      </.header>
-
       <.simple_form
         for={@form}
         id="meeting-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-debounce="500"
         phx-submit="save"
       >
-        <.input field={@form[:title]} type="text" label="Title" />
-        <.input field={@form[:topic]} type="text" label="Topic" />
-        <.input field={@form[:date]} type="date" label="Date" />
+        <.input field={@form[:title]} phx-debounce="500" type="text" label="Title" />
+        <.input field={@form[:topic]} phx-debounce="500" type="text" label="Topic" />
+        <.input field={@form[:date]} phx-debounce="500" type="date" label="Date" />
         <.input field={@form[:scheduled_start_time]} type="time" label="Start" />
         <.input field={@form[:scheduled_end_time]} type="time" label="End" />
-        <.input field={@form[:location]} label="Location" />
+        <.input field={@form[:location]} phx-debounce="500" label="Location" />
         <.input
           field={@form[:timezone]}
           type="select"
@@ -71,6 +66,26 @@ defmodule MeetingMinuetWeb.OrganizationLive.MeetingForm do
   def handle_event(event, socket) do
     IO.inspect(event, label: "Unhandled event")
     {:noreply, socket}
+  end
+
+  def save_meeting(
+        %{assigns: %{meeting: meeting, organization: organization}} =
+          socket,
+        :edit,
+        attrs
+      ) do
+    case Meetings.update_meeting(meeting, attrs) do
+      {:ok, saved_meeting} ->
+        notify_parent({:saved, saved_meeting})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Meeting created successfully")
+         |> push_navigate(to: ~p"/organizations/#{organization}/meetings/#{saved_meeting.id}")}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    end
   end
 
   def save_meeting(

@@ -2,7 +2,6 @@ defmodule MeetingMinuetWeb.MeetingLive.Live do
   alias MeetingMinuetWeb.DTO.Member
   use MeetingMinuetWeb, :live_view
 
-  import MeetingMinuetWeb.LayoutComponents
   alias MeetingMinuet.Meetings
   alias MeetingMinuet.Meetings.{Presence, Notifications}
   alias MeetingMinuet.Organizations

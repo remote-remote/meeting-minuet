@@ -1,32 +1,53 @@
-<.header>
-  <%= @meeting.title %>
-  <:subtitle><%= @meeting.topic %></:subtitle>
-  <:actions>
-    <.link
-      :if={
-        @meeting.status == :scheduled and
-          start_meeting?(@current_attendee) and
-          @meeting.date == Date.utc_today()
-      }
-      phx-click="start"
-    >
-      <.button>Start Meeting</.button>
-    </.link>
-    <.link :if={@meeting.status == :in_progress} phx-click="end">
-      <.button>End Meeting</.button>
-    </.link>
-  </:actions>
-</.header>
-<div>
-  <.card>
-    <.header>
+<div class="grid grid-cols-3 grid-rows-4 gap-4 max-w-screen-2xl mx-auto">
+  <.card class="col-start-1 row-start-1 col-span-1 row-span-1">
+    <:header>
+      Meeting Details
+    </:header>
+    <:sub_header><%= @meeting.topic %></:sub_header>
+    <:header_action :if={
+      @meeting.status == :scheduled and
+        start_meeting?(@current_attendee) and
+        @meeting.date == Date.utc_today()
+    }>
+      <.link phx-click="start">
+        <.button>Start Meeting</.button>
+      </.link>
+    </:header_action>
+    <:header_action :if={@meeting.status == :in_progress}>
+      <.link phx-click="end">
+        <.button>End Meeting</.button>
+      </.link>
+    </:header_action>
+    <:header_action>
+      <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/edit"}>
+        <.icon name="hero-pencil" class="h-5 w-5" />
+      </.link>
+    </:header_action>
+
+    <div class="px-6">
+      <.list>
+        <:item title="Title">
+          <%= @meeting.title %>
+        </:item>
+        <:item title="Scheduled Time">
+          <%= @meeting.date %> at <%= @meeting.scheduled_start_time %>
+        </:item>
+        <:item title="Status">
+          <%= @meeting.status %>
+        </:item>
+      </.list>
+    </div>
+  </.card>
+
+  <.card class="col-start-1 row-start-2 col-span-1 row-span-3">
+    <:header>
       Agenda
-      <:actions>
-        <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/agenda_items/new"}>
-          <.icon name="hero-plus" class="h-5 w-5" />
-        </.link>
-      </:actions>
-    </.header>
+    </:header>
+    <:header_action>
+      <.link patch={~p"/organizations/#{@organization}/meetings/#{@meeting}/agenda_items/new"}>
+        <.icon name="hero-plus" class="h-5 w-5" />
+      </.link>
+    </:header_action>
     <.table
       id="agenda-items"
       rows={@agenda_items}
@@ -59,97 +80,106 @@
       </:action>
       <:action :let={item}>
         <.link phx-click={JS.push("delete_agenda_item", value: %{id: item.id})}>
-          Delete
+          <.icon name="hero-trash" class="h-5 w-5" />
         </.link>
       </:action>
     </.table>
   </.card>
-</div>
-<div class="h-screen grid grid-cols-3 grid-rows-5 gap-4">
-  <div class="col col-span-1 row-span-4">
-    <.card class="h-full">
-      <.live_component
-        module={MeetingMinuetWeb.ChatComponent}
-        id="chat"
-        title="Chat"
-        chattable_type="meeting"
-        chattable_id={@meeting.id}
-        current_user={@current_user}
-      />
-    </.card>
-  </div>
-  <div class="col col-span-1 row-span-4">
-    <.card class="h-full">
-      <.header>
-        Attendees
-      </.header>
-      <.table id="attendees" rows={@attendees}>
-        <:col :let={attendee} label="Name"><%= attendee.name %></:col>
-        <:col :let={attendee} label="Email"><%= attendee.email %></:col>
-        <:col :let={attendee} label="Status"><%= attendee.status %></:col>
-        <:col :let={attendee} label="Current Positions">
-          <%= attendee.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
-        </:col>
-        <:col :let={attendee} label="Online">
-          <%= if attendee.user_id do %>
-            <.icon
-              name="hero-user-circle"
-              class={
-                if @presences[Integer.to_string(attendee.user_id)],
-                  do: "text-green-500",
-                  else: "text-slate-500"
-              }
-            />
-          <% end %>
-        </:col>
-        <:action :let={attendee}>
-          <div
-            :if={manage_attendees?(@current_attendee)}
-            phx-click="uninvite"
-            phx-value-id={attendee.membership_id}
-          >
-            <.icon name="hero-minus-circle" /> Remove
-          </div>
-        </:action>
-      </.table>
-    </.card>
-  </div>
 
-  <div class="col col-span-1 row-span-4">
-    <.card class="h-full">
-      <.header>
-        Uninvited Members
-      </.header>
-      <.table id="members" rows={@uninvited_members}>
-        <:col :let={member} label="Name"><%= member.name %></:col>
-        <:col :let={member} label="Email"><%= member.email %></:col>
-        <:col :let={member} label="Current Positions">
-          <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
-        </:col>
-        <:action :let={member}>
-          <div
-            :if={manage_attendees?(@current_attendee)}
-            phx-click="invite"
-            phx-value-id={member.id}
-          >
-            <.icon name="hero-plus-circle" /> Add
-          </div>
-        </:action>
-      </.table>
-    </.card>
-  </div>
+  <.card class="col-span-1 row-span-2">
+    <:header>
+      Attendees
+    </:header>
+    <.table id="attendees" rows={@attendees}>
+      <:col :let={attendee} label="Name"><%= attendee.name %></:col>
+      <%!-- <:col :let={attendee} label="Email"><%= attendee.email %></:col> --%>
+      <:col :let={attendee} label="Status"><%= attendee.status %></:col>
+      <:col :let={attendee} label="Current Positions">
+        <%= attendee.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <:col :let={attendee} label="Online">
+        <%= if attendee.user_id do %>
+          <.icon
+            name="hero-user-circle"
+            class={
+              if @presences[Integer.to_string(attendee.user_id)],
+                do: "text-green-500",
+                else: "text-slate-500"
+            }
+          />
+        <% end %>
+      </:col>
+      <:action :let={attendee}>
+        <div
+          :if={manage_attendees?(@current_attendee)}
+          phx-click="uninvite"
+          phx-value-id={attendee.membership_id}
+        >
+          <.icon name="hero-minus-circle" /> Remove
+        </div>
+      </:action>
+    </.table>
+  </.card>
+  <.card class="col-start-3 row-start-1 col-span-1 row-span-2">
+    <:header>
+      Uninvited Members
+    </:header>
+    <.table id="members" rows={@uninvited_members}>
+      <:col :let={member} label="Name"><%= member.name %></:col>
+      <:col :let={member} label="Email"><%= member.email %></:col>
+      <:col :let={member} label="Current Positions">
+        <%= member.current_positions |> Enum.map(fn p -> p.name end) |> Enum.join(", ") %>
+      </:col>
+      <:action :let={member}>
+        <div
+          :if={manage_attendees?(@current_attendee)}
+          phx-click="invite"
+          phx-value-id={member.id}
+        >
+          <.icon name="hero-plus-circle" /> Add
+        </div>
+      </:action>
+    </.table>
+  </.card>
+  <.card class="col-start-2 row-start-3 col-span-2 row-span-2">
+    <:header>Chat</:header>
+    <.live_component
+      module={MeetingMinuetWeb.ChatComponent}
+      id="chat"
+      title="Chat"
+      chattable_type="meeting"
+      chattable_id={@meeting.id}
+      current_user={@current_user}
+    />
+  </.card>
 </div>
+
+<.modal
+  :if={@live_action == :edit}
+  id="edit-meeting"
+  show
+  title={@page_title}
+  on_cancel={JS.patch(~p"/organizations/#{@organization}/meetings/#{@meeting}")}
+>
+  <.live_component
+    module={MeetingMinuetWeb.OrganizationLive.MeetingForm}
+    id={@meeting.id}
+    action={@live_action}
+    organization={@organization}
+    meeting={@meeting}
+    membership={@current_membership}
+  />
+</.modal>
 
 <.modal
   :if={@live_action == :new_agenda_item || @live_action == :edit_agenda_item}
   id="agenda-item-modal"
+  title={@page_title}
   show
   on_cancel={JS.patch(~p"/organizations/#{@organization}/meetings/#{@meeting}")}
 >
-  <.header>Add Agenda Item</.header>
-
   <.simple_form for={@item_form} id="agenda-item-form" phx-submit="save_agenda_item">
-    <.input field={@item_form[:name]} type="text" label="Name" />
+    <.input field={@item_form[:name]} type="text" label="Item Title" />
     <.input field={@item_form[:description]} type="textarea" label="Description" />
     <.input
       field={@item_form[:position_id]}

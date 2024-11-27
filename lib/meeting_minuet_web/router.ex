@@ -83,6 +83,7 @@ defmodule MeetingMinuetWeb.Router do
             }
           ] do
           live "/", MeetingLive.Show, :show
+          live "/edit", MeetingLive.Show, :edit
           live "/agenda_items/new", MeetingLive.Show, :new_agenda_item
           live "/agenda_items/:agenda_item_id", MeetingLive.Show, :edit_agenda_item
           live "/live", MeetingLive.Live, :live

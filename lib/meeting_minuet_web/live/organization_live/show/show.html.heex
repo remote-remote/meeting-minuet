@@ -1,7 +1,25 @@
 <div class="h-screen">
-  <.org_header organization={@organization} membership={@current_membership} />
+  <.header text_class="text-3xl">
+    <%= @organization.name %>
+
+    <:subtitle>
+      <%= @organization.description %>
+    </:subtitle>
+    <:actions>
+      <.link
+        :if={edit_organization?(@organization, @current_membership)}
+        patch={~p"/organizations/#{@organization}/show/edit"}
+        phx-click={JS.push_focus()}
+      >
+        <.icon name="hero-pencil" class="w-5 h-5" />
+      </.link>
+    </:actions>
+  </.header>
+  <!-- Grid -->
   <div class="h-screen grid grid-cols-3 grid-rows-5 gap-4">
+    <!-- Chat -->
     <.card class="col-span-1 row-span-4">
+      <:header>Chat</:header>
       <.live_component
         module={MeetingMinuetWeb.ChatComponent}
         id="chat"
@@ -11,24 +29,58 @@
         current_user={@current_user}
       />
     </.card>
-
+    <!-- Meetings -->
     <.card class="col-span-2 row-span-2">
-      <.meetings
+      <:header>
+        Meetings
+      </:header>
+      <:header_action>
+        <.link
+          :if={create_meetings?(@organization, @current_membership)}
+          patch={~p"/organizations/#{@organization}/meetings/new"}
+        >
+          <.icon name="hero-plus" class="w-5 h-5" />
+        </.link>
+      </:header_action>
+      <.meetings_table
         organization={@organization}
         membership={@current_membership}
         meetings={@streams.meetings}
       />
     </.card>
+    <!-- Positions -->
     <.card class="col-span-1 row-span-2">
-      <.positions
+      <:header>
+        Positions
+      </:header>
+      <:header_action>
+        <.link
+          :if={create_positions?(@organization, @current_membership)}
+          patch={~p"/organizations/#{@organization}/positions/new"}
+        >
+          <.icon name="hero-plus" class="w-5 h-5" />
+        </.link>
+      </:header_action>
+      <.positions_table
         organization={@organization}
         membership={@current_membership}
         positions={@streams.positions}
         presences={@presences}
       />
     </.card>
+    <!-- Members -->
     <.card class="col-span-1 row-span-2">
-      <.members
+      <:header>Members</:header>
+      <:header_action>
+        <.link
+          :if={add_members?(@organization, @current_membership)}
+          patch={~p"/organizations/#{@organization}/members/invite"}
+        >
+          <.icon name="hero-plus" class="w-5 h-5" />
+        </.link>
+      </:header_action>
+
+      <.members_table
         organization={@organization}
         membership={@current_membership}
         members={@streams.members}
@@ -60,13 +112,13 @@
 <.modal
   :if={@live_action == :new_position}
   id="position-modal"
+  title={@page_title}
   show
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
     module={MeetingMinuetWeb.OrganizationLive.PositionForm}
     id={@position.id || :new_position}
-    title={@page_title}
     action={@live_action}
     organization={@organization}
     position={@position}
@@ -77,13 +129,13 @@
 <.modal
   :if={@live_action == :new_meeting}
   id="meeting-modal"
+  title={@page_title}
   show
   on_cancel={JS.patch(~p"/organizations/#{@organization}")}
 >
   <.live_component
     module={MeetingMinuetWeb.OrganizationLive.MeetingForm}
     id={@meeting.id || :new_meeting}
-    title={@page_title}
     membership={@current_membership}
     action={@live_action}
     organization={@organization}

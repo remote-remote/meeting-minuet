@@ -1,24 +1,30 @@
-<header class="bg-brand-200 p-6 shadow-md">
+<header class="bg-gradient-to-br from-brand-900 to-brand-700 p-4 shadow shadow-brand-500">
   <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-4xl font-bold text-brand-700">
-      <.link href={~p"/organizations"}>Meeting Minuet</.link>
-    </h1>
-    <nav class="space-x-6">
+    <div class="flex items-center gap-4 text-secondary-200">
+      <img src={~p"/images/clock.png"} class="h-16 w-auto" />
+      <div>
+        <h1 class="text-4xl font-bold">
+          <.link href={~p"/organizations"}>Meeting Minuet</.link>
+        </h1>
+        <span class="text-sm ">Streamlining Meetings, One Motion at a Time.</span>
+      </div>
+    </div>
+    <nav class="space-x-6 text-secondary-200">
       <%= if @current_user do %>
-        <span class="text-brand-500">
+        <span class="text-secondary-200/80">
           <%= @current_user.email %>
         </span>
-        <.link href={~p"/users/settings"} class="text-brand-600 hover:underline">
+        <.link href={~p"/users/settings"} class="hover:underline">
           Settings
         </.link>
-        <.link href={~p"/users/log_out"} method="delete" class="text-brand-600 hover:underline">
+        <.link href={~p"/users/log_out"} method="delete" class="hover:underline">
           Log out
         </.link>
       <% else %>
-        <.link href={~p"/users/register"} class="text-brand-600 hover:underline">
+        <.link href={~p"/users/register"} class="hover:underline">
           Register
         </.link>
-        <.link href={~p"/users/log_in"} class="text-brand-600 hover:underline">
+        <.link href={~p"/users/log_in"} class="hover:underline">
           Log in
         </.link>
       <% end %>
@@ -26,7 +32,7 @@
   </div>
 </header>
 <%!-- px - padding x --%>
-<main class="px-4 py-8 sm:px-6 lg:px-8 bg-secondary-100">
+<main class="px-4 py-8 sm:px-6 lg:px-8 bg-gradient-to-br from-secondary-50 to-secondary-100">
   <div class="mx-auto">
     <.flash_group flash={@flash} />
     <%= @inner_content %>

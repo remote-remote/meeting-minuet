@@ -15,6 +15,7 @@ defmodule MeetingMinuetWeb.OrganizationLive.OrganizationForm do
       <.simple_form
         for={@form}
         id="organization-form"
+        class="bg-blue-300"
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"

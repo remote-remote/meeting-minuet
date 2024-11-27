@@ -1,8 +1,5 @@
 {
   "scripts": {
     "deploy": "cd .. && mix assets.deploy && rm -f _build/esbuild"
-  },
-  "devDependencies": {
-    "tailwindcss-animate": "^1.0.7"
   }
 }

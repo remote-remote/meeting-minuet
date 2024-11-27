@@ -153,6 +153,10 @@ defmodule MeetingMinuet.Meetings do
     |> Repo.insert()
   end
 
+  def update_meeting(%Meeting{} = meeting, attrs) do
+    meeting |> Meeting.changeset(attrs) |> Repo.update()
+  end
+
   def list_org_meetings(organization_id, query \\ [], opts \\ []) do
     Repo.all(
       from m in Meeting,

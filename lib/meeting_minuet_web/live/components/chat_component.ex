@@ -12,24 +12,20 @@ defmodule MeetingMinuetWeb.ChatComponent do
       class="h-full flex flex-col"
       phx-target={@myself}
     >
-      <.header>
-        <%= @title %>
-      </.header>
       <div class="flex-grow overflow-y-auto flex flex-col-reverse">
         <%= for message <- @chat_messages do %>
           <div class={[
-            if(message["user_id"] == @current_user.id,
-              do: "place-self-end bg-slate-200",
-              else: "place-self-start bg-brand-200"
-            ),
-            "my-4 p-2 border rounded-md background-slate-100"
+            "px-6 py-2 border-t"
           ]}>
-            <span class="font-bold"><%= message["user_name"] %>:</span>
-            <span><%= message["body"] %></span>
+            <div>
+              <span class="font-medium"><%= message["user_name"] %></span>
+              <span class="text-sm"><%= message["inserted_at"] %></span>
+            </div>
+            <div><%= message["body"] %></div>
           </div>
         <% end %>
       </div>
-      <form id="message-form" class="mt-4">
+      <form id="message-form" class="p-4">
         <div class="flex gap-2">
           <input id="message-input" name="message" value="" class="flex-grow border rounded p-2" />
           <.button class="w-auto my-4" phx-click="">Send</.button>

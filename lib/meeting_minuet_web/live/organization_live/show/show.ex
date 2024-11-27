@@ -1,8 +1,8 @@
 defmodule MeetingMinuetWeb.OrganizationLive.Show do
   use MeetingMinuetWeb, :live_view
   import MeetingMinuetWeb.DateComponents, warn: false
-  import MeetingMinuetWeb.LayoutComponents
   import MeetingMinuetWeb.OrganizationLive.ShowComponents
+  import MeetingMinuet.Organizations.Permissions
 
   alias MeetingMinuetWeb.DTO
   alias MeetingMinuet.Organizations.Presence
