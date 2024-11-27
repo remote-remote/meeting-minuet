@@ -141,7 +141,7 @@
 </div>
 
 <.modal
-  :if={@live_action == :new_agenda_item}
+  :if={@live_action == :new_agenda_item || @live_action == :edit_agenda_item}
   id="agenda-item-modal"
   show
   on_cancel={JS.patch(~p"/organizations/#{@organization}/meetings/#{@meeting}")}

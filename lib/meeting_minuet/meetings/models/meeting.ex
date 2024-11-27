@@ -1,6 +1,7 @@
 defmodule MeetingMinuet.Meetings.Meeting do
   alias __MODULE__
   use Ecto.Schema
+  import Ecto.Query
   import Ecto.Changeset
 
   schema "meetings" do
@@ -52,27 +53,9 @@ defmodule MeetingMinuet.Meetings.Meeting do
     ])
   end
 
-  def cast_range(changeset, field, start_field, end_field) do
-    start_time = get_change(changeset, start_field)
-    end_time = get_change(changeset, end_field)
-
-    case {start_time, end_time} do
-      {nil, nil} ->
-        changeset
-
-      {nil, _} ->
-        changeset
-
-      {_, nil} ->
-        changeset
-
-      {start_time, end_time} ->
-        put_change(changeset, field, %Postgrex.Range{
-          lower: start_time,
-          upper: end_time,
-          lower_inclusive: true,
-          upper_inclusive: true
-        })
-    end
+  def q_list_for_org(org_id) do
+    from m in Meeting,
+      join: o in assoc(m, :organization),
+      where: o.id == ^org_id
   end
 end

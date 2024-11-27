@@ -29,23 +29,32 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
         _session,
         socket
       ) do
-    organization = Organizations.get_organization!(socket.assigns.current_user, organization_id)
-    meeting = Meetings.get_meeting!(organization, meeting_id)
-    attendees = Meetings.list_attendees(meeting)
-    agenda_items = Meetings.list_agenda_items(meeting.id)
-    attending_member_ids = attendees |> Enum.map(& &1.membership_id)
-
-    uninvited_members =
-      Organizations.list_members(organization_id)
-      |> Member.map_list()
-      |> Enum.reject(fn m -> m.id in attending_member_ids end)
-
     socket
-    |> assign(:organization, organization)
-    |> assign(:meeting, meeting)
-    |> assign(:attendees, attendees)
-    |> assign(:uninvited_members, uninvited_members)
-    |> assign(:agenda_items, agenda_items)
+    |> assign_new(:organization, fn ->
+      Organizations.get_organization!(socket.assigns.current_user, organization_id)
+    end)
+    |> (fn socket ->
+          assign_new(socket, :meeting, fn ->
+            Meetings.get_meeting!(socket.assigns.organization, meeting_id)
+          end)
+        end).()
+    |> (fn socket ->
+          assign_new(socket, :attendees, fn ->
+            Meetings.list_attendees(socket.assigns.meeting)
+          end)
+        end).()
+    |> (fn socket ->
+          assign_new(socket, :uninvited_members, fn ->
+            attending_member_ids = socket.assigns.attendees |> Enum.map(& &1.membership_id)
+
+            Organizations.list_members(organization_id)
+            |> Member.map_list()
+            |> Enum.reject(fn m -> m.id in attending_member_ids end)
+          end)
+        end).()
+    |> assign_new(:agenda_items, fn ->
+      Meetings.list_agenda_items(meeting_id)
+    end)
     |> apply_action(socket.assigns.live_action, params)
   end
 
@@ -67,47 +76,65 @@ defmodule MeetingMinuetWeb.MeetingLive.Show do
      |> assign(:item_form, form)}
   end
 
-  def apply_action(socket, :edit_agenda_item, _params) do
-    form = %AgendaItem{} |> AgendaItem.changeset() |> to_form()
+  def apply_action(socket, :edit_agenda_item, %{"agenda_item_id" => item_id}) do
+    IO.inspect(socket.assigns, label: "edit agenda item socket")
+
+    item =
+      Enum.find(socket.assigns.agenda_items, fn item -> item.id == String.to_integer(item_id) end)
+
+    form =
+      item
+      |> AgendaItem.changeset(%{})
+      |> to_form()
+
+    positions =
+      MeetingMinuet.Organizations.list_positions(socket.assigns.organization.id)
+      |> Enum.map(&{&1.name, &1.id})
 
     {:noreply,
      socket
      |> assign(:page_title, "Edit Agenda Item")
+     |> assign(:agenda_item, item)
+     |> assign(:positions, [{"None", nil} | positions])
      |> assign(:item_form, form)}
   end
 
   @impl true
 
   def handle_event("move_agenda_item_up", %{"id" => id}, socket) do
-    IO.puts("MOVE AGENDA ITEM UP")
-
     Enum.find(socket.assigns.agenda_items, fn item -> item.id == id end)
-    |> IO.inspect(label: "up: found item")
     |> Meetings.move_agenda_item_up()
 
-    patch_to_meeting(socket)
+    {:noreply,
+     assign(socket, :agenda_items, Meetings.list_agenda_items(socket.assigns.meeting.id))}
   end
 
   def handle_event("move_agenda_item_down", %{"id" => id}, socket) do
-    IO.puts("MOVE AGENDA ITEM DOWN")
-
     Enum.find(socket.assigns.agenda_items, fn item -> item.id == id end)
-    |> IO.inspect(label: "down: found item")
     |> Meetings.move_agenda_item_down()
 
-    patch_to_meeting(socket)
+    {:noreply,
+     assign(socket, :agenda_items, Meetings.list_agenda_items(socket.assigns.meeting.id))}
   end
 
   def handle_event("save_agenda_item", %{"agenda_item" => attrs}, socket) do
-    Meetings.create_agenda_item!(Map.put(attrs, "meeting_id", socket.assigns.meeting.id))
+    if socket.assigns.live_action == :new_agenda_item do
+      Meetings.create_agenda_item!(Map.put(attrs, "meeting_id", socket.assigns.meeting.id))
+    end
 
-    patch_to_meeting(socket)
+    if socket.assigns.live_action == :edit_agenda_item do
+      Meetings.update_agenda_item(socket.agenda_item, attrs)
+    end
+
+    assign(socket, :agenda_items, Meetings.list_agenda_items(socket.assigns.meeting.id))
+    |> patch_to_meeting()
   end
 
   def handle_event("delete_agenda_item", %{"id" => id}, socket) do
     Meetings.remove_agenda_item!(id)
 
-    patch_to_meeting(socket)
+    {:noreply,
+     assign(socket, :agenda_items, Meetings.list_agenda_items(socket.assigns.meeting.id))}
   end
 
   def handle_event("invite", %{"id" => membership_id}, socket) do
