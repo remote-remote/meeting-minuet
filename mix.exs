@@ -33,8 +33,8 @@ defmodule MeetingMinuet.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
-      {:phoenix, "~> 1.7.8"},
-      {:phoenix_ecto, "~> 4.4"},
+      {:phoenix, "~> 1.7.21"},
+      {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.10"},
       {:ecto_range, "~> 0.2.1"},
       {:postgrex, ">= 0.0.0"},
